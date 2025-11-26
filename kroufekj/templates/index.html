@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Žebříček hráčů</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="main-container">
+        <h1>Žebříček hráčů</h1>
+
+        <form method="POST">
+            <select name="obtiznost" onchange="this.form.submit()">
+                <option value="Easy" {{ 'selected' if obtiznost == 'Easy' else '' }}>Easy</option>
+                <option value="Medium" {{ 'selected' if obtiznost == 'Medium' else '' }}>Medium</option>
+                <option value="Hard" {{ 'selected' if obtiznost == 'Hard' else '' }}>Hard</option>
+            </select>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Pořadí</th>
+                    <th>Jméno</th>
+                    <th>Skóre</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if leaderboard %}
+                    {% for row in leaderboard %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>
+                                <a href="http://localhost:5000/user/{{ row[0] }}">
+                                    {{ row[0] }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ row[1] }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="3">Žádná data</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
