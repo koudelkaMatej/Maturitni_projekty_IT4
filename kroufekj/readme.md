@@ -44,12 +44,12 @@ python snake-game.py
 ---
 
 <div style="display: flex; gap: 10px;">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/kroufekj/img/1.png" width="30%" height="40%">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/kroufekj/img/2.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/1.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/2.png" width="30%" height="40%">
 </div>
 <div style="display: flex; gap: 10px;">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/kroufekj/img/3.png" width="30%" height="40%">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/kroufekj/img/4.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/3.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/4.png" width="30%" height="40%">
 </div>
 
 
@@ -59,8 +59,8 @@ python snake-game.py
 ## Žebříčky
 
 <div style="display: flex; gap: 10px;">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/kroufekj/img/6.png" width="30%" height="40%">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/kroufekj/img/5.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/6.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/5.png" width="30%" height="40%">
 </div>
 
 ---
@@ -68,8 +68,8 @@ python snake-game.py
 ## Volba nickname
 
 <div style="display: flex; gap: 10px;">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/kroufekj/img/7.png" width="30%" height="40%">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/kroufekj/img/8.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/7.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/8.png" width="30%" height="40%">
 </div>
 
 ---
@@ -77,8 +77,8 @@ python snake-game.py
 ## WEB interface
 
 <div style="display: flex; gap: 10px;">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/kroufekj/img/9.png" width="30%" height="40%">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/kroufekj/img/10.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/9.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/10.png" width="30%" height="40%">
 </div>
 
 ---
