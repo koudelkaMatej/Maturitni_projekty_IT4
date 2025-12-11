@@ -1,6 +1,6 @@
 import pygame
 from pygame.locals import *
-import random
+import random, time
 from packages import block
 
 def vykreslení_okna(okno,bg):#Výplň okna
@@ -84,7 +84,7 @@ def popisky(easy,medium,hard,okno,obtiznosti,font_mensi):#Popisky k blockům obt
         block = moznosti[i]
         info = font_mensi.render(info, True, (255, 255, 255))
         okno.blit(info, (block[0] + 30, block[1]))
-def vytvoření_jídla(obtiznost,obtiznosti,velikost_blocku,šířka_okna,výška_okna,jidlo,okno):#Tvorba blocku, který bude reprezentovat jídlo
+def vytvoření_jídla(obtiznost,obtiznosti,velikost_blocku,šířka_okna,výška_okna,okno):#Tvorba blocku, který bude reprezentovat jídlo
     jidlo = [0,0]
     if obtiznost == obtiznosti[0]: #easy obtížnost(blocky nebudou nikdy na okraji obrazovky)
         jidlo[0] = velikost_blocku * random.randint(2, round(šířka_okna / velikost_blocku) - 2) #Generování náhodného čísla reprezentující pozici x, pro block jídla, který nebude na okraji obrazovky
@@ -133,3 +133,28 @@ def žebříček(sloupce,  mycursor):#získání aktuálně nejlepších uživat
         result = mycursor.fetchall()
         pozice.append(result[0][0])
     return pozice
+def speedup(power_active,save_bps,bps,bonus):
+    if bonus >= bps and power_active == True and bps > save_bps: #Zpomalování každou sekundu
+        bonus = 0
+        if bps - 2 < save_bps:
+            bps = save_bps
+        else:
+            bps -= 2
+    return bps
+def double(score,font,okno,šířka_okna,status,pocatek_animace,animace_casy):
+    if round(time.time()-pocatek_animace) > 2: #Po 2s textu na obrazovce se začne text pohybovat
+        if round(time.time()-pocatek_animace,1) not in animace_casy: #Každou .1 s se text posune o 3px
+            animace_casy.append(round(time.time()-pocatek_animace,1))
+            status += 1
+        text = f"+{score}"
+        barva = (255, 0, 0)
+        skóre = font.render(text, True, barva)
+        okno.blit(skóre, ((šířka_okna * 0.55), 40-3*status))
+        if status != 10:
+            return True, status, animace_casy
+        return False, status, animace_casy
+    text = f"+{score}"
+    barva = (255, 0, 0)
+    skóre = font.render(text, True, barva)
+    okno.blit(skóre, ((šířka_okna * 0.55), 42))
+    return True, 0, animace_casy

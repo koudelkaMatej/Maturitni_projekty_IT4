@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 from packages import funkce, okno_volby, nickname, snake
 from settings import *
-import mysql.connector, getpass, time
+import mysql.connector, getpass, time, random
 #Získání uživatelského jména pro doporučení uživatelského jména
 user = getpass.getuser()
 #Samotné napojení se na databázi
@@ -21,8 +21,11 @@ výška_okna = 600
 okno = pygame.display.set_mode((šířka_okna, výška_okna))
 pygame.display.set_caption("Had")
 #Proměnné
+power_active = False
+bonus_active = False
+timer = 0
 kliknuto = False
-fps = 10
+bps = 10
 novy_nick = False
 run = True
 prohra = 0
@@ -35,7 +38,10 @@ score = 0
 konec_hry = False
 run = True
 prohra = 0
+animace_zdvojnasobeni = False
 stisk = 0
+powered = 0
+animace_casy =[]
 start = time.time()
 tlačítko = Rect(šířka_okna // 2 - 90, výška_okna // 2, 180, 45)
 #Snake
@@ -83,13 +89,13 @@ if nove_hodnoty == True:#Vytvoření nových hodnot
 """)
     mydb.commit()
 #Volba obtížnosti
-obtiznost, pozice_hada, směr = okno_volby.choice(šířka_okna,výška_okna,velikost_blocku,okno,bg,font,font_mensi,fps,outline,modra,body_inner,obtiznosti,mycursor,mydb,user,sloupce,host,username,password,database)
+obtiznost, pozice_hada, směr = okno_volby.choice(šířka_okna,výška_okna,velikost_blocku,okno,bg,font,font_mensi,bps,outline,modra,body_inner,obtiznosti,mycursor,mydb,user,sloupce,host,username,password,database)
 Had2.setPozice(pozice_hada)
 #Zahájení odpočtu času
 start = time.time()
 #Začátek hry
 while run:
-    cas = round(time.time() - start, 2)#Výpočet času pro správnou funkci fps
+    cas = round(time.time() - start, 2)#Výpočet času pro správnou funkci bps
     funkce.vykreslení_okna(okno,bg)
     funkce.vykreslení_score(score,obtiznosti,okno,obtiznost,font,šířka_okna)
     funkce.vykreslení_obtížnosti(obtiznost,font,okno,šířka_okna,výška_okna,obtiznosti)
@@ -103,7 +109,7 @@ while run:
     #tvorba jídla
     if nove_jidlo == True:
         nove_jidlo = False
-        jidlo = funkce.vytvoření_jídla(obtiznost,obtiznosti,velikost_blocku,šířka_okna,výška_okna,jidlo,okno)
+        jidlo = funkce.vytvoření_jídla(obtiznost,obtiznosti,velikost_blocku,šířka_okna,výška_okna,okno)
     jidlo.vykresli()
     #Kolize s jídlem
     if jidlo.kolize(Had2.getPozice()):
@@ -111,8 +117,38 @@ while run:
         #Prodloužení hada
         Had2.dalsi_block(směr,velikost_blocku)
         score += 1 #Přidání score
-    #Logika fps
-    if cas > 1 / fps:
+    #PowerUp
+    if timer >= bps * 10 and bonus_active == False: #Každých 10s se zjeví powerup
+        bonus_active = True
+        timer = 0
+        bonus_block = funkce.vytvoření_jídla(obtiznosti[1],obtiznosti,velikost_blocku,šířka_okna,výška_okna,okno)
+    #Řešení powerupů
+    if bonus_active:
+        bonus_block.animate(okno)
+        if timer >= bps: #Každou seknundu se bude aktualizovat stav powerup animačního blocku
+            timer = 0
+            bonus_block.update_animation()
+        if bonus_block.kolize(Had2.getPozice()): #Kontrola kolize blocku s hadem
+            bonus_active = False
+            power_active = True
+            powered = random.randint(1,10)
+            if powered != 10: #Zrychlení (90% šance)
+                save_bps = bps
+                bps *= 2
+            elif powered == 10: #Zdvojnásobení skóre(10% šance)
+                stav_animace_zdvojnasobeni = 0 #Stav pro animaci zdvojnásobení skóre
+                animace_zdvojnasobeni = True
+                pocatek_animace_zdvojnasobeni = time.time()
+    if animace_zdvojnasobeni:#Animace pro zdvojnásobení skóre
+        animace_zdvojnasobeni, stav_animace_zdvojnasobeni, animace_casy = funkce.double(score,font,okno,šířka_okna,stav_animace_zdvojnasobeni,pocatek_animace_zdvojnasobeni, animace_casy)
+        if animace_zdvojnasobeni == False:
+            if score != 0:
+                score *= 2
+    if powered > 0 and powered < 10: #Zrychlení pohybu hada
+        bps = funkce.speedup(power_active,save_bps,bps,timer)
+    #Logika bps
+    if cas > 1 / bps:
+        timer += 1
         aktualizuj = True
         start = time.time()
         stisk = 0
@@ -139,6 +175,10 @@ while run:
             pos = pygame.mouse.get_pos()
             if tlačítko.collidepoint(pos):
                 #Restart Proměnných
+                animace_zdvojnasobeni = False
+                power_active = False
+                bonus_active = False
+                timer = 0
                 Had2 = snake.Snake(výška_okna,šířka_okna,velikost_blocku)
                 směr = 1
                 aktualizuj = False
@@ -149,7 +189,8 @@ while run:
                 stisk = 0
                 prohra = 0
                 konec_hry = False
-                obtiznost, pozice_hada, směr = okno_volby.choice(šířka_okna,výška_okna,velikost_blocku,okno,bg,font,font_mensi,fps,outline,modra,body_inner,obtiznosti,mycursor,mydb,user,sloupce,host,username,password,database)
+                animace_casy =[]
+                obtiznost, pozice_hada, směr = okno_volby.choice(šířka_okna,výška_okna,velikost_blocku,okno,bg,font,font_mensi,bps,outline,modra,body_inner,obtiznosti,mycursor,mydb,user,sloupce,host,username,password,database)
                 Had2.setPozice(pozice_hada)
     hlava = 1#Proměnná, která nám zajistí, že podmínka ve for loopu níže bude splněna pouze jednou, pro získání jiné barvy pro block představující hlavu
     if konec_hry == False or prohra == 0:

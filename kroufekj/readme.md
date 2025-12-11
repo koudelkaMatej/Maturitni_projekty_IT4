@@ -7,6 +7,7 @@
 * Volba nickname při každém spuštění programu je samozřejmostí
 * Projekt umožňuje WEB interface pro detailnější zobrazení žebříčků a profilů jednotlivých hráčů
 * Program obsahuje prevenci vůči SQLi
+* Každých 10s se na hracím poli zobrazí block powerupu, který umožní hráči `zrychlit na krátký čas (90% šance)`, nebo `zdvojnásobit aktuální skóre (10% šance)`
 
 ---
 
