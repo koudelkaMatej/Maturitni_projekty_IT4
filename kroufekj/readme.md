@@ -102,6 +102,7 @@ python snake-game.py
 ├── static/
 │   └── style.css
 ├── templates/
+│   ├── about.html
 │   ├── index.html
 │   └── profile.html
 ├── img/
