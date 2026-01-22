@@ -98,3 +98,43 @@ a:hover {
 p {
     text-align: center;
 }
+
+
+.btn {
+    display: block;
+    margin-top: 1.5rem;
+    padding: 0.6rem;
+    text-align: center;
+    background-color: #111827;
+    color: white;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #374151;
+    color: white;
+}
+
+.btn.secondary {
+    background-color: #e5e7eb;
+    color: #111827;
+}
+
+.btn.secondary:hover {
+    background-color: #d1d5db;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+.list {
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+}
+
+.list li {
+    margin-bottom: 0.25rem;
+}

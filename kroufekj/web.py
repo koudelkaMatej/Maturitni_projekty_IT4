@@ -28,6 +28,11 @@ def index():
     leaderboard = get_leaderboard(obtiznost) #Využiju funkce pro srovnání leaderboardu
     return render_template('index.html', obtiznost=obtiznost, leaderboard=leaderboard)
 
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
 @app.route('/user/<username>')
 def user_profile(username):
     for char in list(username): #Kontrola jestli nebyl v uri využit nevyžádaný znak
