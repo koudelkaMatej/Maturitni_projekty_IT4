@@ -1,0 +1,24 @@
+Table users {
+  id            integer   [primary key]
+  username      varchar   [not null, unique]
+  games         int       [default: 0]
+  best_run      int       [ref: - runs.id]
+  total_points  int
+}
+
+Table runs {
+  id          integer   [primary key]
+  user_id     integer   [not null, ref: > users.id]
+  date        timestamp [default: 0]
+  points      int
+  level       int
+  run_length  float
+}
+
+Table access {
+  id                integer [primary key]
+  user_id           integer [ref: > users.id]
+  password_hash     varchar
+  reset_mail        varchar
+  last_login        timestamp
+}

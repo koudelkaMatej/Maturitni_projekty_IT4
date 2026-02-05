@@ -1,0 +1,140 @@
+body {
+    background-color: #f3f4f6; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2.5rem; 
+    font-family: sans-serif;
+}
+
+.main-container {
+    background-color: white;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-radius: 1rem; 
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 32rem;
+    border: 1px solid #d1d5db; 
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+form {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+select {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+}
+
+table {
+    width: 100%;
+    text-align: left;
+    border-spacing: 0;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem; 
+    overflow: hidden;
+}
+
+thead tr {
+    background-color: #e5e7eb;
+}
+
+th, td {
+    padding: 0.5rem;
+    border-right: 1px solid #d1d5db; 
+    border-bottom: 1px solid #d1d5db; 
+}
+
+th:last-child, td:last-child {
+    border-right: none;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+tbody td:first-child {
+    font-weight: 500;
+}
+
+tbody tr td[colspan="3"] {
+    text-align: center;
+    padding: 1rem;
+    color: #6b7280; 
+    border-right: none;
+    border-bottom: none;
+}
+
+h2 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+a:hover {
+  color: rgb(163, 163, 163);
+}
+
+p {
+    text-align: center;
+}
+
+
+.btn {
+    display: block;
+    margin-top: 1.5rem;
+    padding: 0.6rem;
+    text-align: center;
+    background-color: #111827;
+    color: white;
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #374151;
+    color: white;
+}
+
+.btn.secondary {
+    background-color: #e5e7eb;
+    color: #111827;
+}
+
+.btn.secondary:hover {
+    background-color: #d1d5db;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+}
+
+.list {
+    margin-left: 1rem;
+    margin-bottom: 1rem;
+}
+
+.list li {
+    margin-bottom: 0.25rem;
+}
