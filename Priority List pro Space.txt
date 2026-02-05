@@ -1,0 +1,183 @@
+Priority List pro Space Invaders
+🎯 PRIORITA 1 - Základní funkčnost (do zítra)
+
+Cíl: Ukázat učiteli funkční základ
+
+    Hlavní okno hry
+
+    Pohyb hráče (šipky doleva/doprava)
+
+    Základní střelba (mezerník)
+
+    Nepřátelé se pohybují
+
+    Kolize střel s nepřáteli
+
+    Základní HUD (health)
+
+    Virtuální prostředí (venv)
+
+🚀 PRIORITA 2 - Hratelnost (1. týden)
+
+Cíl: Hra je kompletní a hratelná
+
+    Scoring systém
+
+        Zobrazování skóre
+
+        Body za zničené nepřátele
+
+        High score
+
+    Konec hry
+
+        Game over screen
+
+        Restart hry
+
+        Win condition (všechny nepřátelé zničeni)
+
+    Vylepšené nepřátelé
+
+        Nepřátelé střílí zpět
+
+        Různé typy nepřátel
+
+        Boss na konci levelu
+
+⭐ PRIORITA 3 - Polishing (2. týden)
+
+Cíl: Hra vypadá profesionálně
+
+    Grafika místo čtverečků
+
+        Sprite pro hráče
+
+        Sprite pro nepřátele
+
+        Sprite pro střely
+
+        Pozadí hry
+
+    Zvuky a efekty
+
+        Zvuk střelby
+
+        Zvuk exploze
+
+        Background music
+
+        Vizuální efekty (exploze)
+
+    Hlavní menu
+
+        Start screen
+
+        Tlačítko Start/Exit
+
+        Nápověda/controls
+
+🔥 PRIORITA 4 - Rozšíření (3. týden)
+
+Cíl: Přidat unikátní features
+
+    Power-upy
+
+        Rychlejší střelba
+
+        Šířší střely
+
+        Dočasná nezranitelnost
+
+        Život navíc
+
+    Level systém
+
+        Více levelů
+
+        Rostoucí obtížnost
+
+        Různé vzory nepřátel
+
+    Ukládání stavu
+
+        Uložení high score
+
+        Možnost pause
+
+💎 PRIORITA 5 - Extra features (4. týden+)
+
+Cíl: Vyniknout nad ostatními
+
+    Nastavení hry
+
+        Volume control
+
+        Obtížnost (easy/medium/hard)
+
+        Fullscreen/windowed
+
+    Animace
+
+        Animace pohybu
+
+        Animace exploze
+
+        Particle effects
+
+    Speciální funkce
+
+        Easter eggs
+
+        Cheat codes
+
+        Statistiky hry
+
+📁 Technické priority
+OKAMŽITĚ
+
+    Funkční requirements.txt
+
+    Správná struktura projektu
+
+    Komentáře v kódu
+
+KRÁTKODOBĚ
+
+    Error handling
+
+    Code documentation
+
+    Logging systém
+
+DLOUHODOBĚ
+
+    Unit testy
+
+    Refactoring kódu
+
+    Performance optimalizace
+
+🎮 MVP (Minimum Viable Product) - CO NEJDŘÍV
+
+    Hráč se pohybuje a střílí
+
+    Nepřátelé se pohybují a umírají při zásahu
+
+    Hra končí když hráč zemře nebo vyhraje
+
+    Zobrazuje se skóre a zdraví
+
+💡 Tipy pro postup
+
+    Nejprve dokonči MVP - měj vždy funkční verzi
+
+    Commituj často - malé kroky, vždy funkční kód
+
+    Testuj po každé změně - nečekej až bude "hotovo"
+
+    Začni s prioritou 1 - zítra ukážeš učitelí základ
+
+    Přidávej postupně - nejdřív funkce, pak grafika
+
+Tento plán ti dá strukturu na několik měsíců práce! 🚀
