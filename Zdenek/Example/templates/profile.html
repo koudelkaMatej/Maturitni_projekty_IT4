@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Profile</title>
+</head>
+<body>
+  <h1>Profil</h1>
+
+  <p><b>Uživatel:</b> {{ username }}</p>
+  <p><b>Coiny:</b> {{ coins }}</p>
+  <p><b>Vytvořen:</b> {{ created_at }}</p>
+
+  <p>
+    <a href="/game">Hra</a> |
+    <a href="/stats">Statistiky</a> |
+    <a href="/logout">Odhlásit</a>
+  </p>
+
+  <h2>Poslední hry</h2>
+  {% if last_matches|length == 0 %}
+    <p>Zatím žádné hry.</p>
+  {% else %}
+    <ul>
+      {% for m in last_matches %}
+        <li>{{ m[4] }} — {{ m[0] }}, vlna {{ m[1] }}, killy {{ m[2] }}, odměna {{ m[3] }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+</body>
+</html>

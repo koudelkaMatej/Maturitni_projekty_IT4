@@ -1,0 +1,1 @@
+SECRET_KEY = "super_tajne_heslo_12345"

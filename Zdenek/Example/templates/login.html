@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Login</title>
+</head>
+<body>
+  <h1>Přihlášení</h1>
+
+  {% if error %}
+    <p style="color:red;">{{ error }}</p>
+  {% endif %}
+
+  <form method="post">
+    <label>Username:</label><br>
+    <input name="username"><br><br>
+
+    <label>Password:</label><br>
+    <input type="password" name="password"><br><br>
+
+    <button type="submit">Login</button>
+  </form>
+
+  <p>Nemáš účet? <a href="/register">Registrace</a></p>
+</body>
+</html>
