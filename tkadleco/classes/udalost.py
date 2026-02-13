@@ -9,17 +9,21 @@ class Udalost:
         self.prirazena_jednotka = None
 
     def prirad_jednotku(self, jednotka):
+        # Označíme, že na události pracuje daná jednotka
         self.prirazena_jednotka = jednotka
 
     def update(self):
+        # Když je jednotka při události a už nemá cíl (dorazila), událost je vyřešená
         if self.prirazena_jednotka and not self.prirazena_jednotka.cil:
             self.aktivni = False
 
         self.timer += 1
+        # Pokud událost zůstane moc dlouho nevyřešená, také skončí (pokuta/timeout)
         if self.timer > 2000:
             self.aktivni = False
 
     def draw(self, screen):
+        # Barva podle typu události
         if self.typ == "požár":
             barva = (255, 0, 0)
         elif self.typ == "krádež":

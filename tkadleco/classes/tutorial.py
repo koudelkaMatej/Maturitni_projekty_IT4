@@ -8,6 +8,7 @@ class Tutorial:
         self.mensi_font = pygame.font.Font(None, 32)
         self.tlacitko_zpet = pygame.Rect(20, 20, 150, 50)
 
+        # Text tutoriálu (můžeš ho později rozšířit)
         self.text = [
             "🎮 City Rescue Simulator 🎮",
             "",
