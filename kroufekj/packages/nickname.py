@@ -1,7 +1,9 @@
 import pygame
 from pygame.locals import *
 import sys
-def otazka(user,okno,šířka_okna,výška_okna,font_mensi,povolené_znaky):
+from packages import funkce
+def otazka(okno,šířka_okna,výška_okna,font_mensi,povolené_znaky, mycursor):
+    user = "host"
     run = True
     kliknuto = False
     tlačítko_Ano = Rect(šířka_okna // 2 - 93, výška_okna // 2, 70, 40) #Tlačítko reprezentující volbu ano
@@ -10,8 +12,9 @@ def otazka(user,okno,šířka_okna,výška_okna,font_mensi,povolené_znaky):
     input_box_stín = pygame.Rect(šířka_okna //2 - 90, výška_okna //2 - 1 , 182, 34) #Box pro stín uživatelského inputu
     zadany_text = ""
     zadat = False
+    chyba = ""
     while run:          
-        okno.fill((0,0,0))      
+        okno.fill((0,0,0))    
         #Kontrola událostí provedených uživatelem
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -25,9 +28,13 @@ def otazka(user,okno,šířka_okna,výška_okna,font_mensi,povolené_znaky):
                 if event.type == pygame.KEYDOWN: #Kontrola stisknutých kláves v případě nutného uživatelského inputu
                     if event.key == pygame.K_BACKSPACE: #funkce mazání textu
                         zadany_text = zadany_text[:-1] #Odebrání posledního prvku v listu obsahující uživatelský input, pro plnou funkci BACKSPACE
-                    elif event.key == pygame.K_RETURN: #Enter, neboli potvrzení zadaného vstupu
-                        run = False
-                        user = zadany_text
+                    elif event.key == pygame.K_RETURN and zadany_text != "": #Enter, neboli potvrzení zadaného vstupu
+                        if funkce.kontrola_nick(mycursor, zadany_text):
+                            return zadany_text
+                        else:
+                            zadany_text = ""
+                            chyba = "Uživatel není zaregistrován! Použijte Web UI"
+                            chyba = font_mensi.render(chyba, True, (255, 0, 0))
                     else: 
                         if max(180, text_zobrazeno.get_width()+10) == 180: #Pokud je box nutné zdelšit, protože se do něj již nevejde uživateslký input, tak se input nepropíše
                             if event.unicode in povolené_znaky:
@@ -81,6 +88,8 @@ def otazka(user,okno,šířka_okna,výška_okna,font_mensi,povolené_znaky):
             if max(180, text_zobrazeno.get_width()+10) != 180: 
                 zadany_text = zadany_text[:-1] 
             okno.blit(text_zobrazeno, (input_box.x+5, input_box.y+5)) 
+            if chyba != "":
+                okno.blit(chyba, (šířka_okna // 2 - len("Uživatel není zaregistrován! Použijte Web UI")*5, výška_okna // 2 + 60))
             pygame.display.flip() 
         pygame.display.update()
     return user

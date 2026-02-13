@@ -2,9 +2,7 @@ import pygame
 from pygame.locals import *
 from packages import funkce, okno_volby, nickname, snake
 from settings import *
-import mysql.connector, getpass, time, random
-#Získání uživatelského jména pro doporučení uživatelského jména
-user = getpass.getuser()
+import mysql.connector, time, random
 #Samotné napojení se na databázi
 mydb = mysql.connector.connect(
     host = host
@@ -12,7 +10,7 @@ mydb = mysql.connector.connect(
     ,password = password
     ,database = database
 )
-mycursor = mydb.cursor()
+mycursor = mydb.cursor(buffered=True)
 #inicializace
 pygame.init()
 #Okno
@@ -58,36 +56,25 @@ bg = (0, 0, 0)
 body_inner = (255, 255, 255)
 outline = (100, 100, 200)
 modra = (0, 0, 255)
-#Volba nickname
-user = nickname.otazka(user,okno,šířka_okna,výška_okna,font_mensi,povolené_znaky)
-#Kontrola Existence Table Score
-nove_hodnoty = False
-try:
-    mycursor.execute(f"""SELECT * FROM `Score`""")
-    myresult = mycursor.fetchall() 
-except mysql.connector.errors.ProgrammingError: 
-    mycursor.execute("""CREATE TABLE `Score`(
-        username text,
-        Easy int,
-        Medium int,
-        Hard int
-                     
-    )""")
-    mydb.commit()
-#Kontrola Existence Hodnot pro aktuálního uživatele
-try:
-    mycursor.execute(f"""SELECT * FROM `Score` WHERE username = '{user}'""")
-    myresult = mycursor.fetchall()
-    if myresult == []:
-        nove_hodnoty = True
-except mysql.connector.errors.ProgrammingError: 
-    nove_hodnoty = True
-if nove_hodnoty == True:#Vytvoření nových hodnot
+#Pokud tabulka není, vytvoříme ji + fetchneme data
+mycursor.execute("""
+CREATE TABLE IF NOT EXISTS `Score` (
+    username VARCHAR(50) PRIMARY KEY,
+    password VARCHAR(255),
+    Easy INT DEFAULT 0,
+    Medium INT DEFAULT 0,
+    Hard INT DEFAULT 0)""")
+mydb.commit()
+mycursor.execute("SELECT username FROM `Score` WHERE username='host'")
+result = mycursor.fetchall()
+if result == []:
     mycursor.execute(f"""INSERT INTO `Score`
-(username, Easy, Medium, Hard) VALUES
-('{user}', 0, 0, 0);
-""")
-    mydb.commit()
+(username, password, Easy, Medium, Hard) VALUES
+('host', '', 0, 0, 0);
+""") 
+mydb.commit()
+#Volba nickname
+user = nickname.otazka(okno,šířka_okna,výška_okna,font_mensi,povolené_znaky, mycursor)
 #Volba obtížnosti
 obtiznost, pozice_hada, směr = okno_volby.choice(šířka_okna,výška_okna,velikost_blocku,okno,bg,font,font_mensi,bps,outline,modra,body_inner,obtiznosti,mycursor,mydb,user,sloupce,host,username,password,database)
 Had2.setPozice(pozice_hada)

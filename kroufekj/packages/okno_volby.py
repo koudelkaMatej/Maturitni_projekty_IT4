@@ -148,7 +148,7 @@ def choice(šířka_okna,výška_okna,velikost_blocku,okno,bg,font,font_mensi,fp
                 mycursor.execute(f"""SELECT * FROM `Score` WHERE username = '{user}'""")
                 myresult = mycursor.fetchall()
                 hodnoty = list(myresult[0])
-                hodnoty.pop(0)
+                for _ in range(2): hodnoty.pop(0)
                 proběhlo = True
             #Vypsání hodnot skóre na obrazovku  
             for i in range(3):

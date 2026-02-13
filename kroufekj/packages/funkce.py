@@ -63,7 +63,8 @@ def zápis_score(score,obtiznosti,obtiznost,mycursor,mydb,user,sloupce):
     mycursor.execute(f"""SELECT * FROM `Score` WHERE username = '{user}'""")
     myresult = mycursor.fetchall()
     high_score = list(myresult[0])
-    high_score.pop(0)
+    for _ in range(2): high_score.pop(0)
+    
     working = score #pracovní proměná pro lepší orientaci
     změna = False
     if int(high_score[obtiznosti.index(obtiznost)]) < working:#Kontrola dosažení nového skóre
@@ -158,3 +159,11 @@ def double(score,font,okno,šířka_okna,status,pocatek_animace,animace_casy):
     skóre = font.render(text, True, barva)
     okno.blit(skóre, ((šířka_okna * 0.55), 42))
     return True, 0, animace_casy
+
+def kontrola_nick(mycursor, user):
+    mycursor.execute(f"SELECT username FROM `Score` WHERE username='{user}'")
+    result = mycursor.fetchall()
+    if result == []:
+        return False
+    return True
+

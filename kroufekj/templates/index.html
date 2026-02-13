@@ -7,7 +7,10 @@
 </head>
 <body>
     <div class="main-container">
-        <h1>Žebříček hráčů</h1>
+        <a class="btn" href="{{ url_for('login') }}" style="display: flex; justify-content: center; align-items: center; float: left; margin-top: 1.5rem; width: 45%; background-color: grey;">Login</a>
+        <a class="btn" href="{{ url_for('register') }}" style="display: flex; justify-content: center; align-items: center; float: right; margin-top: 1.5rem; width: 45%; background-color: rgb(141, 131, 131);">Register</a>
+        <div style="clear: both;"></div>
+        <h1 style="margin-top: 50px;">Žebříček hráčů</h1>
 
         <form method="POST">
             <select name="obtiznost" onchange="this.form.submit()">
