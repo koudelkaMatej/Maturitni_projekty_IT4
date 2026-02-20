@@ -23,8 +23,7 @@ power_active = False
 bonus_active = False
 timer = 0
 kliknuto = False
-bps = 10
-novy_nick = False
+bps = 10 #Rychlost hada. Blocks pre second
 run = True
 prohra = 0
 stisk = 0
@@ -66,8 +65,7 @@ CREATE TABLE IF NOT EXISTS `Score` (
     Hard INT DEFAULT 0)""")
 mydb.commit()
 mycursor.execute("SELECT username FROM `Score` WHERE username='host'")
-result = mycursor.fetchall()
-if result == []:
+if mycursor.fetchall() == []: #Tvorba defaultního uživatele "host", za kterého je nemožné se přihlásit díky prázdnému poli "password". 
     mycursor.execute(f"""INSERT INTO `Score`
 (username, password, Easy, Medium, Hard) VALUES
 ('host', '', 0, 0, 0);

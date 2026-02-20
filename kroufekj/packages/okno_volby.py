@@ -3,7 +3,7 @@ from pygame.locals import *
 from packages import funkce,block,snake
 import time, sys
 
-def choice(šířka_okna,výška_okna,velikost_blocku,okno,bg,font,font_mensi,fps,outline,modra,body_inner,obtiznosti,mycursor,mydb,user,sloupce,host,username,password,database):
+def choice(šířka_okna,výška_okna,velikost_blocku,okno,bg,font,font_mensi,bps,outline,modra,body_inner,obtiznosti,mycursor,mydb,user,sloupce,host,username,password,database):
     easy_cords = [šířka_okna // 5, výška_okna // 3] #Souřadnice blocku reprezentující Easy obtížnost
     medium_cords = [šířka_okna // 2, výška_okna // 3] #Souřadnice blocku reprezentující Mid obtížnost
     hard_cords = [šířka_okna // 1.25, výška_okna // 3] #Souřadnice blocku reprezentující Hard obtížnost
@@ -11,6 +11,7 @@ def choice(šířka_okna,výška_okna,velikost_blocku,okno,bg,font,font_mensi,fp
     reset_cords = [šířka_okna // 1.5, (výška_okna // 3) - velikost_blocku * 3] #Souřadnice blocku reprezentující Možnost resetu hodnot skóre
     popis_cords = [šířka_okna - velikost_blocku * 4, (výška_okna // 3) * 2 + velikost_blocku * 3] #Souřadnice blocku reprezentující Popisky blocků
     žebříčky_cords = [šířka_okna // 2, (výška_okna // 3) * 2 + velikost_blocku * 3] #Souřadnice blocku reprezentující žebříčky
+    #Tvorba bloků pomocí třídy
     easy = block.Block(easy_cords[0],easy_cords[1],(0,255,0),okno,velikost_blocku)
     medium = block.Block(medium_cords[0],medium_cords[1],(255,255,0),okno,velikost_blocku)
     hard = block.Block(hard_cords[0], hard_cords[1],(255,0,0),okno,velikost_blocku)
@@ -36,7 +37,7 @@ def choice(šířka_okna,výška_okna,velikost_blocku,okno,bg,font,font_mensi,fp
     Had = snake.Snake(výška_okna, šířka_okna, velikost_blocku)
     #Začátek Menu
     while run:
-        cas = round(time.time() - start, 2)#Výpočet času pro správnou funkci fps
+        cas = round(time.time() - start, 2)#Výpočet času pro správnou funkci bps
         funkce.vykreslení_okna(okno,bg)
         #Kontrola událostí provedených uživatelem
         for event in pygame.event.get():
@@ -158,7 +159,7 @@ def choice(šířka_okna,výška_okna,velikost_blocku,okno,bg,font,font_mensi,fp
                 okno.blit(hodnota, (50, (výška_okna // 8) * (2 + i)))
                 box = Rect(25, (výška_okna // 8) * (2 + i) - 11, 150 + pocet * 11, 45)
                 pygame.draw.rect(okno, (255, 0, 0), box, 2, 3)
-        if cas > 1 / fps:#logika fps
+        if cas > 1 / bps:#logika bps
             aktualizuj = True
             start = time.time()
             stisk = 0

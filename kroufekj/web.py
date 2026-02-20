@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for
 import mysql.connector
 import webbrowser, random
 from settings import *
@@ -43,17 +43,17 @@ def login():
         user_input = request.form.get('username')
         for char in list(user_input): #Kontrola jestli nebyl v inputu využit nevyžádaný znak
             if char not in povolené_znaky:
-                return render_template('login.html', msg="Nepovolený znak detekován")
-        pass_input = request.form.get('password')
-
-        mycursor.execute(f"SELECT * FROM Score WHERE username = '{user_input}'")
+                return render_template('login.html', msg="Nepovolený znak detekován") #Vracím chybovou zprávu
+        #Pokud nebyl detekován nevyžádaný znak, provedu následující
+        pass_input = request.form.get('password') 
+        #Fetchnu data
+        mycursor.execute(f"SELECT * FROM Score WHERE username = '{user_input}'") 
         user_data = mycursor.fetchone()
-
+        #Kontrola správnosti hesla
         if user_data and check_password_hash(user_data[1], pass_input):
-            session['user'] = user_input
-            return redirect(url_for('index'))
+            return redirect(url_for('index')) #Redirect zpět na index page
         else:
-            return render_template("login.html", msg="Chybné jméno nebo heslo")
+            return render_template("login.html", msg="Chybné jméno nebo heslo") #Vracím chybovou zprávu
             
     return render_template('login.html', msg="")
 
@@ -64,16 +64,16 @@ def register():
         for char in list(user_input): #Kontrola jestli nebyl v inputu využit nevyžádaný znak
             if char not in povolené_znaky:
                 return render_template('register.html', msg="Nepovolený znak detekován")
+        #Kontroluji, jestli se hesla shodují   
         pass_input = request.form.get('password')
         confirm_pass = request.form.get('confirm_password')
-
         if pass_input != confirm_pass:
             return render_template('register.html', msg="Hesla se neshodují")
-
+        #Fetch dat pro kontrolu nové registrace
         mycursor.execute(f"SELECT username FROM Score WHERE username = '{user_input}'")
-        if mycursor.fetchone():
-            return render_template('register.html', msg="Uživatel s tímto jménem již existuje")
-
+        if mycursor.fetchone(): 
+            return render_template('register.html', msg="Uživatel s tímto jménem již existuje") #Vracím chybovou zprávu
+        #Vložení do databáze a redirect
         hashed_password = generate_password_hash(pass_input)
         mycursor.execute(f"INSERT INTO Score (username, password, Easy, Medium, Hard) VALUES ('{user_input}', '{hashed_password}', 0, 0, 0)")
         mydb.commit()

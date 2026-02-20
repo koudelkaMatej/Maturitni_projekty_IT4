@@ -25,7 +25,7 @@ def vykreslení_score(score,obtiznosti,okno,obtiznost,font,šířka_okna):#Vykre
         barva = (255, 0, 0)
     skóre = font.render(text, True, barva)
     okno.blit(skóre, ((šířka_okna * 0.42), 3))
-def kontrola_konce_hry(konec_hry, pozice_hada,výška_okna,šířka_okna,velikost_blocku):#Kontrola podímnek pro ukončení hry
+def kontrola_konce_hry(konec_hry, pozice_hada,výška_okna,šířka_okna,velikost_blocku):#Kontrola podmínek pro ukončení hry
     #Kontrola kolize hada s jeho tělem
     cislo_blocku = 0
     for segment in pozice_hada:
@@ -52,7 +52,7 @@ def vykresleni_konce_hry(font,okno,šířka_okna,výška_okna,změna,tlačítko,
     info = "<--- klikni" #Popisek tlačíka
     info = font_mensi.render(info, True, (0, 255, 0))
     okno.blit(info, (šířka_okna // 2 + 100, výška_okna // 2 + 10))
-    if změna == True: #Pokud se provedla změna skóre v souboru pro ukládání skóre, tak se na obrazovce zobrazí popisek infromující o dosažení nového skoŕe
+    if změna == True: #Pokud se provedla změna skóre v souboru pro ukládání skóre, tak se na obrazovce zobrazí popisek infromující o dosažení nového skóre
         info = "|i| Dosáhl jsi nového nejlepšího skóre |i|"
         info = font_mensi.render(info, True, (255, 255, 255))
         okno.blit(info, (0 + šířka_okna // 6, výška_okna - výška_okna // 5))
@@ -63,10 +63,9 @@ def zápis_score(score,obtiznosti,obtiznost,mycursor,mydb,user,sloupce):
     mycursor.execute(f"""SELECT * FROM `Score` WHERE username = '{user}'""")
     myresult = mycursor.fetchall()
     high_score = list(myresult[0])
-    for _ in range(2): high_score.pop(0)
+    for _ in range(2): high_score.pop(0) #Mazání prvních 2 sloupců (username, heslo)
     
     working = score #pracovní proměná pro lepší orientaci
-    změna = False
     if int(high_score[obtiznosti.index(obtiznost)]) < working:#Kontrola dosažení nového skóre
         text = sloupce[obtiznosti.index(obtiznost)]
         mycursor.execute(f"""
@@ -75,11 +74,10 @@ def zápis_score(score,obtiznosti,obtiznost,mycursor,mydb,user,sloupce):
         WHERE username = '{user}'
         """)
         mydb.commit()
-        změna = True #nyní se splní podmínka v vykresleni_konce_hry() a vykreslí se popisek infromující uživatele o dosažení nové hodnoty skóre
-
-    return změna
-def popisky(easy,medium,hard,okno,obtiznosti,font_mensi):#Popisky k blockům obtížnosti(volitelné)
-    moznosti = [easy, medium, hard]
+        return True #nyní se splní podmínka v vykresleni_konce_hry() a vykreslí se popisek infromující uživatele o dosažení nové hodnoty skóre
+    return False
+def popisky(easy,medium,hard,okno,obtiznosti,font_mensi):#Popisky k blockům obtížnosti
+    moznosti = [easy, medium, hard] #Souřadnice bloků vykreslených na obrazovce, pod kterými budou popisky zobrazovány
     for i in range(3):
         info = f"{obtiznosti[i]}"
         block = moznosti[i]
@@ -87,12 +85,11 @@ def popisky(easy,medium,hard,okno,obtiznosti,font_mensi):#Popisky k blockům obt
         okno.blit(info, (block[0] + 30, block[1]))
 def vytvoření_jídla(obtiznost,obtiznosti,velikost_blocku,šířka_okna,výška_okna,okno):#Tvorba blocku, který bude reprezentovat jídlo
     jidlo = [0,0]
-    if obtiznost == obtiznosti[0]: #easy obtížnost(blocky nebudou nikdy na okraji obrazovky)
+    if obtiznost == obtiznosti[0]: #easy obtížnost(bloky nebudou nikdy na okraji obrazovky)
         jidlo[0] = velikost_blocku * random.randint(2, round(šířka_okna / velikost_blocku) - 2) #Generování náhodného čísla reprezentující pozici x, pro block jídla, který nebude na okraji obrazovky
         jidlo[1] = velikost_blocku * random.randint(2, round(výška_okna / velikost_blocku) - 2) #Generování náhodného čísla reprezentující pozici y, pro block jídla, který nebude na okraji obrazovky
-    elif obtiznost == obtiznosti[1]: #medium obtížnost(pozice blocku na okraji je 1 ku 2)
-        nahodne = random.randint(0, 1)
-        if nahodne == 1: #jídlo bude na okraji
+    elif obtiznost == obtiznosti[1]: #medium obtížnost(pozice blocku na okraji je 1:2)
+        if random.randint(0, 1) == 1: #jídlo bude na okraji
             osa = random.choice(["x", "y"])
             strana = random.randint(0,1)
             if osa == "y":
@@ -127,14 +124,14 @@ def vytvoření_jídla(obtiznost,obtiznosti,velikost_blocku,šířka_okna,výšk
                 jidlo[1] = velikost_blocku * random.randint(0, round(výška_okna / velikost_blocku) - 1) #Generování náhodného čísla reprezentující pozici y, pro block jídla
     jidlo = block.Block(jidlo[0],jidlo[1],(200, 50, 50),okno,velikost_blocku)
     return jidlo
-def žebříček(sloupce,  mycursor):#získání aktuálně nejlepších uživatelů v databázi
+def žebříček(sloupce, mycursor):#získání aktuálně nejlepších uživatelů v databázi
     pozice = []
     for sloupec in sloupce:
         mycursor.execute(f"SELECT username FROM `Score` ORDER BY {sloupec} DESC")
         result = mycursor.fetchall()
-        pozice.append(result[0][0])
+        pozice.append(result[0][0]) #Vracím pouze username, který je na prvním indexu (0)
     return pozice
-def speedup(power_active,save_bps,bps,bonus):
+def speedup(power_active,save_bps,bps,bonus): #Funkce zrychlení hada na chvíli
     if bonus >= bps and power_active == True and bps > save_bps: #Zpomalování každou sekundu
         bonus = 0
         if bps - 2 < save_bps:
@@ -142,7 +139,7 @@ def speedup(power_active,save_bps,bps,bonus):
         else:
             bps -= 2
     return bps
-def double(score,font,okno,šířka_okna,status,pocatek_animace,animace_casy):
+def double(score,font,okno,šířka_okna,status,pocatek_animace,animace_casy): #Funkce pro zdvojnásobení aktuálního skóre a vykreslení animace
     if round(time.time()-pocatek_animace) > 2: #Po 2s textu na obrazovce se začne text pohybovat
         if round(time.time()-pocatek_animace,1) not in animace_casy: #Každou .1 s se text posune o 3px
             animace_casy.append(round(time.time()-pocatek_animace,1))
@@ -160,7 +157,7 @@ def double(score,font,okno,šířka_okna,status,pocatek_animace,animace_casy):
     okno.blit(skóre, ((šířka_okna * 0.55), 42))
     return True, 0, animace_casy
 
-def kontrola_nick(mycursor, user):
+def kontrola_nick(mycursor, user): #Kontrola, jestli je uživatel již registrován
     mycursor.execute(f"SELECT username FROM `Score` WHERE username='{user}'")
     result = mycursor.fetchall()
     if result == []:
