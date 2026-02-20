@@ -1,6 +1,6 @@
 import pygame
 
-from menu import Menu
+from Maturitni_projekty_IT4.Lukáš_Jíra.menu import Menu
 from game import Game
 from settings import *
 
