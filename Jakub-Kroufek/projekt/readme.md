@@ -89,9 +89,9 @@ python snake-game.py
 ```
 .    
 ├── requirements.txt
-├── .gitignore
 ├── settings.py    
-├── snake-game.py                   
+├── snake-game.py   
+├── testing.py               
 ├── packages/
 │   ├── block.py
 │   ├── nickname.py
@@ -104,6 +104,8 @@ python snake-game.py
 ├── templates/
 │   ├── about.html
 │   ├── index.html
+│   ├── login.html
+│   ├── register.html
 │   └── profile.html
 ├── img/
 │   ├── 1.jpg
@@ -115,7 +117,8 @@ python snake-game.py
 │   ├── 7.jpg
 │   ├── 8.jpg
 │   ├── 9.jpg
-│   └── 10.jpg
+│   ├── 10.jpg
+│   └── diagram.png
 └── readme.md
 ```
 
