@@ -13,7 +13,7 @@
 
 ## Stažení
 
-[![Download](https://img.shields.io/badge/Klikni%20zde-green?style=for-the-badge)](https://downgit.github.io/#/home?url=https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/kroufekj)
+[![Download](https://img.shields.io/badge/Klikni%20zde-green?style=for-the-badge)](https://downgit.github.io/#/home?url=https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/Jakub-Kroufek/Jakub-Kroufek/)
 
 
 
@@ -45,12 +45,12 @@ python snake-game.py
 ---
 
 <div style="display: flex; gap: 10px;">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/1.png" width="30%" height="40%">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/2.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/Jakub-Kroufek/Jakub-Kroufek/projekt/img/1.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/Jakub-Kroufek/Jakub-Kroufek/projekt/img/2.png" width="30%" height="40%">
 </div>
 <div style="display: flex; gap: 10px;">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/3.png" width="30%" height="40%">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/4.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/Jakub-Kroufek/Jakub-Kroufek/projekt/img/3.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/Jakub-Kroufek/Jakub-Kroufek/projekt/img/4.png" width="30%" height="40%">
 </div>
 
 
@@ -60,8 +60,8 @@ python snake-game.py
 ## Žebříčky
 
 <div style="display: flex; gap: 10px;">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/6.png" width="30%" height="40%">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/5.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/Jakub-Kroufek/Jakub-Kroufek/projekt/img/6.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/Jakub-Kroufek/Jakub-Kroufek/projekt/img/5.png" width="30%" height="40%">
 </div>
 
 ---
@@ -69,8 +69,8 @@ python snake-game.py
 ## Volba nickname
 
 <div style="display: flex; gap: 10px;">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/7.png" width="30%" height="40%">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/8.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/Jakub-Kroufek/Jakub-Kroufek/projekt/img/7.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/Jakub-Kroufek/Jakub-Kroufek/projekt/img/8.png" width="30%" height="40%">
 </div>
 
 ---
@@ -78,8 +78,8 @@ python snake-game.py
 ## WEB interface
 
 <div style="display: flex; gap: 10px;">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/9.png" width="30%" height="40%">
-    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/10.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/Jakub-Kroufek/Jakub-Kroufek/projekt/img/9.png" width="30%" height="40%">
+    <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/Jakub-Kroufek/Jakub-Kroufek/projekt/img/10.png" width="30%" height="40%">
 </div>
 
 ---
