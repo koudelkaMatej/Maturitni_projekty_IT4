@@ -32,6 +32,8 @@ class Block:
         pygame.draw.rect(self.okno, (255, 251, 0), (self.x+self.animace, self.y+self.animace, self.velikost-self.animace*2, self.velikost-self.animace*2))
         okno.blit(otaznik, otaznik_sqr)
         okno.blit(stín_surface, stín_rect)
+    def get_pos(self):
+        return self.x,  self.y
 
         
         
