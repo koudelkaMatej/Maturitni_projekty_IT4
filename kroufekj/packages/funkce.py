@@ -164,3 +164,12 @@ def kontrola_nick(mycursor, user): #Kontrola, jestli je uživatel již registrov
         return False
     return True
 
+def tvorba_db(mycursor, mydb):
+    mycursor.execute("""
+    CREATE TABLE IF NOT EXISTS `Score` (
+        username VARCHAR(50) PRIMARY KEY,
+        password VARCHAR(255),
+        Easy INT DEFAULT 0,
+        Medium INT DEFAULT 0,
+        Hard INT DEFAULT 0)""")
+    mydb.commit()

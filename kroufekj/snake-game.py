@@ -56,14 +56,7 @@ body_inner = (255, 255, 255)
 outline = (100, 100, 200)
 modra = (0, 0, 255)
 #Pokud tabulka není, vytvoříme ji + fetchneme data
-mycursor.execute("""
-CREATE TABLE IF NOT EXISTS `Score` (
-    username VARCHAR(50) PRIMARY KEY,
-    password VARCHAR(255),
-    Easy INT DEFAULT 0,
-    Medium INT DEFAULT 0,
-    Hard INT DEFAULT 0)""")
-mydb.commit()
+funkce.tvorba_db(mycursor,mydb)
 mycursor.execute("SELECT username FROM `Score` WHERE username='host'")
 if mycursor.fetchall() == []: #Tvorba defaultního uživatele "host", za kterého je nemožné se přihlásit díky prázdnému poli "password". 
     mycursor.execute(f"""INSERT INTO `Score`

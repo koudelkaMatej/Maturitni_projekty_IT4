@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 import mysql.connector
 import webbrowser, random
 from settings import *
+from packages import funkce
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -14,6 +15,7 @@ mydb = mysql.connector.connect(
     ,database = database
 )
 mycursor = mydb.cursor()
+funkce.tvorba_db(mycursor,mydb)
 def get_leaderboard(obtiznost):
     if obtiznost not in (sloupce): #Prevence
         obtiznost = "Easy"
@@ -98,5 +100,5 @@ def user_profile(username):
     return render_template('profile.html', user=user_dict)
 
 if __name__ == '__main__':
-    webbrowser.open("http://localhost:5000")
+    webbrowser.open("http://127.0.0.1:5000")
     app.run(debug=False)
