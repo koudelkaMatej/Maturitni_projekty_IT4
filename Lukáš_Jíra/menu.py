@@ -1,7 +1,10 @@
 import pygame
 import sys
-import Maturitni_projekty_IT4.Lukáš_Jíra.hra as hra
-import Maturitni_projekty_IT4.Lukáš_Jíra.databaze as databaze
+import os
+import math
+import array
+import hra
+import databaze
 import web
 
 
@@ -29,11 +32,69 @@ font_tlacitka = pygame.font.SysFont("Arial", 30, bold=True)
 font_mezi = pygame.font.SysFont("Arial", 28)
 font_maly = pygame.font.SysFont("Arial", 20)
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+IMAGES_DIR = os.path.join(BASE_DIR, "Obrazky")
+menu_music_channel = None
+menu_music_sound = None
+
+
+def image_path(filename):
+    return os.path.join(IMAGES_DIR, filename)
+
+
+def _generate_ambient_loop():
+    sample_rate = 44100
+    notes = [(220, 0.6), (262, 0.6), (294, 0.7), (262, 0.6)]
+    volume = 0.03
+    data = array.array("h")
+    for frequency, seconds in notes:
+        total = int(sample_rate * seconds)
+        fade = int(total * 0.12)
+        for i in range(total):
+            envelope = 1.0
+            if i < fade:
+                envelope = i / max(1, fade)
+            elif i > total - fade:
+                envelope = (total - i) / max(1, fade)
+            sample = int(
+                32767
+                * volume
+                * envelope
+                * math.sin((2 * math.pi * frequency * i) / sample_rate)
+            )
+            data.append(sample)
+        pause = int(sample_rate * 0.08)
+        for _ in range(pause):
+            data.append(0)
+    return pygame.mixer.Sound(buffer=data.tobytes())
+
+
+def start_menu_music():
+    global menu_music_channel, menu_music_sound
+    try:
+        if not pygame.mixer.get_init():
+            pygame.mixer.init(frequency=44100, size=-16, channels=1)
+        if menu_music_sound is None:
+            menu_music_sound = _generate_ambient_loop()
+        if menu_music_channel is None:
+            menu_music_channel = pygame.mixer.Channel(1)
+        menu_music_channel.set_volume(0.22)
+        if not menu_music_channel.get_busy():
+            menu_music_channel.play(menu_music_sound, loops=-1)
+    except Exception:
+        menu_music_channel = None
+
+
+def stop_menu_music():
+    global menu_music_channel
+    if menu_music_channel:
+        menu_music_channel.stop()
+
 
 try:
-    pozadi_img = pygame.image.load("Obrazky/flappybirdbg.png")
+    pozadi_img = pygame.image.load(image_path("flappybirdbg.png"))
     pozadi_img = pygame.transform.scale(pozadi_img, (SIRKA, VYSKA))
-    ptak_img = pygame.image.load("Obrazky/redbird-midflap.png")
+    ptak_img = pygame.image.load(image_path("redbird-midflap.png"))
     ptak_img = pygame.transform.scale(ptak_img, (60, 45))
 except:
     pozadi_img = pygame.Surface((SIRKA, VYSKA)); pozadi_img.fill(MODRA)
@@ -61,7 +122,14 @@ def nakresli_tlacitko(text, x, y, sirka, vyska, barva_neaktivni, barva_aktivni):
         pygame.draw.rect(okno, barva_neaktivni, tlacitko_rect, border_radius=15)
 
 
-    text_surf = font_tlacitka.render(text, True, BILA)
+    max_text_width = sirka - 16
+    font_size = 30
+    btn_font = pygame.font.SysFont("Arial", font_size, bold=True)
+    text_surf = btn_font.render(text, True, BILA)
+    while text_surf.get_width() > max_text_width and font_size > 16:
+        font_size -= 1
+        btn_font = pygame.font.SysFont("Arial", font_size, bold=True)
+        text_surf = btn_font.render(text, True, BILA)
     text_rect = text_surf.get_rect(center=tlacitko_rect.center)
     okno.blit(text_surf, text_rect)
     return zmacknuto
@@ -104,6 +172,8 @@ def hlavni_menu():
     posledni_body = 0
     prihlaseny_hrac = None
     zprava_na_obrazovce = ""
+    zvuk_zapnuty = True
+    hra.set_sound_enabled(zvuk_zapnuty)
 
 
     while bezi:
@@ -127,7 +197,7 @@ def hlavni_menu():
             napis("Pro hraní si vytvoř účet na webu.", font_mezi, 210, BILA)
            
             # Jen 2 tlačítka: Přihlásit a Konec
-            if nakresli_tlacitko("PŘIHLÁSIT SE", 80, 270, 200, 60, ORANZOVA, SVETLE_ORANZOVA):
+            if nakresli_tlacitko("PŘIHLÁSIT SE", 60, 270, 240, 60, ORANZOVA, SVETLE_ORANZOVA):
                 pygame.time.delay(300)
                 jmeno = zadej_text("Jméno:")
                 heslo = zadej_text("Heslo:")
@@ -141,11 +211,17 @@ def hlavni_menu():
             if nakresli_tlacitko("KONEC", 80, 350, 200, 60, CERVENA, SVETLE_CERVENA):
                 bezi = False
 
+            text_zvuk = "ZVUK: ZAP" if zvuk_zapnuty else "ZVUK: VYP"
+            if nakresli_tlacitko(text_zvuk, 80, 430, 200, 50, MODRA, (130, 180, 255)):
+                zvuk_zapnuty = not zvuk_zapnuty
+                hra.set_sound_enabled(zvuk_zapnuty)
+                pygame.time.delay(200)
+
 
         # --- HRÁČ JE PŘIHLÁŠENÝ ---
         else:
             # Jméno svítí v horní části menu
-            napis(f"👤 Hráč: {prihlaseny_hrac}", font_maly, 210, CERNA)
+            napis(f"Hráč: {prihlaseny_hrac}", font_maly, 210, CERNA)
 
 
             # Odemkly se mu tlačítka pro hru a web
@@ -156,7 +232,7 @@ def hlavni_menu():
                 pygame.time.delay(300)
 
 
-            if nakresli_tlacitko("WEB A VÝSLEDKY", 80, 330, 200, 60, ORANZOVA, SVETLE_ORANZOVA):
+            if nakresli_tlacitko("WEB A VÝSLEDKY", 50, 330, 260, 60, ORANZOVA, SVETLE_ORANZOVA):
                 webbrowser.open("http://127.0.0.1:5000")
                 pygame.time.delay(300)
 
@@ -165,6 +241,12 @@ def hlavni_menu():
                 prihlaseny_hrac = None
                 zprava_na_obrazovce = "Byl jsi odhlášen."
                 pygame.time.delay(300)
+
+            text_zvuk = "ZVUK: ZAP" if zvuk_zapnuty else "ZVUK: VYP"
+            if nakresli_tlacitko(text_zvuk, 80, 490, 200, 50, MODRA, (130, 180, 255)):
+                zvuk_zapnuty = not zvuk_zapnuty
+                hra.set_sound_enabled(zvuk_zapnuty)
+                pygame.time.delay(200)
 
 
         pygame.display.update()

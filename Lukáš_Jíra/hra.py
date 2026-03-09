@@ -1,6 +1,7 @@
 import pygame
 import sys
 import random
+import os
 
 
 # --- NASTAVENÍ ---
@@ -20,6 +21,13 @@ pipe_width = 64
 pipe_height = 512
 pipe_x = GAME_WIDTH
 pipe_y = 0
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+IMAGES_DIR = os.path.join(BASE_DIR, "Obrazky")
+
+
+def image_path(filename):
+    return os.path.join(IMAGES_DIR, filename)
 
 
 class Bird(pygame.Rect):
@@ -51,19 +59,19 @@ class Pipe(pygame.Rect):
 # --- NAČÍTÁNÍ OBRÁZKŮ ---
 bird_images = []
 try:
-    background_image = pygame.image.load("Obrazky/flappybirdbg.png")
-    img1 = pygame.image.load("Obrazky/redbird-downflap.png")
-    img2 = pygame.image.load("Obrazky/redbird-midflap.png")
-    img3 = pygame.image.load("Obrazky/redbird-upflap.png")
+    background_image = pygame.image.load(image_path("flappybirdbg.png"))
+    img1 = pygame.image.load(image_path("redbird-downflap.png"))
+    img2 = pygame.image.load(image_path("redbird-midflap.png"))
+    img3 = pygame.image.load(image_path("redbird-upflap.png"))
     img1 = pygame.transform.scale(img1, (bird_width, bird_height))
     img2 = pygame.transform.scale(img2, (bird_width, bird_height))
     img3 = pygame.transform.scale(img3, (bird_width, bird_height))
     bird_images = [img1, img2, img3]
 
 
-    top_pipe_image = pygame.image.load("Obrazky/toppipe.png")
+    top_pipe_image = pygame.image.load(image_path("toppipe.png"))
     top_pipe_image = pygame.transform.scale(top_pipe_image, (pipe_width, pipe_height))
-    bottom_pipe_image = pygame.image.load("Obrazky/bottompipe.png")
+    bottom_pipe_image = pygame.image.load(image_path("bottompipe.png"))
     bottom_pipe_image = pygame.transform.scale(bottom_pipe_image, (pipe_width, pipe_height))
 except:
     background_image = pygame.Surface((GAME_WIDTH, GAME_HEIGHT)); background_image.fill((0, 0, 0))
@@ -79,6 +87,34 @@ velocity_y = 0
 score = 0
 game_over = False
 window = None
+sounds = None
+effects_enabled = False
+sound_enabled = True
+
+
+def set_sound_enabled(enabled):
+    global sound_enabled
+    sound_enabled = bool(enabled)
+    if sounds and "flap" in sounds:
+        sounds["flap"].set_volume(0.35 if sound_enabled else 0.0)
+
+
+def init_audio():
+    global sounds, effects_enabled
+    effects_enabled = False
+    try:
+        if not pygame.mixer.get_init():
+            pygame.mixer.init(frequency=44100, size=-16, channels=1)
+        flap_path = image_path("flap.mp3")
+        sounds = {"flap": pygame.mixer.Sound(flap_path)}
+        sounds["flap"].set_volume(0.35 if sound_enabled else 0.0)
+        effects_enabled = True
+    except Exception:
+        sounds = None
+
+
+def stop_audio():
+    return
 
 
 def create_pipes():
@@ -131,11 +167,23 @@ def draw():
     window.blit(bird.img, bird)
     for pipe in pipes:
         window.blit(pipe.img, pipe)
-    text_str = str(int(score))
+    score_font = pygame.font.SysFont("Trebuchet MS", 62, bold=True)
+    score_text = score_font.render(str(int(score)), True, (255, 255, 255))
+    score_shadow = score_font.render(str(int(score)), True, (20, 30, 48))
+    score_x = (GAME_WIDTH - score_text.get_width()) // 2
+    window.blit(score_shadow, (score_x + 2, 18))
+    window.blit(score_text, (score_x, 14))
+
     if game_over:
-        text_str = "Game over           Body: " + text_str
-    font = pygame.font.SysFont("Comic Sans MS", 30)
-    window.blit(font.render(text_str, True, "black"), (10, 10))
+        over_font = pygame.font.SysFont("Trebuchet MS", 28, bold=True)
+        message = over_font.render("GAME OVER", True, (255, 255, 255))
+        hint_font = pygame.font.SysFont("Trebuchet MS", 16, bold=True)
+        hint = hint_font.render("Stiskni SPACE pro navrat", True, (255, 230, 170))
+        box = pygame.Rect(38, 255, 285, 90)
+        pygame.draw.rect(window, (15, 23, 42), box, border_radius=14)
+        pygame.draw.rect(window, (255, 120, 120), box, width=2, border_radius=14)
+        window.blit(message, (box.x + 60, box.y + 14))
+        window.blit(hint, (box.x + 32, box.y + 52))
 
 
 def spustit_hru(hlavni_okno):
@@ -146,6 +194,7 @@ def spustit_hru(hlavni_okno):
     velocity_y = 0
     score = 0
     game_over = False
+    init_audio()
    
     clock = pygame.time.Clock()
     pipe_timer = pygame.USEREVENT + 1
@@ -172,7 +221,10 @@ def spustit_hru(hlavni_okno):
                 if event.key == pygame.K_SPACE:
                     if not game_over:
                         velocity_y = -6
+                        if effects_enabled and sounds and sound_enabled:
+                            sounds["flap"].play()
                     else:
+                        stop_audio()
                         return score
 
 
