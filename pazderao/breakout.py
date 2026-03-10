@@ -274,7 +274,7 @@ while run:
         draw_text('VYBER OBTÍŽNOST:', font1, text_col, 45, 100)
         draw_text('1 - LEHKÁ (EASY)', font, block_yellow, 180, 250)
         draw_text('2 - STŘEDNÍ (MEDIUM)', font, block_orange, 150, 300)
-        draw_text('3 - TĚŽKÁ (HARD)', font, block_red, 180, 350)
+        draw_text('3 - Jednoduchá (HARD)', font, block_red, 180, 350)
         
         key = pygame.key.get_pressed()
         start_game = False
