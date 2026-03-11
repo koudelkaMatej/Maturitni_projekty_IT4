@@ -29,7 +29,7 @@ class GameTimer:
         seconds = (current_time // 1000) % 60
         minutes = (current_time // 60000)
 
-        # Formátování do MM:SS.d (např. 01:25.3)
+        
         return f"{minutes:02d}:{seconds:02d}.{tenths}"
 
     def draw(self, screen, font, color, x, y):

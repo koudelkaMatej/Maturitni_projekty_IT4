@@ -7,6 +7,7 @@ SCREEN_HEIGHT = 600
 # Cesty k souborům
 BG_IMAGE_PATH = "pazderao/images/background.jpg"
 FONT_PATH = "pazderao/images/font/lemonmilk.otf"
+CESTA_PRO_DATA = "pazderao/data/casy.txt" #pro timer.py
 
 # Základní nastavení hry
 COLS = 6
