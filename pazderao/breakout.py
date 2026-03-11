@@ -11,10 +11,10 @@ pygame.display.set_caption('Breakout')
 #background
 BG = pygame.image.load(BG_IMAGE_PATH).convert()
 background = pygame.transform.scale(BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
+ 
 #font 
-font = pygame.font.Font("Projekt-main/images/font/lemonmilk.otf", 27)
-font1 = pygame.font.Font("Projekt-main/images/font/lemonmilk.otf", 50)
+font = pygame.font.Font("pazderao/images/font/lemonmilk.otf", 27)
+font1 = pygame.font.Font("pazderao/images/font/lemonmilk.otf", 50)
 
 
 

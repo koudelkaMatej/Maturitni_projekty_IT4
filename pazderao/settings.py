@@ -5,8 +5,8 @@ SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
 
 # Cesty k souborům
-BG_IMAGE_PATH = "Projekt-main/images/background.jpg"
-FONT_PATH = "Projekt-main/images/font/lemonmilk.otf"
+BG_IMAGE_PATH = "pazderao/images/background.jpg"
+FONT_PATH = "pazderao/images/font/lemonmilk.otf"
 
 # Základní nastavení hry
 COLS = 6
