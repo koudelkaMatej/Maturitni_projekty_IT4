@@ -2,11 +2,14 @@ import pygame
 from pygame.locals import *
 import random
 from settings import *
+from timer import GameTimer
 
 pygame.init()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Breakout')
+
+game_timer = GameTimer() #načtení timeru
 
 #background
 BG = pygame.image.load(BG_IMAGE_PATH).convert()
@@ -221,10 +224,12 @@ while run:
             player_paddle.reset()
             balls = [game_ball(player_paddle.rect.centerx, player_paddle.rect.top)]
             wall.create_wall()
+            game_timer.start()
             active_boosts = []
     else:
         wall.draw_wall()
         player_paddle.draw()
+        game_timer.draw(screen, font, (255, 255, 255), 10, SCREEN_HEIGHT - 40)
         for b in balls: b.draw()
         for bst in active_boosts: bst.draw()
 
@@ -270,9 +275,13 @@ while run:
         if not LIVE_BALL:
             if GAME_OVER == 0: draw_text('KLIKNI PRO SPUŠTĚNÍ HRY', font, text_col, 110, 430)
             elif GAME_OVER == 1:
+                game_timer.stop()        
+                game_timer.save_time()
                 draw_text('VYHRÁL SI!', font1, text_col_green, 130, 180)
                 draw_text('KLIKNI PRO NÁVRÁT DO MENU', font, text_col, 80, 300)
             elif GAME_OVER == -1:
+                game_timer.stop()        
+                game_timer.save_time()
                 wall.clear_wall()
                 draw_text('PROHRÁL SI!', font1, text_col_red, 120, 180)
                 draw_text('KLIKNI PRO NÁVRÁT DO MENU', font, text_col, 80, 300)
@@ -288,6 +297,7 @@ while run:
                     else:
                         LIVE_BALL = True
                         balls = [game_ball(player_paddle.rect.centerx, player_paddle.rect.top)]
+                        game_timer.start()
 
     pygame.display.update()
 

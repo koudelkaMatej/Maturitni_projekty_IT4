@@ -1,41 +1,44 @@
 import pygame
 
-class Timer:
-    def __init__(self, screen, font_path, size=20):
-        self.screen = screen
-        # Použijeme malý font lemonmilk
-        self.font = pygame.font.Font(font_path, size)
+class GameTimer:
+    def __init__(self):
         self.start_ticks = 0
-        self.running = False
         self.elapsed_time = 0
+        self.is_running = False
+        self.saved = False # Zabraňuje vícenásobnému uložení stejného času
 
     def start(self):
-        """Spustí nebo restartuje časovač."""
         self.start_ticks = pygame.time.get_ticks()
-        self.running = True
+        self.is_running = True
+        self.saved = False
 
     def stop(self):
-        """Zastaví časovač."""
-        self.running = False
+        if self.is_running:
+            self.elapsed_time = pygame.time.get_ticks() - self.start_ticks
+            self.is_running = False
 
-    def reset(self):
-        """Vynuluje časovač."""
-        self.start_ticks = pygame.time.get_ticks()
-        self.elapsed_time = 0
+    def get_time_string(self):
+        # Pokud běží, počítá aktuální čas, jinak ukazuje ten zastavený
+        if self.is_running:
+            current_time = pygame.time.get_ticks() - self.start_ticks
+        else:
+            current_time = self.elapsed_time
 
-    def update(self):
-        """Aktualizuje uběhlý čas, pokud časovač běží."""
-        if self.running:
-            # Převod milisekund na sekundy
-            self.elapsed_time = (pygame.time.get_ticks() - self.start_ticks) // 1000
+        # Výpočet minut, sekund a desetin
+        tenths = (current_time // 100) % 10
+        seconds = (current_time // 1000) % 60
+        minutes = (current_time // 60000)
 
-    def draw(self):
-        """Vykreslí časovač v levém horním rohu."""
-        minutes = self.elapsed_time // 60
-        seconds = self.elapsed_time % 60
-        # Formátování času na 00:00
-        time_str = f"TIME: {minutes:02}:{seconds:02}"
-        
-        timer_surface = self.font.render(time_str, True, (255, 255, 255))
-        # Umístění do levého horního rohu (s malým odstupem 10px)
-        self.screen.blit(timer_surface, (10, 10))
+        # Formátování do MM:SS.d (např. 01:25.3)
+        return f"{minutes:02d}:{seconds:02d}.{tenths}"
+
+    def draw(self, screen, font, color, x, y):
+        time_str = self.get_time_string()
+        img = font.render(time_str, True, color)
+        screen.blit(img, (x, y))
+
+    def save_time(self, filename="casy.txt"):
+        if not self.saved and self.elapsed_time > 0:
+            with open(filename, "a", encoding="utf-8") as file:
+                file.write(f"Dosažený čas: {self.get_time_string()}\n")
+            self.saved = True
