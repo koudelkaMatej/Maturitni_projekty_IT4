@@ -12,18 +12,16 @@ pygame.display.set_caption('Breakout')
 
 game_timer = GameTimer() #načtení timeru
 
-#background
+#background a boosty
 BG = pygame.image.load(BG_IMAGE_PATH).convert()
 background = pygame.transform.scale(BG, (SCREEN_WIDTH, SCREEN_HEIGHT))
+img_plus = pygame.transform.scale(pygame.image.load(IMG_PATH_PLUS).convert_alpha(), BOOST_SIZE)
+img_minus = pygame.transform.scale(pygame.image.load(IMG_PATH_MINUS).convert_alpha(), BOOST_SIZE)
+img_ball = pygame.transform.scale(pygame.image.load(IMG_PATH_BALL).convert_alpha(), BOOST_SIZE)
  
 #font 
 font = pygame.font.Font("pazderao/images/font/lemonmilk.otf", 27)
 font1 = pygame.font.Font("pazderao/images/font/lemonmilk.otf", 50)
-
-# --- NAČTENÍ OBRÁZKŮ BOOSTŮ (doplň si cesty) ---
-# img_plus = pygame.image.load("images/plus.jpg").convert_alpha()
-# img_minus = pygame.image.load("images/minus.jpg").convert_alpha()
-# img_ball = pygame.image.load("images/ball.jpg").convert_alpha()
 
 #menu obtížností
 in_menu = True
@@ -37,18 +35,23 @@ def draw_text(text, font, text_col, x, y):
 # Boosty
 class boost():
     def __init__(self, x, y, b_type):
-        self.b_type = b_type # 'plus', 'minus', 'ball'
-        self.rect = pygame.Rect(x, y, 30, 30)
-        self.speed = 4
+        self.b_type = b_type
+        # Použijeme velikost ze settings
+        self.rect = pygame.Rect(x, y, BOOST_SIZE[0], BOOST_SIZE[1])
+        self.speed = 3
 
     def move(self):
         self.rect.y += self.speed
-        return self.rect.top < SCREEN_HEIGHT # vrací True, pokud je ještě na obrazovce
+        return self.rect.top < SCREEN_HEIGHT 
 
     def draw(self):
-        # Tady pak nahradíš barevné čtverce obrázky: screen.blit(img_plus, self.rect)
-        color = (0, 255, 0) if self.b_type == 'plus' else (255, 0, 0) if self.b_type == 'minus' else (0, 0, 255)
-        pygame.draw.rect(screen, color, self.rect)
+        if self.b_type == 'plus':
+            screen.blit(img_plus, self.rect)
+        elif self.b_type == 'minus':
+            screen.blit(img_minus, self.rect)
+        elif self.b_type == 'ball':
+            screen.blit(img_ball, self.rect)
+
 
 #stěna z bloků
 class wall():
@@ -162,18 +165,36 @@ class game_ball():
         
         if wall_destroyed == 1: self.GAME_OVER = 1
 
-        if self.rect.left < 0 or self.rect.right > SCREEN_WIDTH: self.speed_x *= -1
-        if self.rect.top < 0: self.speed_y *= -1
-        if self.rect.bottom > SCREEN_HEIGHT: return "dead" # Míček propadl
+        if self.rect.left < 0:
+            self.rect.left = 0 
+            self.speed_x *= -1
+        if self.rect.right > SCREEN_WIDTH:
+            self.rect.right = SCREEN_WIDTH 
+            self.speed_x *= -1
+        if self.rect.top < 0:
+            self.rect.top = 0
+            self.speed_y *= -1
+        if self.rect.bottom > SCREEN_HEIGHT: return "dead"
 
         if self.rect.colliderect(player_paddle):
-            if abs(self.rect.bottom - player_paddle.rect.top) < collision_thresh and self.speed_y > 0:
+            if self.speed_y > 0:
+                self.rect.bottom = player_paddle.rect.top 
                 self.speed_y *= -1
-                self.speed_x += player_paddle.direction
-                if self.speed_x > self.speed_max: self.speed_x = self.speed_max
-                elif self.speed_x < -self.speed_max: self.speed_x = -self.speed_max
-            else: self.speed_x *= -1
+                
+                # Výpočet pozice dopadu na pálku
+                paddle_center = player_paddle.rect.centerx
+                ball_center = self.rect.centerx
+                distance_from_center = ball_center - paddle_center
+                
+                # Výpočet poměru (-1.0 až 1.0)
+                max_distance = player_paddle.rect.width / 2
+                ratio = distance_from_center / max_distance
+                
+                # Nastavení nové rychlosti X podle místa dopadu a citlivosti ze settings
+                self.speed_x = ratio * self.speed_max * PADDLE_INFLUENCE
 
+        if abs(self.speed_x) < MIN_X_SPEED:
+            self.speed_x = MIN_X_SPEED if self.speed_x >= 0 else -MIN_X_SPEED
         self.rect.x += self.speed_x
         self.rect.y += self.speed_y
         return self.GAME_OVER
@@ -274,7 +295,7 @@ while run:
                     active_boosts.remove(bst)
 
         if not LIVE_BALL:
-            if GAME_OVER == 0: draw_text('KLIKNI PRO SPUŠTĚNÍ HRY', font, text_col, 110, 430)
+            if GAME_OVER == 0: draw_text('KLIKNI PRO SPUŠTĚNÍ HRY', font, text_col, 110, 430), game_timer.stop()
             elif GAME_OVER == 1:
                 game_timer.stop()        
                 game_timer.save_time(CESTA_PRO_DATA)
@@ -282,7 +303,6 @@ while run:
                 draw_text('KLIKNI PRO NÁVRÁT DO MENU', font, text_col, 80, 300)
             elif GAME_OVER == -1:
                 game_timer.stop()        
-                game_timer.save_time(CESTA_PRO_DATA)
                 wall.clear_wall()
                 draw_text('PROHRÁL SI!', font1, text_col_red, 120, 180)
                 draw_text('KLIKNI PRO NÁVRÁT DO MENU', font, text_col, 80, 300)
