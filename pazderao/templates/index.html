@@ -1,0 +1,19 @@
+<form method="POST">
+    <button name="obtiznost" value="Easy">Lehká</button>
+    <button name="obtiznost" value="Medium">Střední</button>
+    <button name="obtiznost" value="Hard">Těžká</button>
+</form>
+
+<h2>Žebříček pro obtížnost: {{ obtiznost }}</h2>
+<table>
+    <tr>
+        <th>Hráč</th>
+        <th>Čas (s)</th>
+    </tr>
+    {% for radek in leaderboard %}
+    <tr>
+        <td>{{ radek.username }}</td>
+        <td>{{ radek[obtiznost] }}</td>
+    </tr>
+    {% endfor %}
+</table>

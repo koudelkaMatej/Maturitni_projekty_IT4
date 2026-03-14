@@ -60,3 +60,9 @@ BUTTON_TEXT_COL = (255, 255, 255)
 
 #tlačítko tabulka
 table_button_rect = pygame.Rect(10, SCREEN_HEIGHT - 40, 100, 30)
+
+#databáze
+host = "localhost"
+username = "root"
+password = ""  # Tady tvoje heslo
+database = "breakout_db"
