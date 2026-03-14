@@ -3,6 +3,7 @@ from pygame.locals import *
 import random
 from Timer import GameTimer 
 from settings import *
+from menu import *
 
 
 pygame.init()
@@ -19,9 +20,7 @@ img_plus = pygame.transform.scale(pygame.image.load(IMG_PATH_PLUS).convert_alpha
 img_minus = pygame.transform.scale(pygame.image.load(IMG_PATH_MINUS).convert_alpha(), BOOST_SIZE)
 img_ball = pygame.transform.scale(pygame.image.load(IMG_PATH_BALL).convert_alpha(), BOOST_SIZE)
  
-#font 
-font = pygame.font.Font("pazderao/images/font/lemonmilk.otf", 27)
-font1 = pygame.font.Font("pazderao/images/font/lemonmilk.otf", 50)
+
 
 #menu obtížností
 in_menu = True
@@ -223,6 +222,8 @@ player_paddle = paddle()
 balls = [] # Seznam pro míčky
 active_boosts = [] # Seznam pro padající ovoce
 paddle_timer = 0 # Časovač pro pálku
+is_paused = False
+pause_menu = PauseMenu(font)
 
 run = True
 while run:
@@ -230,6 +231,8 @@ while run:
     screen.blit(background, (0, 0))
 
     if in_menu:
+        pygame.draw.rect(screen, (255, 255, 255), table_button_rect, 1)
+        draw_text('TABULKA', font2, (255, 255, 255), 20, SCREEN_HEIGHT - 35)
         draw_text('VYBER OBTÍŽNOST:', font1, text_col, 45, 100)
         draw_text('1 - LEHKÁ (EASY)', font, BLOCK_YELLOW, 180, 250)
         draw_text('2 - STŘEDNÍ (MEDIUM)', font, BLOCK_ORANGE, 150, 300)
@@ -249,68 +252,101 @@ while run:
             game_timer.start()
             active_boosts = []
     else:
+        # 1. VŽDY VYKRESLÍME HRU (i když je pauza, chceme ji vidět na pozadí)
         wall.draw_wall()
         player_paddle.draw()
         game_timer.draw(screen, font, (255, 255, 255), 20, 20)
         for b in balls: b.draw()
         for bst in active_boosts: bst.draw()
 
-        if LIVE_BALL:
-            player_paddle.move()
-            
-            # --- LOGIKA ČASOVAČE PÁLKY (10 sekund) ---
-            if paddle_timer > 0:
-                if pygame.time.get_ticks() - paddle_timer > 10000:
-                    # Reset šířky pálky
-                    current_x = player_paddle.rect.centerx
-                    player_paddle.reset()
-                    player_paddle.rect.centerx = current_x
-                    paddle_timer = 0
+        # 2. HRA BĚŽÍ (Není pauza)
+        if not is_paused:
+            if LIVE_BALL:
+                player_paddle.move()
+                
+                # --- LOGIKA ČASOVAČE PÁLKY (10 sekund) ---
+                if paddle_timer > 0:
+                    if pygame.time.get_ticks() - paddle_timer > 10000:
+                        current_x = player_paddle.rect.centerx
+                        player_paddle.reset()
+                        player_paddle.rect.centerx = current_x
+                        paddle_timer = 0
 
-            # Pohyb a správa míčků
-            for b in balls[:]:
-                GAME_OVER = b.move()
-                if GAME_OVER == "dead":
-                    balls.remove(b)
-                elif GAME_OVER != 0:
+                # Pohyb a správa míčků
+                for b in balls[:]:
+                    GAME_OVER = b.move()
+                    if GAME_OVER == "dead":
+                        balls.remove(b)
+                    elif GAME_OVER != 0:
+                        LIVE_BALL = False
+
+                if not balls:
+                    GAME_OVER = -1
                     LIVE_BALL = False
 
-            if not balls: # Pokud došly všechny míčky
-                GAME_OVER = -1
+                # --- LOGIKA PADÁNÍ A SBÍRÁNÍ OVOCE ---
+                for bst in active_boosts[:]:
+                    if not bst.move():
+                        active_boosts.remove(bst)
+                    elif bst.rect.colliderect(player_paddle.rect):
+                        if bst.b_type == 'plus':
+                            player_paddle.rect.inflate_ip(60, 0)
+                            paddle_timer = pygame.time.get_ticks()
+                        elif bst.b_type == 'minus':
+                            player_paddle.rect.width = max(40, player_paddle.rect.width - 40)
+                            paddle_timer = pygame.time.get_ticks()
+                        elif bst.b_type == 'ball':
+                            balls.append(game_ball(player_paddle.rect.centerx, player_paddle.rect.top))
+                        active_boosts.remove(bst)
+
+            if not LIVE_BALL:
+                if GAME_OVER == 0: draw_text('KLIKNI PRO SPUSTENI HRY', font, text_col, 110, 430), game_timer.stop()
+                elif GAME_OVER == 1:
+                    game_timer.stop()        
+                    game_timer.save_time(CESTA_PRO_DATA, selected_level)
+                    draw_text('VYHRAL SI!', font1, text_col_green, 130, 180)
+                    draw_text('KLIKNI PRO NAVRAT DO MENU', font, text_col, 80, 300)
+                elif GAME_OVER == -1:
+                    game_timer.stop()        
+                    wall.clear_wall()
+                    draw_text('PROHRAL SI!', font1, text_col_red, 120, 180)
+                    draw_text('KLIKNI PRO NAVRAT DO MENU', font, text_col, 80, 300)
+
+        else:
+            action = pause_menu.draw(screen)
+            if action == "resume":
+                is_paused = False
+                game_timer.resume()
+            elif action == "table":
+                pass 
+            elif action == "quit":
+                is_paused = False
+                in_menu = True
                 LIVE_BALL = False
-
-            # --- LOGIKA PADÁNÍ A SBÍRÁNÍ OVOCE ---
-            for bst in active_boosts[:]:
-                if not bst.move():
-                    active_boosts.remove(bst)
-                elif bst.rect.colliderect(player_paddle.rect):
-                    if bst.b_type == 'plus':
-                        player_paddle.rect.inflate_ip(60, 0) # Rozšíří pálku
-                        paddle_timer = pygame.time.get_ticks()
-                    elif bst.b_type == 'minus':
-                        player_paddle.rect.width = max(40, player_paddle.rect.width - 40) # Zmenší pálku
-                        paddle_timer = pygame.time.get_ticks()
-                    elif bst.b_type == 'ball':
-                        balls.append(game_ball(player_paddle.rect.centerx, player_paddle.rect.top))
-                    active_boosts.remove(bst)
-
-        if not LIVE_BALL:
-            if GAME_OVER == 0: draw_text('KLIKNI PRO SPUŠTĚNÍ HRY', font, text_col, 110, 430), game_timer.stop()
-            elif GAME_OVER == 1:
-                game_timer.stop()        
-                game_timer.save_time(CESTA_PRO_DATA)
-                draw_text('VYHRÁL SI!', font1, text_col_green, 130, 180)
-                draw_text('KLIKNI PRO NÁVRÁT DO MENU', font, text_col, 80, 300)
-            elif GAME_OVER == -1:
-                game_timer.stop()        
-                wall.clear_wall()
-                draw_text('PROHRÁL SI!', font1, text_col_red, 120, 180)
-                draw_text('KLIKNI PRO NÁVRÁT DO MENU', font, text_col, 80, 300)
+                GAME_OVER = 0
+                game_timer.stop() 
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT: run = False
+        
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE and not in_menu and GAME_OVER == 0:
+                is_paused = not is_paused
+                if is_paused:
+                    game_timer.pause()
+                else:
+                    game_timer.resume()
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if in_menu:
+                mouse_pos = pygame.mouse.get_pos()
+                if table_button_rect.collidepoint(mouse_pos):
+                    print("Otevírám tabulku nejlepších časů...")
+
+        
         if event.type == pygame.MOUSEBUTTONDOWN or (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE):
-            if not in_menu:
+            if not in_menu and not is_paused: 
                 if LIVE_BALL == False:
                     if GAME_OVER != 0:
                         in_menu = True

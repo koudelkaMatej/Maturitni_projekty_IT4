@@ -4,6 +4,14 @@ import pygame
 SCREEN_WIDTH = 600
 SCREEN_HEIGHT = 600
 
+
+#font 
+pygame.font.init()
+FONT_PATH = "pazderao/images/font/lemonmilk.otf"
+font = pygame.font.Font("pazderao/images/font/lemonmilk.otf", 27)
+font1 = pygame.font.Font("pazderao/images/font/lemonmilk.otf", 50)
+font2 = pygame.font.Font("pazderao/images/font/lemonmilk.otf", 17)
+
 # Cesty k souborům
 BG_IMAGE_PATH = "pazderao/images/background.jpg"
 FONT_PATH = "pazderao/images/font/lemonmilk.otf"
@@ -43,3 +51,12 @@ TEXT_COL = (255, 255, 255) # Barvy textů
 TEXT_COL_RED = (255, 0, 0)
 TEXT_COL_GREEN = (0, 255, 0)
 
+# Nastavení menu 
+BUTTON_WIDTH = 300
+BUTTON_HEIGHT = 60
+BUTTON_COL = (70, 70, 70)          # Základní barva tlačítka
+BUTTON_HOVER_COL = (100, 100, 100) # Barva po přejetí myší
+BUTTON_TEXT_COL = (255, 255, 255)
+
+#tlačítko tabulka
+table_button_rect = pygame.Rect(10, SCREEN_HEIGHT - 40, 100, 30)
