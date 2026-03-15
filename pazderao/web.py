@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import mysql.connector
-from settings import * # Načte host, username, password, database
+from settings import * 
+import os
 
 app = Flask(__name__)
 
@@ -12,6 +13,31 @@ def get_db_connection():
         password = password,
         database = database
     )
+
+
+def get_data_from_file(obtiznost):
+    vysledky = []
+    sekce = f"{obtiznost.upper()}:"
+    uvnitr_sekce = False
+
+    if not os.path.exists(CESTA_PRO_DATA):
+        return []
+
+    with open(CESTA_PRO_DATA, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line == sekce:
+                uvnitr_sekce = True
+                continue
+            if uvnitr_sekce and (line.endswith(":") or not line):
+                uvnitr_sekce = False
+            
+            if uvnitr_sekce and " - " in line:
+                jmeno, cas = line.split(" - ")
+                vysledky.append({"jmeno": jmeno, "cas": cas})
+    
+    return vysledky
+
 
 def get_leaderboard(obtiznost):
     # Seznam povolených sloupců (prevence SQL injection)
@@ -38,6 +64,15 @@ def index():
     obtiznost = request.form.get('obtiznost', 'Easy')
     leaderboard = get_leaderboard(obtiznost)
     return render_template('index.html', obtiznost=obtiznost, leaderboard=leaderboard)
+
+@app.route('/')
+def index():
+    obtiznost = request.args.get('obtiznost', 'LEHKÁ')
+    leaderboard = get_data_from_file(obtiznost)
+    return render_template('tab.html', leaderboard=leaderboard, obtiznost=obtiznost)
+
+if __name__ == '__main__':
+    app.run(debug=True)
 
 @app.route('/info')
 def info():

@@ -229,8 +229,21 @@ run = True
 while run:
     clock.tick(FPS)
     screen.blit(background, (0, 0))
+    
+    if entering_name:
+        draw_text('JMENO:', font1, text_col, 60, 200)
+        
+        # Rámeček pro text
+        input_rect = pygame.Rect(SCREEN_WIDTH//2 - 150, 300, 300, 50)
+        pygame.draw.rect(screen, BUTTON_COL, input_rect)
+        pygame.draw.rect(screen, OUTLINE_COL, input_rect, 2)
+        
+        # Vykreslení toho, co hráč píše
+        draw_text(player_name, font, text_col, input_rect.x + 10, input_rect.y + 10)
+        
+        draw_text('STISKNI ENTER PRO START', font2, text_col, 170, 400)
 
-    if in_menu:
+    elif in_menu:
         pygame.draw.rect(screen, (255, 255, 255), table_button_rect, 1)
         draw_text('TABULKA', font2, (255, 255, 255), 20, SCREEN_HEIGHT - 35)
         draw_text('VYBER OBTÍŽNOST:', font1, text_col, 45, 100)
@@ -303,7 +316,7 @@ while run:
                 if GAME_OVER == 0: draw_text('KLIKNI PRO SPUSTENI HRY', font, text_col, 110, 430), game_timer.stop()
                 elif GAME_OVER == 1:
                     game_timer.stop()        
-                    game_timer.save_time(CESTA_PRO_DATA, selected_level)
+                    game_timer.save_time(CESTA_PRO_DATA, selected_level, player_name)
                     draw_text('VYHRAL SI!', font1, text_col_green, 130, 180)
                     draw_text('KLIKNI PRO NAVRAT DO MENU', font, text_col, 80, 300)
                 elif GAME_OVER == -1:
@@ -329,7 +342,20 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: run = False
         
-        
+        if entering_name:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN and len(player_name) > 0:
+                    # Hráč potvrdil jméno, jdeme do menu!
+                    entering_name = False
+                    in_menu = True
+                elif event.key == pygame.K_BACKSPACE:
+                    # Hráč maže písmeno
+                    player_name = player_name[:-1]
+                else:
+                    # Hráč píše (omezeno na max 12 znaků)
+                    if len(player_name) < 12 and event.unicode.isprintable():
+                        player_name += event.unicode
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE and not in_menu and GAME_OVER == 0:
                 is_paused = not is_paused

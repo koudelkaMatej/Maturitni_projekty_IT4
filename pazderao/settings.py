@@ -66,3 +66,6 @@ host = "localhost"
 username = "root"
 password = ""  # Tady tvoje heslo
 database = "breakout_db"
+player_name = ""
+entering_name = True 
+in_menu = False

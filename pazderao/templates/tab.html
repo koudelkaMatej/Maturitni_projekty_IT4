@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Breakout Leaderboard</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; text-align: center; }
+        table { margin: 20px auto; border-collapse: collapse; width: 50%; }
+        th, td { padding: 12px; border: 1px solid #444; }
+        th { background: #00cc66; color: black; }
+        .nav { margin-bottom: 20px; }
+        .nav a { color: #00cc66; margin: 0 10px; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>LEADERBOARD - {{ obtiznost }}</h1>
+
+    <div class="nav">
+        <a href="/?obtiznost=LEHKÁ">LEHKÁ</a>
+        <a href="/?obtiznost=STŘEDNÍ">STŘEDNÍ</a>
+        <a href="/?obtiznost=TĚŽKÁ">TĚŽKÁ</a>
+    </div>
+
+    <table>
+        <tr>
+            <th>Hráč</th>
+            <th>Čas (MM:SS:mmm)</th>
+        </tr>
+        {% for radek in leaderboard %}
+        <tr>
+            <td>{{ radek.jmeno }}</td>
+            <td>{{ radek.cas }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="2">Zatím žádné časy pro tuto obtížnost.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

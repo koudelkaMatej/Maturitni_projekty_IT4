@@ -39,43 +39,61 @@ class GameTimer:
             current_total += pygame.time.get_ticks() - self.start_ticks
 
         if current_total == 0:
-            return "00:00.0"
+            return "00:00:000"
 
-        tenths = (current_total // 100) % 10
-        seconds = (current_total // 1000) % 60
-        minutes = (current_total // 60000)
+        # Výpočty
+        milliseconds = current_total % 1000        
+        seconds = (current_total // 1000) % 60    
+        minutes = (current_total // 60000)         
 
-        return f"{minutes:02d}:{seconds:02d}.{tenths}"
+        
+        return f"{minutes:02d}:{seconds:02d}:{milliseconds:03d}"
 
     def draw(self, screen, font, color, x, y):
         time_str = self.get_time_string()
         img = font.render(time_str, True, color)
         screen.blit(img, (x, y))
 
-    # --- NOVÁ CHYTRÁ FUNKCE PRO UKLÁDÁNÍ ---
-    def save_time(self, filename, level):
+
+    def save_time(self, filename, level, player_name):
         if not self.saved and self.accumulated_time > 0:
-            # Převedeme číslo levelu (1, 2, 3) na text
             level_names = {1: "LEHKÁ", 2: "STŘEDNÍ", 3: "TĚŽKÁ"}
             current_level = level_names.get(level, "NEZNÁMÁ")
             new_time = self.get_time_string()
 
-            # Datová struktura pro rozřazení
             data = {"LEHKÁ": [], "STŘEDNÍ": [], "TĚŽKÁ": []}
             current_section = None
 
-            # 1. Pokusíme se načíst existující časy ze souboru
             try:
                 with open(filename, "r", encoding="utf-8") as file:
                     for line in file:
                         line = line.strip()
-                        if not line: continue
-                        if line in ["LEHKÁ:", "STŘEDNÍ:", "TĚŽKÁ:"]:
-                            current_section = line.replace(":", "")
-                        elif current_section and line.startswith("Vítězný čas:"):
+                        if not line or line in ["LEHKÁ:", "STŘEDNÍ:", "TĚŽKÁ:"]:
+                            if line: current_section = line.replace(":", "")
+                            continue
+                        
+                        # Načteme jen řádky, které obsahují pomlčku (Jméno - Čas)
+                        if current_section and " - " in line:
                             data[current_section].append(line)
             except FileNotFoundError:
-                pass # Pokud soubor neexistuje, nic se neděje, vytvoříme nový
+                pass
+
+            # Přidání nového záznamu ve formátu: Jméno - 00:00:00
+            if current_level in data:
+                # Převedeme jméno na kapitálky (nepovinné, ale vypadá to profi)
+                formatted_name = player_name.capitalize()
+                data[current_level].append(f"{formatted_name} - {new_time}")
+
+            # Zápis zpět do souboru
+            with open(filename, "w", encoding="utf-8") as file:
+                for sec in ["LEHKÁ", "STŘEDNÍ", "TĚŽKÁ"]:
+                    file.write(f"{sec}:\n")
+                    # Seřazení podle času (to je ta část za pomlčkou)
+                    for t in sorted(data[sec], key=lambda x: x.split(" - ")[1]):
+                        file.write(f"{t}\n")
+                    file.write("\n")
+
+            self.saved = True
 
             # 2. Přidáme nový čas hráče do správné sekce
             if current_level in data:
