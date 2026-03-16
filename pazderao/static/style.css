@@ -1,102 +1,41 @@
-/* Základní nastavení */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     background-color: #f0f2f5;
-    color: #333;
     margin: 0;
-    line-height: 1.6;
 }
 
-/* Horní lišta s navigací */
-nav {
-    background-color: #ffffff;
-    padding: 1rem 2rem;
+nav { /* styl navigace */
+    background: white;
+    padding: 15px 30px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Velmi jemný stín místo čáry */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-nav a {
-    text-decoration: none;
-    color: #007bff;
-    font-weight: 600;
-    margin-left: 20px;
-}
-
-nav a:hover {
-    color: #0056b3;
-}
-
-/* Hlavní kontejner pro obsah */
-.container {
-    max-width: 900px;
+.container { /* styl hlavního bloku s obsahem */
+    max-width: 800px;
     margin: 40px auto;
     background: white;
     padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-radius: 10px;
     text-align: center;
 }
 
-h1 { color: #222; margin-bottom: 30px; }
-
-/* H2 bez čáry a paddingu */
-h2 { 
-    color: #444; 
-    margin-top: 40px; 
-}
-
-/* Stylování tabulek - čistý vzhled bez čar */
-table {
+table { /* styl tabulek bez dělících čar */
     width: 100%;
+    margin-bottom: 30px;
     border-collapse: collapse;
-    margin: 20px 0;
 }
 
-th, td {
-    padding: 12px 15px;
-    text-align: left;
-    /* Border-bottom odstraněn */
-}
-
-th {
-    background-color: #f8f9fa;
-    color: #666;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-}
-
-/* Zvýraznění řádku jen při najetí myší */
-tr:hover { 
-    background-color: #f8f9fa; 
-}
-
-/* Tlačítka a formuláře */
-input {
+td {
     padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    width: 250px;
-    margin-bottom: 15px;
 }
 
-button {
+button { /* styl tlačítek na webu */
+    padding: 10px 20px;
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 10px 250px; /* Široké tlačítko vypadá víc moderně */
-    width: auto;
-    max-width: 100%;
-    border-radius: 6px;
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 1rem;
 }
-
-/* Úprava pro tlačítko v loginu, aby nebylo obří */
-.login-form button {
-    padding: 10px 25px;
-}
-
-button:hover { background-color: #0056b3; }
