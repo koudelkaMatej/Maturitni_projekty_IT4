@@ -56,48 +56,60 @@ class GameTimer:
 
 
     def save_time(self, filename, level, player_name):
+        # Uložíme jen pokud ještě nebylo uloženo a čas je větší než 0
         if not self.saved and self.accumulated_time > 0:
             level_names = {1: "LEHKÁ", 2: "STŘEDNÍ", 3: "TĚŽKÁ"}
             current_level = level_names.get(level, "NEZNÁMÁ")
             new_time = self.get_time_string()
 
+            # 1. Příprava dat (vyčistíme staré "Vítězný čas" záznamy)
             data = {"LEHKÁ": [], "STŘEDNÍ": [], "TĚŽKÁ": []}
             current_section = None
 
-            try:
-                with open(filename, "r", encoding="utf-8") as file:
-                    for line in file:
-                        line = line.strip()
-                        if not line or line in ["LEHKÁ:", "STŘEDNÍ:", "TĚŽKÁ:"]:
-                            if line: current_section = line.replace(":", "")
-                            continue
-                        
-                        # Načteme jen řádky, které obsahují pomlčku (Jméno - Čas)
-                        if current_section and " - " in line:
-                            data[current_section].append(line)
-            except FileNotFoundError:
-                pass
+            if os.path.exists(filename):
+                try:
+                    with open(filename, "r", encoding="utf-8") as file:
+                        for line in file:
+                            line = line.strip()
+                            if not line: continue
+                            
+                            # Detekce sekce (LEHKÁ:, ...)
+                            if line in ["LEHKÁ:", "STŘEDNÍ:", "TĚŽKÁ:"]:
+                                current_section = line.replace(":", "")
+                                continue
+                            
+                            # Načteme jen řádky, které obsahují čárku (Jméno, Čas)
+                            if current_section and ", " in line:
+                                data[current_section].append(line)
+                except Exception as e:
+                    print(f"Chyba při čtení: {e}")
 
-            # Přidání nového záznamu ve formátu: Jméno - 00:00:00
+            # 2. Přidání nového záznamu (Jméno, Čas)
             if current_level in data:
-                # Převedeme jméno na kapitálky (nepovinné, ale vypadá to profi)
                 formatted_name = player_name.capitalize()
-                data[current_level].append(f"{formatted_name} - {new_time}")
+                data[current_level].append(f"{formatted_name}, {new_time}")
 
-            # Zápis zpět do souboru
-            with open(filename, "w", encoding="utf-8") as file:
-                for sec in ["LEHKÁ", "STŘEDNÍ", "TĚŽKÁ"]:
-                    file.write(f"{sec}:\n")
-                    # Seřazení podle času (to je ta část za pomlčkou)
-                    for t in sorted(data[sec], key=lambda x: x.split(" - ")[1]):
-                        file.write(f"{t}\n")
-                    file.write("\n")
-
-            self.saved = True
+            # 3. Zápis a správné seřazení
+            try:
+                with open(filename, "w", encoding="utf-8") as file:
+                    for sec in ["LEHKÁ", "STŘEDNÍ", "TĚŽKÁ"]:
+                        file.write(f"{sec}:\n")
+                        
+                        # KLÍČOVÉ ŘAZENÍ: x.split(", ")[1] vezme ten čas za čárkou a řadí podle něj
+                        sorted_list = sorted(data[sec], key=lambda x: x.split(", ")[1])
+                        
+                        for radek in sorted_list:
+                            file.write(f"{radek}\n")
+                        file.write("\n")
+                
+                self.saved = True # Označíme jako uloženo
+                print(f"Uloženo: {player_name} v čase {new_time}")
+            except Exception as e:
+                print(f"Chyba při zápisu: {e}")
 
             # 2. Přidáme nový čas hráče do správné sekce
             if current_level in data:
-                data[current_level].append(f"Vítězný čas: {new_time}")
+                data[current_level].append(f"{player_name} - {new_time}")
 
             # 3. Zapíšeme zformátované a SEŘAZENÉ časy zpět
             with open(filename, "w", encoding="utf-8") as file:

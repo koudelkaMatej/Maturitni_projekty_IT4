@@ -1,19 +1,41 @@
-<form method="POST">
-    <button name="obtiznost" value="Easy">Lehká</button>
-    <button name="obtiznost" value="Medium">Střední</button>
-    <button name="obtiznost" value="Hard">Těžká</button>
-</form>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Breakout - Žebříček</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
 
-<h2>Žebříček pro obtížnost: {{ obtiznost }}</h2>
-<table>
-    <tr>
-        <th>Hráč</th>
-        <th>Čas (s)</th>
-    </tr>
-    {% for radek in leaderboard %}
-    <tr>
-        <td>{{ radek.username }}</td>
-        <td>{{ radek[obtiznost] }}</td>
-    </tr>
-    {% endfor %}
-</table>
+    <nav>
+        <a href="/">Žebříček</a>
+        <a href="/about">O Projektu</a>
+    </nav>
+
+    <h1>LEADERBOARD - {{ obtiznost }}</h1>
+
+    <div class="difficulty-nav">
+        <a href="/?obtiznost=LEHKÁ">Lehká</a>
+        <a href="/?obtiznost=STŘEDNÍ">Střední</a>
+        <a href="/?obtiznost=TĚŽKÁ">Těžká</a>
+    </div>
+
+    <table>
+        <tr>
+            <th>Hráč</th>
+            <th>Čas</th>
+        </tr>
+        {% for radek in leaderboard %}
+        <tr>
+            <td>{{ radek.jmeno }}</td>
+            <td>{{ radek.cas }}</td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="2" style="text-align: center; color: #555;">Zatím žádné časy pro tuto obtížnost.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap');
+
+body {
+    background-color: #0a0a0a;
+    color: #00ff00; /* Neonově zelená */
+    font-family: 'Share Tech Mono', monospace;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2 {
+    font-family: 'Press Start 2P', cursive;
+    color: #00ff00;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+    margin-top: 30px;
+    font-size: 20px;
+}
+
+/* Horní navigace */
+nav {
+    background-color: #111;
+    padding: 20px;
+    border-bottom: 2px solid #00ff00;
+    margin-bottom: 30px;
+}
+
+nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    margin: 0 20px;
+    text-transform: uppercase;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: #00ff00;
+    text-shadow: 0 0 8px #00ff00;
+}
+
+/* Tlačítka pro obtížnost */
+.difficulty-nav {
+    margin-bottom: 30px;
+}
+
+.difficulty-nav a {
+    background: #111;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 18px;
+    margin: 0 10px;
+    transition: 0.3s;
+}
+
+.difficulty-nav a:hover {
+    background: #00ff00;
+    color: #000;
+    box-shadow: 0 0 15px #00ff00;
+}
+
+/* Tabulka s výsledky */
+table {
+    margin: 0 auto;
+    border-collapse: collapse;
+    width: 50%;
+    background-color: #111;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+}
+
+th, td {
+    padding: 15px;
+    border: 1px solid #333;
+    font-size: 20px;
+}
+
+th {
+    background-color: #003300;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+}
+
+tr:nth-child(even) { background-color: #0d0d0d; }
+tr:hover { background-color: #002200; }
+
+/* Box pro stránku About */
+.info-box {
+    width: 60%;
+    margin: 0 auto;
+    background: #111;
+    border: 1px solid #00ff00;
+    padding: 30px;
+    text-align: left;
+    line-height: 1.6;
+}
