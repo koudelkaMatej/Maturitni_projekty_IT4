@@ -2,30 +2,56 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>Breakout - O Projektu</title>
+    <title>O projektu - Breakout</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
     <nav>
-        <a href="/">Žebříček</a>
-        <a href="/about">O Projektu</a>
+        <div class="nav-left">
+            <a href="/login">Uživatelský Login</a>
+        </div>
+        <div class="nav-right">
+            <a href="/">Domů</a>
+            <a href="/tab">Tabulka výsledků</a>
+            <a href="/about">O projektu</a>
+        </div>
     </nav>
 
-    <h1>MATURITNÍ PROJEKT</h1>
-
-    <div class="info-box">
-        <h2>Hra Breakout</h2>
-        <p>Tento projekt vznikl jako praktická maturitní práce. Jedná se o klasickou arkádovou hru Breakout naprogramovanou v jazyce Python pomocí knihovny Pygame.</p>
+    <div class="container" style="text-align: left;">
+        <h1>O maturitním projektu</h1>
         
-        <h2>Technologie</h2>
-        <ul>
-            <li><strong>Hra:</strong> Python 3, Pygame</li>
-            <li><strong>Web:</strong> Flask, HTML, CSS (Jinja2)</li>
-            <li><strong>Ukládání:</strong> Textový soubor / MySQL databáze</li>
-        </ul>
+        <section>
+            <h2>Popis aplikace</h2>
+            <p>Tato práce se zabývá tvorbou klasické arkádové hry <strong>Breakout</strong>. Cílem hráče je pomocí pálky odrážet míček a ničit cihly v horní části obrazovky. Projekt je rozdělen na dvě hlavní části: samotnou herní aplikaci a webové rozhraní pro správu výsledků.</p>
+        </section>
 
-        <p><em>Zde pak můžeš vložit obrázek svého ER diagramu nebo další popis struktury kódu.</em></p>
+        <section>
+            <h2>Použité technologie</h2>
+            <ul>
+                <li><strong>Python 3.10:</strong> Hlavní programovací jazyk celého projektu.</li>
+                <li><strong>Pygame:</strong> Knihovna použitá pro vykreslování herní grafiky, obsluhu událostí a fyziku míčku.</li>
+                <li><strong>Flask:</strong> Webový framework, který pohání tento web a propojuje data ze hry s prohlížečem.</li>
+                <li><strong>HTML5 & CSS3:</strong> Technologie použité pro strukturu a moderní vzhled webových stránek.</li>
+                <li><strong>MySQL:</strong> (V přípravě) Systém pro trvalé ukládání uživatelských účtů a herních statistik.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Klíčové funkce</h2>
+            <p>V aktuální verzi projekt podporuje:</p>
+            <ul>
+                <li>Tři úrovně obtížnosti (Lehká, Střední, Těžká), které se liší rychlostí míčku a počtem cihel.</li>
+                <li>Měření času s přesností na milisekundy pomocí herního timeru.</li>
+                <li>Automatické ukládání nejlepších výsledků do externího souboru.</li>
+                <li>Dynamické zobrazení žebříčku nejlepších hráčů na tomto webu.</li>
+            </ul>
+        </section>
+
+        <section style="background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 30px;">
+            <h3>Autor projektu</h3>
+            <p>Tento projekt byl vytvořen jako praktická část maturitní zkoušky v oboru IT.</p>
+        </section>
     </div>
 
 </body>

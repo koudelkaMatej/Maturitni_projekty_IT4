@@ -1,98 +1,102 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap');
-
+/* Základní nastavení */
 body {
-    background-color: #0a0a0a;
-    color: #00ff00; /* Neonově zelená */
-    font-family: 'Share Tech Mono', monospace;
-    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
     margin: 0;
-    padding: 0;
+    line-height: 1.6;
 }
 
-h1, h2 {
-    font-family: 'Press Start 2P', cursive;
-    color: #00ff00;
-    text-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
-    margin-top: 30px;
-    font-size: 20px;
-}
-
-/* Horní navigace */
+/* Horní lišta s navigací */
 nav {
-    background-color: #111;
-    padding: 20px;
-    border-bottom: 2px solid #00ff00;
-    margin-bottom: 30px;
+    background-color: #ffffff;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05); /* Velmi jemný stín místo čáry */
 }
 
 nav a {
-    color: #fff;
     text-decoration: none;
-    font-size: 18px;
-    margin: 0 20px;
-    text-transform: uppercase;
-    transition: 0.3s;
+    color: #007bff;
+    font-weight: 600;
+    margin-left: 20px;
 }
 
 nav a:hover {
-    color: #00ff00;
-    text-shadow: 0 0 8px #00ff00;
+    color: #0056b3;
 }
 
-/* Tlačítka pro obtížnost */
-.difficulty-nav {
-    margin-bottom: 30px;
+/* Hlavní kontejner pro obsah */
+.container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    text-align: center;
 }
 
-.difficulty-nav a {
-    background: #111;
-    color: #00ff00;
-    border: 1px solid #00ff00;
-    padding: 10px 20px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 18px;
-    margin: 0 10px;
-    transition: 0.3s;
+h1 { color: #222; margin-bottom: 30px; }
+
+/* H2 bez čáry a paddingu */
+h2 { 
+    color: #444; 
+    margin-top: 40px; 
 }
 
-.difficulty-nav a:hover {
-    background: #00ff00;
-    color: #000;
-    box-shadow: 0 0 15px #00ff00;
-}
-
-/* Tabulka s výsledky */
+/* Stylování tabulek - čistý vzhled bez čar */
 table {
-    margin: 0 auto;
+    width: 100%;
     border-collapse: collapse;
-    width: 50%;
-    background-color: #111;
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+    margin: 20px 0;
 }
 
 th, td {
-    padding: 15px;
-    border: 1px solid #333;
-    font-size: 20px;
+    padding: 12px 15px;
+    text-align: left;
+    /* Border-bottom odstraněn */
 }
 
 th {
-    background-color: #003300;
-    font-family: 'Press Start 2P', cursive;
-    font-size: 10px;
+    background-color: #f8f9fa;
+    color: #666;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
 }
 
-tr:nth-child(even) { background-color: #0d0d0d; }
-tr:hover { background-color: #002200; }
-
-/* Box pro stránku About */
-.info-box {
-    width: 60%;
-    margin: 0 auto;
-    background: #111;
-    border: 1px solid #00ff00;
-    padding: 30px;
-    text-align: left;
-    line-height: 1.6;
+/* Zvýraznění řádku jen při najetí myší */
+tr:hover { 
+    background-color: #f8f9fa; 
 }
+
+/* Tlačítka a formuláře */
+input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    width: 250px;
+    margin-bottom: 15px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 250px; /* Široké tlačítko vypadá víc moderně */
+    width: auto;
+    max-width: 100%;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* Úprava pro tlačítko v loginu, aby nebylo obří */
+.login-form button {
+    padding: 10px 25px;
+}
+
+button:hover { background-color: #0056b3; }

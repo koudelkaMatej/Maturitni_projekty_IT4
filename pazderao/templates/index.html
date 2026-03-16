@@ -2,40 +2,26 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <title>Breakout - Žebříček</title>
+    <title>Breakout Projekt</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
     <nav>
-        <a href="/">Žebříček</a>
-        <a href="/about">O Projektu</a>
+        <div class="nav-left">
+            <a href="/login">Uživatelský Login</a>
+        </div>
+        <div class="nav-right">
+            <a href="/">Domů</a>
+            <a href="/tab">Tabulka výsledků</a>
+            <a href="/about">O projektu</a>
+        </div>
     </nav>
 
-    <h1>LEADERBOARD - {{ obtiznost }}</h1>
-
-    <div class="difficulty-nav">
-        <a href="/?obtiznost=LEHKÁ">Lehká</a>
-        <a href="/?obtiznost=STŘEDNÍ">Střední</a>
-        <a href="/?obtiznost=TĚŽKÁ">Těžká</a>
+    <div class="container">
+        <h1>Vítejte v projektu Breakout</h1>
+        <p>Tato webová aplikace slouží k zobrazení nejlepších výsledků a informací o hře.</p>
     </div>
-
-    <table>
-        <tr>
-            <th>Hráč</th>
-            <th>Čas</th>
-        </tr>
-        {% for radek in leaderboard %}
-        <tr>
-            <td>{{ radek.jmeno }}</td>
-            <td>{{ radek.cas }}</td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="2" style="text-align: center; color: #555;">Zatím žádné časy pro tuto obtížnost.</td>
-        </tr>
-        {% endfor %}
-    </table>
 
 </body>
 </html>
