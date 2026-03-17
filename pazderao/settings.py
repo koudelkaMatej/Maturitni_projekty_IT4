@@ -20,6 +20,7 @@ IMG_PATH_PLUS = "pazderao/images/plus.png" # pro boosty
 IMG_PATH_MINUS = "pazderao/images/minus.png"
 IMG_PATH_BALL = "pazderao/images/ball.png"
 
+
 # Základní nastavení hry
 COLS = 6
 ROWS = 7
@@ -62,10 +63,11 @@ BUTTON_TEXT_COL = (255, 255, 255)
 table_button_rect = pygame.Rect(10, SCREEN_HEIGHT - 40, 100, 30)
 
 #databáze
-host = "localhost"
-username = "root"
-password = ""  # Tady tvoje heslo
-database = "breakout_db"
+host = "dbs.spskladno.cz"
+username = "vyuka22"  
+password = "spsnet"  
+database = "vyuka22"
+WEB_URL = "http://127.0.0.1:5000/"
 player_name = ""
 entering_name = True 
 in_menu = False

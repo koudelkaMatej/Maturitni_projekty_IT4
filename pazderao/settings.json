@@ -11,5 +11,5 @@
     "git.enableSmartCommit": true,
     "git.autofetch": "all",
 
-    "python.defaultInterpreterPath": "c:\\Users\\pazon\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe"
+    "python.defaultInterpreterPath": "c:\\Users\\pazon\\AppData\\Local\\Python\\pythoncore-3.10-64\\python.exe"
 }

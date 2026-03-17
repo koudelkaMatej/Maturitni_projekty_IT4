@@ -1,9 +1,11 @@
 import pygame
 from pygame.locals import *
 import random
+import webbrowser
 from Timer import GameTimer 
 from settings import *
 from menu import *
+
 
 
 pygame.init()
@@ -368,7 +370,7 @@ while run:
             if in_menu:
                 mouse_pos = pygame.mouse.get_pos()
                 if table_button_rect.collidepoint(mouse_pos):
-                    print("Otevírám tabulku nejlepších časů...")
+                    webbrowser.open("http://127.0.0.1:5000/tab")
 
         
         if event.type == pygame.MOUSEBUTTONDOWN or (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE):

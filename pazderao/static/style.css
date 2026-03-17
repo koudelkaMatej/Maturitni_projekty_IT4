@@ -4,24 +4,55 @@ body {
     margin: 0;
 }
 
-nav { /* styl navigace */
+/* --- globální nastavení odkazů --- */
+a {
+    text-decoration: none; /* odstraní ošklivé modré podtržení */
+    color: inherit; /* odkaz zdědí barvu od rodiče */
+}
+
+/* --- navigace --- */
+nav { 
     background: white;
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
+    align-items: center; /* zarovná položky vertikálně na střed */
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.container { /* styl hlavního bloku s obsahem */
+/* styl samotných odkazů v navigaci (vypadají teď jako flat tlačítka) */
+nav a {
+    padding: 8px 16px;
+    border-radius: 6px;
+    color: #007bff; /* základní modrá barva */
+    font-weight: 500;
+    transition: all 0.3s ease; /* zajistí plynulou změnu barvy */
+}
+
+/* reakce na najetí myší v navigaci */
+nav a:hover {
+    background-color: #f0f2f5; /* jemně šedé pozadí */
+    color: #0056b3; /* tmavší modrá */
+}
+
+/* drobná mezera mezi tlačítky v pravé části navigace */
+.nav-right a {
+    margin-left: 10px;
+}
+
+/* --- hlavní kontejner --- */
+.container { 
     max-width: 800px;
     margin: 40px auto;
     background: white;
     padding: 30px;
     border-radius: 10px;
     text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* přidán jemný stín i kontejneru */
 }
 
-table { /* styl tabulek bez dělících čar */
+/* --- tabulky --- */
+table { 
     width: 100%;
     margin-bottom: 30px;
     border-collapse: collapse;
@@ -29,13 +60,28 @@ table { /* styl tabulek bez dělících čar */
 
 td {
     padding: 10px;
+    border-bottom: 1px solid #eee; /* jemná linka mezi řádky pro lepší čitelnost */
 }
 
-button { /* styl tlačítek na webu */
-    padding: 10px 20px;
+/* zvýraznění celého řádku při najetí myší (dobré pro leaderboard) */
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* --- hlavní grafické tlačítko (použito v index.html) --- */
+.btn-main {
+    display: inline-block;
+    padding: 12px 25px;
     background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    color: white !important;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: 0.3s;
+}
+
+.btn-main:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px); /* tlačítko se při najetí mírně nadzvedne */
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
