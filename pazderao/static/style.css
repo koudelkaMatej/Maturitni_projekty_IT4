@@ -4,43 +4,43 @@ body {
     margin: 0;
 }
 
-/* --- globální nastavení odkazů --- */
+/* odkazy */
 a {
-    text-decoration: none; /* odstraní ošklivé modré podtržení */
-    color: inherit; /* odkaz zdědí barvu od rodiče */
+    text-decoration: none;
+    color: inherit;
 }
 
-/* --- navigace --- */
+/* horní lišta */
 nav { 
     background: white;
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
-    align-items: center; /* zarovná položky vertikálně na střed */
+    align-items: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* styl samotných odkazů v navigaci (vypadají teď jako flat tlačítka) */
+/* tlačítka v menu */
 nav a {
     padding: 8px 16px;
     border-radius: 6px;
-    color: #007bff; /* základní modrá barva */
+    color: #007bff;
     font-weight: 500;
-    transition: all 0.3s ease; /* zajistí plynulou změnu barvy */
+    transition: all 0.3s ease;
 }
 
-/* reakce na najetí myší v navigaci */
+/* barva při najetí */
 nav a:hover {
-    background-color: #f0f2f5; /* jemně šedé pozadí */
-    color: #0056b3; /* tmavší modrá */
+    background-color: #f0f2f5;
+    color: #0056b3;
 }
 
-/* drobná mezera mezi tlačítky v pravé části navigace */
+/* mezery vpravo */
 .nav-right a {
     margin-left: 10px;
 }
 
-/* --- hlavní kontejner --- */
+/* hlavní box */
 .container { 
     max-width: 800px;
     margin: 40px auto;
@@ -48,10 +48,10 @@ nav a:hover {
     padding: 30px;
     border-radius: 10px;
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* přidán jemný stín i kontejneru */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
-/* --- tabulky --- */
+/* tabulka */
 table { 
     width: 100%;
     margin-bottom: 30px;
@@ -60,15 +60,15 @@ table {
 
 td {
     padding: 10px;
-    border-bottom: 1px solid #eee; /* jemná linka mezi řádky pro lepší čitelnost */
+    border-bottom: 1px solid #eee;
 }
 
-/* zvýraznění celého řádku při najetí myší (dobré pro leaderboard) */
+/* barva řádku */
 tr:hover {
     background-color: #f8f9fa;
 }
 
-/* --- hlavní grafické tlačítko (použito v index.html) --- */
+/* modrý tlačítko */
 .btn-main {
     display: inline-block;
     padding: 12px 25px;
@@ -82,6 +82,35 @@ tr:hover {
 
 .btn-main:hover {
     background-color: #0056b3;
-    transform: translateY(-2px); /* tlačítko se při najetí mírně nadzvedne */
+    transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
+
+/* o projektu */
+.about-list {
+    list-style-type: none;
+    padding-left: 0;
+    line-height: 1.6;
+}
+
+.about-list li {
+    margin-bottom: 20px;
+}
+
+.about-list strong {
+    display: block;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.about-desc {
+    margin: 5px 0 0 20px;
+    font-size: 0.95rem;
+    color: #555;
+    text-align: left;
+}
+
+/* barvy obtížností */
+.text-easy { color: #28a745; font-weight: bold; }
+.text-medium { color: #fd7e14; font-weight: bold; }
+.text-hard { color: #dc3545; font-weight: bold; }
