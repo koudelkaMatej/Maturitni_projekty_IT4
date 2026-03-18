@@ -8,6 +8,14 @@ from menu import *
 
 pygame.init()
 
+# inicializace hodin a základních proměnných, pokud nejsou v settings
+clock = pygame.time.Clock()
+# pokud nemáš v settings, odkomentuj tyto řádky:
+# entering_name = True
+# player_name = ""
+# LIVE_BALL = False
+# GAME_OVER = 0
+
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Breakout')
 
@@ -50,6 +58,7 @@ class wall():
     def __init__(self):
         self.width = SCREEN_WIDTH // COLS
         self.height = 50
+        self.blocks = []
 
     def clear_wall(self): # smaže cihly
         self.blocks = []  
@@ -66,7 +75,6 @@ class wall():
                 block_y = row * self.height
                 rect = pygame.Rect(block_x, block_y, self.width, self.height)
                 
-                # kolikrát se musí do cihly bouchnout
                 if selected_level == 3:
                     strength = 3 if row < 2 else (2 if row < 6 else 1)
                 else:
@@ -120,38 +128,71 @@ class game_ball():
         self.speed_max = 5
         self.reset(x, y)
 
-    def move(self):
+    def reset(self, x, y):
+        self.ball_rad = 10
+        self.rect = Rect(x - self.ball_rad, y, self.ball_rad * 2, self.ball_rad * 2)
+        self.speed_x = random.choice([-1, 1]) * random.uniform(2, 5)
+        # rychlost podle obtížnosti
+        if selected_level == 1: self.speed_y = -3
+        elif selected_level == 3: self.speed_y = -5; self.speed_max = 6
+        else: self.speed_y = -4; self.speed_max = 5
+
+    def draw(self):
+        pygame.draw.circle(screen, PADDLE_COL, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
+        pygame.draw.circle(screen, PADDLE_OUTLINE, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad, 3)
+
+    def move(self, player_paddle, wall, active_boosts, boost_class):
         collision_thresh = 12
         wall_destroyed = 1
         
+        # nejdriv pohneme mickem
+        self.rect.x += self.speed_x
+        self.rect.y += self.speed_y
+
+        # fix zasekavani o steny
+        if self.rect.left < 0:
+            self.rect.left = 0
+            self.speed_x *= -1
+        if self.rect.right > SCREEN_WIDTH:
+            self.rect.right = SCREEN_WIDTH
+            self.speed_x *= -1
+        if self.rect.top < 0:
+            self.rect.top = 0
+            self.speed_y *= -1
+        if self.rect.bottom > SCREEN_HEIGHT:
+            return "dead"
+
+        # odrazy od cihel
         for row_idx, row in enumerate(wall.blocks):
             for col_idx, item in enumerate(row):
                 if self.rect.colliderect(item[0]) and item[1] > 0:
-                    # odrazy od cihel
-                    if abs(self.rect.bottom - item[0].top) < collision_thresh and self.speed_y > 0: self.speed_y *= -1
-                    elif abs(self.rect.top - item[0].bottom) < collision_thresh and self.speed_y < 0: self.speed_y *= -1                      
-                    elif abs(self.rect.right - item[0].left) < collision_thresh and self.speed_x > 0: self.speed_x *= -1
-                    elif abs(self.rect.left - item[0].right) < collision_thresh and self.speed_x < 0: self.speed_x *= -1
+                    if abs(self.rect.bottom - item[0].top) < collision_thresh and self.speed_y > 0:
+                        self.rect.bottom = item[0].top
+                        self.speed_y *= -1
+                    elif abs(self.rect.top - item[0].bottom) < collision_thresh and self.speed_y < 0:
+                        self.rect.top = item[0].bottom
+                        self.speed_y *= -1                      
+                    elif abs(self.rect.right - item[0].left) < collision_thresh and self.speed_x > 0:
+                        self.rect.right = item[0].left
+                        self.speed_x *= -1
+                    elif abs(self.rect.left - item[0].right) < collision_thresh and self.speed_x < 0:
+                        self.rect.left = item[0].right
+                        self.speed_x *= -1
                     
-                    # ubrání života cihle
                     if wall.blocks[row_idx][col_idx][1] > 1:
                         wall.blocks[row_idx][col_idx][1] -= 1
                     else:
                         wall.blocks[row_idx][col_idx][1] = 0
-                        # šance na padající věc
                         if random.random() < 0.2:
-                            active_boosts.append(boost(item[0].centerx, item[0].centery, random.choice(['plus', 'minus', 'ball'])))
+                            active_boosts.append(boost_class(item[0].centerx, item[0].centery, random.choice(['plus', 'minus', 'ball'])))
 
-                if wall.blocks[row_idx][col_idx][1] > 0: wall_destroyed = 0
+                if wall.blocks[row_idx][col_idx][1] > 0: 
+                    wall_destroyed = 0
         
-        if wall_destroyed == 1: self.GAME_OVER = 1
+        if wall_destroyed == 1: 
+            return 1 # vyhra
 
-        # odrazy od okrajů
-        if self.rect.left < 0 or self.rect.right > SCREEN_WIDTH: self.speed_x *= -1
-        if self.rect.top < 0: self.speed_y *= -1
-        if self.rect.bottom > SCREEN_HEIGHT: return "dead"
-
-        # odraz od pálky
+        # odraz od palky
         if self.rect.colliderect(player_paddle):
             if self.speed_y > 0:
                 self.rect.bottom = player_paddle.rect.top 
@@ -162,23 +203,7 @@ class game_ball():
         if abs(self.speed_x) < MIN_X_SPEED:
             self.speed_x = MIN_X_SPEED if self.speed_x >= 0 else -MIN_X_SPEED
             
-        self.rect.x += self.speed_x
-        self.rect.y += self.speed_y
-        return self.GAME_OVER
-
-    def draw(self):
-        pygame.draw.circle(screen, PADDLE_COL, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad)
-        pygame.draw.circle(screen, PADDLE_OUTLINE, (self.rect.x + self.ball_rad, self.rect.y + self.ball_rad), self.ball_rad, 3)
-
-    def reset(self, x, y):
-        self.ball_rad = 10
-        self.rect = Rect(x - self.ball_rad, y, self.ball_rad * 2, self.ball_rad * 2)
-        self.speed_x = random.choice([-1, 1]) * random.uniform(2, 5)
-        # rychlost podle obtížnosti
-        if selected_level == 1: self.speed_y = -3
-        elif selected_level == 3: self.speed_y = -5; self.speed_max = 6
-        else: self.speed_y = -4; self.speed_max = 5
-        self.GAME_OVER = 0
+        return 0
 
 # vytvoření věcí pro hru
 wall = wall()
@@ -196,7 +221,6 @@ while run:
     
     if entering_name:
         draw_text('JMENO:', font1, text_col, 60, 200)
-        # políčko pro jméno
         input_rect = pygame.Rect(SCREEN_WIDTH//2 - 150, 300, 300, 50)
         pygame.draw.rect(screen, BUTTON_COL, input_rect)
         pygame.draw.rect(screen, OUTLINE_COL, input_rect, 2)
@@ -204,10 +228,8 @@ while run:
         draw_text('STISKNI ENTER PRO START', font2, text_col, 170, 400)
 
     elif in_menu:
-        # tlačítko pro tabulku
         pygame.draw.rect(screen, (255, 255, 255), table_button_rect, 1)
         draw_text('TABULKA', font2, (255, 255, 255), 20, SCREEN_HEIGHT - 35)
-        # výběr obtížnosti
         draw_text('VYBER OBTÍŽNOST:', font1, text_col, 45, 100)
         draw_text('1 - LEHKÁ (EASY)', font, BLOCK_YELLOW, 180, 250)
         draw_text('2 - STŘEDNÍ (MEDIUM)', font, BLOCK_ORANGE, 150, 300)
@@ -222,12 +244,12 @@ while run:
         if start_game:
             in_menu = False
             player_paddle.reset()
-            balls = [game_ball(player_paddle.rect.centerx, player_paddle.rect.top)]
+            balls = [game_ball(player_paddle.rect.centerx, player_paddle.rect.top - 20)]
             wall.create_wall()
-            game_timer.start()
             active_boosts = []
+            GAME_OVER = 0
+            LIVE_BALL = False
     else:
-        # kreslení hry
         wall.draw_wall()
         player_paddle.draw()
         game_timer.draw(screen, font, (255, 255, 255), 20, 20)
@@ -238,7 +260,6 @@ while run:
             if LIVE_BALL:
                 player_paddle.move()
                 
-                # jak dlouho trvá zvětšení pálky
                 if paddle_timer > 0:
                     if pygame.time.get_ticks() - paddle_timer > 10000:
                         curr_x = player_paddle.rect.centerx
@@ -246,19 +267,27 @@ while run:
                         player_paddle.rect.centerx = curr_x
                         paddle_timer = 0
 
-                # pohyb míčků a jestli vypadl
+                # pohyb míčků
                 for b in balls[:]:
-                    res = b.move()
-                    if res == "dead": balls.remove(b)
-                    elif res != 0: LIVE_BALL = False
+                    res = b.move(player_paddle, wall, active_boosts, boost)
+                    if res == "dead": 
+                        balls.remove(b)
+                    elif res == 1: # VYHRA
+                        GAME_OVER = 1
+                        LIVE_BALL = False
+                        game_timer.stop()
+                        game_timer.save_time(selected_level, player_name)
 
-                if not balls:
+                # kontrola prohry (vsechny micky pryc)
+                if not balls and GAME_OVER == 0:
                     GAME_OVER = -1
                     LIVE_BALL = False
+                    game_timer.stop()
 
-                # sbírání věcí co padají
+                # sbírání boostů
                 for bst in active_boosts[:]:
-                    if not bst.move(): active_boosts.remove(bst)
+                    if not bst.move(): 
+                        active_boosts.remove(bst)
                     elif bst.rect.colliderect(player_paddle.rect):
                         if bst.b_type == 'plus':
                             player_paddle.rect.inflate_ip(60, 0)
@@ -267,35 +296,30 @@ while run:
                             player_paddle.rect.width = max(40, player_paddle.rect.width - 40)
                             paddle_timer = pygame.time.get_ticks()
                         elif bst.b_type == 'ball':
-                            balls.append(game_ball(player_paddle.rect.centerx, player_paddle.rect.top))
+                            balls.append(game_ball(player_paddle.rect.centerx, player_paddle.rect.top - 20))
                         active_boosts.remove(bst)
 
-            # nápisy když dohraješ
+            # nápisy po konci nebo pred startem
             if not LIVE_BALL:
-                if GAME_OVER == 0: draw_text('KLIKNI PRO SPUSTENI HRY', font, text_col, 110, 430), game_timer.stop()
+                if GAME_OVER == 0: 
+                    draw_text('KLIKNI PRO SPUSTENI HRY', font, text_col, 110, 430)
                 elif GAME_OVER == 1:
-                    game_timer.stop()        
-                    game_timer.save_time(CESTA_PRO_DATA, selected_level, player_name)
-                    draw_text('VYHRAL SI!', font1, text_col_green, 130, 180)
-                    draw_text('KLIKNI PRO NAVRAT DO MENU', font, text_col, 80, 300)
+                    draw_text('VYHRAL SI!', font1, text_col_green, 130, 300)
+                    draw_text('KLIKNI PRO NAVRAT DO MENU', font, text_col, 80, 400)
                 elif GAME_OVER == -1:
-                    game_timer.stop()        
-                    wall.clear_wall()
-                    draw_text('PROHRAL SI!', font1, text_col_red, 120, 180)
-                    draw_text('KLIKNI PRO NAVRAT DO MENU', font, text_col, 80, 300)
+                    draw_text('PROHRAL SI!', font1, text_col_red, 120, 300)
+                    draw_text('KLIKNI PRO NAVRAT DO MENU', font, text_col, 80, 400)
         else:
-            # pauza menu
             action = pause_menu.draw(screen)
             if action == "resume":
                 is_paused = False
                 game_timer.resume()
             elif action == "quit":
-                is_paused = False; in_menu = True; LIVE_BALL = False; GAME_OVER = 0; game_timer.stop() 
+                is_paused = False; in_menu = True; LIVE_BALL = False; GAME_OVER = 0; game_timer.reset() 
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT: run = False
         
-        # zadávání jména
         if entering_name and event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN and len(player_name) > 0:
                 entering_name = False; in_menu = True
@@ -304,27 +328,26 @@ while run:
             elif len(player_name) < 12 and event.unicode.isprintable():
                 player_name += event.unicode
 
-        # pauza
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE and not in_menu and GAME_OVER == 0:
                 is_paused = not is_paused
                 if is_paused: game_timer.pause()
                 else: game_timer.resume()
 
-        # kliknutí na tabulku
         if event.type == pygame.MOUSEBUTTONDOWN and in_menu:
             if table_button_rect.collidepoint(pygame.mouse.get_pos()):
                 webbrowser.open("http://127.0.0.1:5000/tab")
         
-        # vystřelení míčku
         if event.type == pygame.MOUSEBUTTONDOWN or (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE):
             if not in_menu and not is_paused: 
                 if not LIVE_BALL:
                     if GAME_OVER != 0:
-                        in_menu = True; GAME_OVER = 0
+                        in_menu = True 
+                        GAME_OVER = 0
+                        game_timer.reset()
                     else:
                         LIVE_BALL = True
-                        balls = [game_ball(player_paddle.rect.centerx, player_paddle.rect.top)]
+                        balls = [game_ball(player_paddle.rect.centerx, player_paddle.rect.top - 20)]
                         game_timer.start()
 
     pygame.display.update()

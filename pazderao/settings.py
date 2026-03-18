@@ -56,10 +56,11 @@ table_button_rect = pygame.Rect(10, SCREEN_HEIGHT - 40, 100, 30)
 
 # databáze a jméno
 host = "dbs.spskladno.cz"
-username = "vyuka22"
+username = "vyuka16"
 password = "spsnet"
-database = "vyuka22"
+database = "vyuka16"
 WEB_URL = "http://127.0.0.1:5000/"
+povolené_znaky = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 "
 player_name = ""
 entering_name = True 
 in_menu = False

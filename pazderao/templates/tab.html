@@ -1,51 +1,55 @@
 <!DOCTYPE html>
-<html lang="cs">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Výsledky</title>
+    <title>Žebříček - Breakout</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
-    <nav> <div class="nav-left">
-            <a href="/login">Uživatelský Login</a>
-        </div>
+    <nav>
+        <div class="nav-left"><strong>Breakout Hra</strong></div>
         <div class="nav-right">
             <a href="/">Domů</a>
-            <a href="/tab">Tabulka výsledků</a>
-            <a href="/about">O projektu</a>
+            <a href="/tab">Žebříček</a>
+            {% if user %}
+                <a href="/profile">Můj profil</a>
+            {% else %}
+                <a href="/login">Login</a>
+            {% endif %}
         </div>
     </nav>
 
     <div class="container">
-        <h1>LEADERBOARD</h1>
+        <h2>Nejlepší časy</h2>
+        
+        <div style="margin-bottom: 20px;">
+            <a href="/tab?level=1" class="btn-main" style="background-color: #28a745;">Lehká</a>
+            <a href="/tab?level=2" class="btn-main" style="background-color: #fd7e14;">Střední</a>
+            <a href="/tab?level=3" class="btn-main" style="background-color: #dc3545;">Těžká</a>
+        </div>
 
-        <h2>🟢 Lehká obtížnost</h2>
-        <table>
-            <thead><tr><th>Hráč</th><th>Čas</th></tr></thead>
-            <tbody>
-                {% for r in lehka %} <tr><td>{{ r.jmeno }}</td><td>{{ r.cas }}</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <h3>Výsledky pro: 
+            {% if level == 1 %}Lehkou{% endif %}
+            {% if level == 2 %}Střední{% endif %}
+            {% if level == 3 %}Těžkou{% endif %}
+        </h3>
 
-        <h2>🟡 Střední obtížnost</h2>
-        <table>
-            <thead><tr><th>Hráč</th><th>Čas</th></tr></thead>
-            <tbody>
-                {% for r in stredni %} <tr><td>{{ r.jmeno }}</td><td>{{ r.cas }}</td></tr>
+        {% if leaderboard %}
+            <table>
+                <tr>
+                    <th>Hráč</th>
+                    <th>Čas</th>
+                </tr>
+                {% for row in leaderboard %}
+                <tr>
+                    <td><strong>{{ row.username }}</strong></td>
+                    <td>{{ row.time_str }}</td>
+                </tr>
                 {% endfor %}
-            </tbody>
-        </table>
-
-        <h2>🔴 Těžká obtížnost</h2>
-        <table>
-            <thead><tr><th>Hráč</th><th>Čas</th></tr></thead>
-            <tbody>
-                {% for r in tezka %} <tr><td>{{ r.jmeno }}</td><td>{{ r.cas }}</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+            </table>
+        {% else %}
+            <p>Zatím tu nikdo není. Buď první!</p>
+        {% endif %}
     </div>
 </body>
 </html>

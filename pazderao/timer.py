@@ -1,16 +1,17 @@
 import pygame
-import os
+import mysql.connector
+from settings import host, username, password, database
 
 class GameTimer:
     def __init__(self):
-        self.start_ticks = 0 # čas kdy se začalo
-        self.accumulated_time = 0 # uloženej čas
-        self.is_paused = False # jestli je pauza
-        self.is_running = False # jestli běží čas
-        self.saved = False # aby se to neuložilo víckrát
+        self.start_ticks = 0
+        self.accumulated_time = 0
+        self.is_paused = False
+        self.is_running = False
+        self.saved = False
 
     def start(self):
-        self.start_ticks = pygame.time.get_ticks() # start stopek
+        self.start_ticks = pygame.time.get_ticks()
         self.accumulated_time = 0
         self.is_running = True
         self.is_paused = False
@@ -18,13 +19,12 @@ class GameTimer:
 
     def pause(self):
         if self.is_running and not self.is_paused:
-            # uložení času do pauzy
             self.accumulated_time += pygame.time.get_ticks() - self.start_ticks
             self.is_paused = True
 
     def resume(self):
         if self.is_running and self.is_paused:
-            self.start_ticks = pygame.time.get_ticks() # pokračování po pauze
+            self.start_ticks = pygame.time.get_ticks()
             self.is_paused = False
 
     def stop(self):
@@ -34,65 +34,73 @@ class GameTimer:
             self.is_running = False
             self.is_paused = False
 
-    def get_time_string(self):
-        current_total = self.accumulated_time
+    def reset(self):
+        self.start_ticks = 0
+        self.accumulated_time = 0
+        self.is_paused = False
+        self.is_running = False
+        self.saved = False
+
+    def get_time_ms(self):
+        # Pokud timer vůbec neběží a není tam uložený čas, vrať 0
+        if not self.is_running and self.accumulated_time == 0:
+            return 0
+        
+        total = self.accumulated_time
         if self.is_running and not self.is_paused:
-            current_total += pygame.time.get_ticks() - self.start_ticks
+            total += pygame.time.get_ticks() - self.start_ticks
+        return total
 
-        if current_total == 0:
-            return "00:00:000"
+    def get_time_ms(self):
+        # čas v milisekundách kvůli řazení
+        total = self.accumulated_time
+        if self.is_running and not self.is_paused:
+            total += pygame.time.get_ticks() - self.start_ticks
+        return total
 
-        # převod na minuty a sekundy
+    def get_time_string(self):
+        current_total = self.get_time_ms()
+        if current_total == 0: return "00:00:000"
         milliseconds = current_total % 1000
         seconds = (current_total // 1000) % 60
         minutes = (current_total // 60000)
-
         return f"{minutes:02d}:{seconds:02d}:{milliseconds:03d}"
 
     def draw(self, screen, font, color, x, y):
-        # nakreslí čas do rohu
         time_str = self.get_time_string()
         img = font.render(time_str, True, color)
         screen.blit(img, (x, y))
 
-    def save_time(self, filename, level, player_name):
-        if not self.saved and self.accumulated_time > 0:
-            level_names = {1: "LEHKÁ", 2: "STŘEDNÍ", 3: "TĚŽKÁ"}
-            current_level = level_names.get(level, "NEZNÁMÁ")
-            new_time = self.get_time_string()
+    def save_time(self, level, p_name):
+        if self.saved or self.accumulated_time <= 0:
+            return
 
-            data = {"LEHKÁ": [], "STŘEDNÍ": [], "TĚŽKÁ": []}
-            current_section = None
+        try:
+            # připojení k databázi
+            conn = mysql.connector.connect(host=host, user=username, password=password, database=database)
+            cursor = conn.cursor()
 
-            # načtení starých časů
-            if os.path.exists(filename):
-                try:
-                    with open(filename, "r", encoding="utf-8") as file:
-                        for line in file:
-                            line = line.strip()
-                            if not line: continue
-                            if line in ["LEHKÁ:", "STŘEDNÍ:", "TĚŽKÁ:"]:
-                                current_section = line.replace(":", "")
-                                continue
-                            if current_section and ", " in line:
-                                data[current_section].append(line)
-                except Exception as e:
-                    print(f"chyba čtení: {e}")
+            # moje vlastní tabulka, ať se to neplete s ostatníma
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS pazderao_casy (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    username VARCHAR(50),
+                    level INT,
+                    time_str VARCHAR(20),
+                    time_ms INT
+                )
+            """)
 
-            # přidání novýho jména a času
-            if current_level in data:
-                data[current_level].append(f"{player_name.capitalize()}, {new_time}")
-
-            # uložení všech časů a seřazení
-            try:
-                with open(filename, "w", encoding="utf-8") as file:
-                    for sec in ["LEHKÁ", "STŘEDNÍ", "TĚŽKÁ"]:
-                        file.write(f"{sec}:\n")
-                        # srovná časy od nejlepšího
-                        sorted_list = sorted(data[sec], key=lambda x: x.split(", ")[1])
-                        for radek in sorted_list:
-                            file.write(f"{radek}\n")
-                        file.write("\n")
-                self.saved = True
-            except Exception as e:
-                print(f"chyba zápisu: {e}")
+            # vložení dat
+            sql = "INSERT INTO pazderao_casy (username, level, time_str, time_ms) VALUES (%s, %s, %s, %s)"
+            val = (p_name.capitalize(), level, self.get_time_string(), self.get_time_ms())
+            cursor.execute(sql, val)
+            
+            conn.commit()
+            self.saved = True
+        except Exception as e:
+            print(f"chyba ukladani db: {e}")
+        finally:
+            if 'conn' in locals() and conn.is_connected():
+                cursor.close()
+                conn.close()
