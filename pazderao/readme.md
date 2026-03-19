@@ -71,7 +71,8 @@ python breakout.py
     ├── Er-Diagram.png    _Er-diagram hry_
     └── plus.png          _Booster velikosti pálky +_
 
-
+# Er-Diagram
+<img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/raw/Ondrej-Pazdera/pazderao/images/Er-Diagram.png" alt="ER Diagram" style="max-width: 100%; height: auto;">
 
 
 # Obtížnosti
