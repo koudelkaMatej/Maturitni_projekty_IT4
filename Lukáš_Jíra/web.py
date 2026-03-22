@@ -229,6 +229,28 @@ def _base_styles():
             background: #fff;
         }
 
+        .diagram-wrap {
+            overflow-x: auto;
+            padding: 8px 0;
+        }
+
+        .diagram-svg {
+            min-width: 720px;
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #ffffff;
+            border: 1px solid #c8d4e5;
+            border-radius: 12px;
+        }
+
+        .diagram-note {
+            margin-top: 12px;
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
         @media (max-width: 640px) {
             .topbar a { font-size: 13px; }
             .btn { width: 100%; }
@@ -367,8 +389,40 @@ def hlavni_stranka():
         </section>
 
         <section class="card" id="diagramy" style="margin-top:16px;">
-            <h2>ER diagram k vyvoji hry</h2>
-            <img src="/Obrazky/unnamed.jpg" alt="ER diagram hry" class="diagram-image">
+            <h2>ER diagram databaze</h2>
+            <div class="diagram-wrap">
+                <svg viewBox="0 0 980 320" class="diagram-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ER diagram databaze">
+                    <defs>
+                        <marker id="arrow-end" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+                            <path d="M0,0 L12,6 L0,12 z" fill="#0f766e"/>
+                        </marker>
+                    </defs>
+
+                    <rect x="60" y="40" width="320" height="200" rx="16" fill="#f8fbff" stroke="#0c4a6e" stroke-width="2"/>
+                    <rect x="60" y="40" width="320" height="44" rx="16" fill="#0c4a6e"/>
+                    <text x="220" y="68" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff">UZIVATELE</text>
+                    <text x="86" y="112" font-size="19" font-weight="700" fill="#0f172a">PK id : INTEGER</text>
+                    <text x="86" y="145" font-size="19" fill="#0f172a">jmeno : TEXT (UNIQUE)</text>
+                    <text x="86" y="178" font-size="19" fill="#0f172a">heslo_hash : TEXT</text>
+                    <text x="86" y="211" font-size="19" fill="#475569">heslo : TEXT (stary sloupec)</text>
+
+                    <rect x="600" y="40" width="320" height="200" rx="16" fill="#fffdf7" stroke="#b45309" stroke-width="2"/>
+                    <rect x="600" y="40" width="320" height="44" rx="16" fill="#b45309"/>
+                    <text x="760" y="68" text-anchor="middle" font-size="24" font-weight="700" fill="#ffffff">VYSLEDKY</text>
+                    <text x="626" y="112" font-size="19" font-weight="700" fill="#0f172a">PK id : INTEGER</text>
+                    <text x="626" y="145" font-size="19" fill="#0f172a">jmeno : TEXT</text>
+                    <text x="626" y="178" font-size="19" fill="#0f172a">body : INTEGER</text>
+                    <text x="626" y="211" font-size="19" fill="#0f172a">datum : TEXT</text>
+
+                    <line x1="380" y1="140" x2="600" y2="140" stroke="#0f766e" stroke-width="4" marker-end="url(#arrow-end)"/>
+                    <text x="490" y="126" text-anchor="middle" font-size="18" font-weight="700" fill="#0f766e">1 : N</text>
+                    <text x="490" y="164" text-anchor="middle" font-size="16" fill="#334155">vazba pres jmeno</text>
+                </svg>
+            </div>
+            <p class="diagram-note">
+                Diagram odpovida databazi <b>skore.db</b>. Vazba mezi tabulkami je v aplikaci resena
+                logicky pres pole <b>jmeno</b>, ale v SQLite momentalne neni nastavena jako cizi klic.
+            </p>
         </section>
 
         <section class="card" id="vysledky" style="margin-top:16px;">
