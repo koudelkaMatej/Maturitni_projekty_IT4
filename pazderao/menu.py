@@ -10,51 +10,41 @@ class Button():
 
     def draw(self, screen):
         action = False
-        pos = pygame.mouse.get_pos() # kde je myš
+        pos = pygame.mouse.get_pos() # zjištění pozice myši
         
-        # barva tlačítka při najetí a klikání
         if self.rect.collidepoint(pos):
-            pygame.draw.rect(screen, BUTTON_HOVER_COL, self.rect)
+            pygame.draw.rect(screen, BUTTON_HOVER_COL, self.rect) # barva tlačítka při najetí
             if pygame.mouse.get_pressed()[0] == 1 and not self.clicked:
                 self.clicked = True
-                action = True
+                action = True # označení kliknutí
         else:
-            pygame.draw.rect(screen, BUTTON_COL, self.rect)
+            pygame.draw.rect(screen, BUTTON_COL, self.rect) # základní barva tlačítka
             
-        # reset aby nešlo klikat pořád dokola
         if pygame.mouse.get_pressed()[0] == 0:
-            self.clicked = False
+            self.clicked = False # reset kliknutí, aby to nebralo jeden stisk víckrát
             
-        # vykreslení textu na střed
-        pygame.draw.rect(screen, OUTLINE_COL, self.rect, 2)
+        pygame.draw.rect(screen, OUTLINE_COL, self.rect, 2) # vykreslení obrysu
         text_img = self.font.render(self.text, True, BUTTON_TEXT_COL)
-        text_rect = text_img.get_rect(center=self.rect.center)
+        text_rect = text_img.get_rect(center=self.rect.center) # vycentrování textu na střed tlačítka
         screen.blit(text_img, text_rect)
         
         return action
 
 class PauseMenu():
     def __init__(self, font):
-        # pozice tlačítek v pauze
-        start_y = SCREEN_HEIGHT // 2 - 50
-        center_x = SCREEN_WIDTH // 2 - BUTTON_WIDTH // 2
+        start_y = SCREEN_HEIGHT // 2 - 50 # výpočet výšky pro první tlačítko
+        center_x = SCREEN_WIDTH // 2 - BUTTON_WIDTH // 2 # výpočet středu pro tlačítka
         
-        # tlačítka pro pauzu
         self.btn_resume = Button(center_x, start_y, BUTTON_WIDTH, BUTTON_HEIGHT, "POKRACUJ", font)
         self.btn_quit = Button(center_x, start_y + 80, BUTTON_WIDTH, BUTTON_HEIGHT, "ZPET DO MENU", font)
         
-        # černej poloprůhlednej flek přes hru
-        self.overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
-        self.overlay.fill((0, 0, 0, 150))
+        self.overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA) # vytvoření průhledné vrstvy
+        self.overlay.fill((0, 0, 0, 150)) # nastavení černé barvy s průhledností
 
     def draw(self, screen):
-        screen.blit(self.overlay, (0, 0)) # ztmavení pozadí
+        screen.blit(self.overlay, (0, 0)) # ztmavení scény pod menu
         
-        # co se stane po kliknutí
-        if self.btn_resume.draw(screen):
-            return "resume"
-        
-        if self.btn_quit.draw(screen):
-            return "quit"
+        if self.btn_resume.draw(screen): return "resume" # pokračování ve hře
+        if self.btn_quit.draw(screen): return "quit" # návrat do menu
             
         return None
