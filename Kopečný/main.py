@@ -4,6 +4,7 @@ import random
 import mysql.connector
 from mysql.connector import Error
 from datetime import datetime
+from heslo import *
 
 # Inicializace Pygame
 pygame.init()
@@ -28,11 +29,10 @@ player_name = ""
 selected_customer = None  # Pro vybraného zákazníka
 customer_positions = []  # Pro sledování obsazených pozic zákazníků
 
-
 DB_CONFIG = {
     'host': 'dbs.spskladno.cz',
     'user': 'student19',
-    'password': 'spsnet',  
+    'password': PASSWORD,  
     'database': 'vyuka19', 
     'port': 3306
 }
@@ -92,6 +92,19 @@ for i in range(1, 4):
         elif i == 3:
             img.fill((150, 200, 150))  # Zelená
         customer_images.append(img)
+
+# Načtení plus ikon pro další požadavky
+plus_icons = {}
+for idx, fn in enumerate(["plus1.png", "plus2.png", "plus3.png"], start=1):
+    try:
+        icon = pygame.image.load(fn)
+        icon = pygame.transform.scale(icon, (180, 120))
+        plus_icons[idx-1] = icon
+    except:
+        # fallback
+        icon = pygame.Surface((180, 120))
+        icon.fill((255, 255, 0) if idx == 1 else (200, 0, 200) if idx == 2 else (0, 200, 200))
+        plus_icons[idx-1] = icon
 
 # Fonty
 font = pygame.font.SysFont('Arial', 40)
@@ -265,12 +278,21 @@ class Slider:
 
 class Customer:
     def __init__(self, x, y):
-        self.drink_type = random.randint(0, 2)  # 0=pivo, 1=víno, 2=drink
+        # Zákazník chce 1-2 nápoje najednou
+        num_drinks = random.randint(1, 2)
+        self.drinks_wanted = []
+        for _ in range(num_drinks):
+            drink_type = random.randint(0, 2)  # 0=pivo, 1=víno, 2=drink
+            self.drinks_wanted.append(drink_type)
+        
+        # první nápoj určuje obrázek
+        self.drink_type = self.drinks_wanted[0]
         self.image = customer_images[self.drink_type]
         self.rect = self.image.get_rect(center=(x, y))
         self.served = False
         self.arrival_time = pygame.time.get_ticks()
         self.selected = False
+        self.drinks_served = []  # Seznam již obsloužených nápojů
 
     def draw(self, surface):
         if not self.served:
@@ -280,6 +302,20 @@ class Customer:
                 highlight = pygame.Surface((self.rect.width, self.rect.height), pygame.SRCALPHA)
                 highlight.fill((100, 200, 255, 100))
                 surface.blit(highlight, self.rect)
+
+            # vykresli plus icony pro každý nápoj
+            if len(self.drinks_wanted) > 1:
+                base_x = self.rect.right + 10
+                base_y = self.rect.centery - 20
+                extra_idx = 0
+                for drink in self.drinks_wanted[1:]:
+                    # pouze pokud ještě není podáno
+                    if drink not in self.drinks_served:
+                        icon = plus_icons.get(drink)
+                        if icon:
+                            icon_pos = (base_x + extra_idx * 45 - 120, base_y - 70)
+                            surface.blit(icon, icon_pos)
+                            extra_idx += 1
 
     def handle_click(self, pos):
         global selected_customer
@@ -293,33 +329,51 @@ class Customer:
             return True
         return False
 
-    def serve(self):
+    def serve_drink(self, drink_type):
         global coins, beer_amount, wine_amount, drink_amount, stress_level, selected_customer
         if self.served:
             return False
         
-        drink_available = False
-        if self.drink_type == 0 and beer_amount > 0:
-            beer_amount -= 1
-            drink_available = True
-        elif self.drink_type == 1 and wine_amount > 0:
-            wine_amount -= 1
-            drink_available = True
-        elif self.drink_type == 2 and drink_amount > 0:
-            drink_amount -= 1
-            drink_available = True
-        
-        if drink_available:
-            self.served = True
-            self.selected = False
-            selected_customer = None
-            coins += 15
-            stress_level = max(0, stress_level - 20)
-            return True
+        # počet požadovaných a obsloužených nápojů
+        wanted_count = self.drinks_wanted.count(drink_type)
+        served_count = self.drinks_served.count(drink_type)
+
+        if wanted_count > served_count:
+            drink_available = False
+            if drink_type == 0 and beer_amount > 0:
+                beer_amount -= 1
+                drink_available = True
+            elif drink_type == 1 and wine_amount > 0:
+                wine_amount -= 1
+                drink_available = True
+            elif drink_type == 2 and drink_amount > 0:
+                drink_amount -= 1
+                drink_available = True
+
+            if drink_available:
+                self.drinks_served.append(drink_type)
+                # Zkontroluj, zda má všechny nápoje
+                if len(self.drinks_served) == len(self.drinks_wanted):
+                    self.served = True
+                    self.selected = False
+                    selected_customer = None
+                    # Bonus
+                    bonus_multiplier = len(self.drinks_wanted)
+                    coins += 15 * bonus_multiplier
+                    stress_level = max(0, stress_level - 20 * bonus_multiplier)
+                return True
+            else:
+                # Nemáme nápoj - zvýšíme stres
+                stress_level = min(stress_max, stress_level + 1)
+                return False
         else:
-            # Nemáme nápoj - zvýšíme stres
-            stress_level = min(stress_max, stress_level + 1)
+            # již obdržel nebo tento typ nechtěl
+            stress_level = min(stress_max, stress_level + 5)
             return False
+
+    def serve(self):
+        # Starý způsob
+        return self.serve_drink(self.drink_type)
 
 def connect_to_database():
     """Vytvoření připojení k databázi"""
@@ -764,25 +818,13 @@ def game_scene():
                     return "main_menu"
                 elif event.key == pygame.K_1:  # Klávesa 1 pro pivo
                     if selected_customer:
-                        if selected_customer.drink_type == 0:
-                            selected_customer.serve()
-                        else:
-                            # Špatný nápoj - zvýší stres
-                            stress_level = min(stress_max, stress_level + 20)
+                        selected_customer.serve_drink(0)
                 elif event.key == pygame.K_2:  # Klávesa 2 pro víno
                     if selected_customer:
-                        if selected_customer.drink_type == 1:
-                            selected_customer.serve()
-                        else:
-                            # Špatný nápoj - zvýší stres
-                            stress_level = min(stress_max, stress_level + 20)
+                        selected_customer.serve_drink(1)
                 elif event.key == pygame.K_3:  # Klávesa 3 pro drink
                     if selected_customer:
-                        if selected_customer.drink_type == 2:
-                            selected_customer.serve()
-                        else:
-                            # Špatný nápoj - zvýší stres
-                            stress_level = min(stress_max, stress_level + 20)
+                        selected_customer.serve_drink(2)
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 # Zkontroluj kliknutí na zákazníky
@@ -793,25 +835,15 @@ def game_scene():
                 # Zkontroluj kliknutí na servírovací tlačítka
                 result = beer_button.handle_event(event)
                 if result == "serve_beer" and selected_customer:
-                    if selected_customer.drink_type == 0:
-                        selected_customer.serve()
-                    else:
-                        # Špatný nápoj - zvýší stres
-                        stress_level = min(stress_max, stress_level + 20)
+                    selected_customer.serve_drink(0)
                 
                 result = wine_button.handle_event(event)
                 if result == "serve_wine" and selected_customer:
-                    if selected_customer.drink_type == 1:
-                        selected_customer.serve()
-                    else:
-                        stress_level = min(stress_max, stress_level + 20)
+                    selected_customer.serve_drink(1)
                 
                 result = drink_button.handle_event(event)
                 if result == "serve_drink" and selected_customer:
-                    if selected_customer.drink_type == 2:
-                        selected_customer.serve()
-                    else:
-                        stress_level = min(stress_max, stress_level + 20)
+                    selected_customer.serve_drink(2)
             
             # Zpracuj hold tlačítka pro doplnění
             if event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEBUTTONUP or event.type == pygame.MOUSEMOTION:
@@ -961,7 +993,15 @@ def game_scene():
         # Informace o vybraném zákazníku
         if selected_customer:
             drink_names = ["Pivo", "Víno", "Drink"]
-            selected_text = small_font.render(f"Vybraný: Chce {drink_names[selected_customer.drink_type]}", True, BLUE)
+            wanted_drinks = [drink_names[d] for d in selected_customer.drinks_wanted]
+            served_drinks = [drink_names[d] for d in selected_customer.drinks_served]
+            
+            wanted_text = " + ".join(wanted_drinks)
+            if served_drinks:
+                served_text = " + ".join(served_drinks)
+                selected_text = small_font.render(f"Vybraný: Chce {wanted_text} (má: {served_text})", True, BLUE)
+            else:
+                selected_text = small_font.render(f"Vybraný: Chce {wanted_text}", True, BLUE)
             screen.blit(selected_text, (SCREEN_WIDTH//2 - selected_text.get_width()//2, 450))
 
         customer_text = small_font.render(f"Zákazníci: {len(customers)}", True, BLACK)
