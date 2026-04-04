@@ -5,9 +5,13 @@ from typing import TypedDict, Optional, Any, Type
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import joinedload
+import os
 
-DATABASE_FILE = 'gradproj.db'
+DATABASE_FILE = 'ditr.db'
 DATABASE_URL = f'sqlite:///instance/{DATABASE_FILE}'
+
+if not os.path.exists("instance"):
+    os.makedirs("instance")
 
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()
@@ -15,10 +19,8 @@ Base = declarative_base()
 
 
 def session_init():
-    engine = create_engine(DATABASE_URL)
     Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
+    return Session()
 
 
 class User(TypedDict):
@@ -26,6 +28,9 @@ class User(TypedDict):
     username: str
     email: str
     created_at: datetime.datetime
+    prefered_scheme: Optional[str]
+    role: Optional[str]
+    
 
     game_sessions: Optional[list['GameSession']]
 
@@ -60,6 +65,9 @@ class UserModel(Base, UserMixin):
     email = mapped_column(String, unique=True, nullable=False)
     created_at = mapped_column(DateTime, default=datetime.datetime.now())
     game_sessions = relationship('GameSessionModel', back_populates='user')
+    prefered_scheme = mapped_column(String, nullable=True)
+    role = mapped_column(String, nullable=True, default="user", server_default="user")
+    banned = mapped_column(Integer, nullable=False, default=0)
 
     def set_password(self, password, persist: bool = True):
         self.password_hash = generate_password_hash(password)
@@ -79,6 +87,8 @@ class UserModel(Base, UserMixin):
 
     def __repr__(self):
         return f"<User(id={self.id}, username='{self.username}', email='{self.email}', created_at='{self.created_at}')>"
+    
+    
 
 class GameSessionModel(Base):
     __tablename__ = 'game_sessions'
@@ -88,8 +98,12 @@ class GameSessionModel(Base):
     started_at = mapped_column(DateTime, default=datetime.datetime.now())
     score = mapped_column(Integer, default=0)
     level_reached = mapped_column(Integer, default=1)
+    invalidated = mapped_column(Integer, nullable=False, default=0)
 
     user = relationship('UserModel', back_populates='game_sessions')
+
+    def __repr__(self):
+        return f"<GameSession(id={self.id}, user_id={self.user_id}, started_at='{self.started_at}', score={self.score}, level_reached={self.level_reached}), invalidated={self.invalidated}>"
 
 
 Base.metadata.create_all(bind=session_init().get_bind())
@@ -170,3 +184,13 @@ def query_rows(model: Type[Any], filters: Optional[dict[str, Any]] = None, inclu
         return [instance_to_dict(r) for r in results]
     finally:
         session.close()
+
+try:
+    query_rows(UserModel, {"username": "admin"})[0]
+    query_rows(UserModel, {"username": "Anonymous"})[0]
+except IndexError as e:
+    insert_row(UserModel, {"username":"admin", "email":"admin@admin.com", "password_hash":generate_password_hash("admin"), "role":"admin"})
+    insert_row(UserModel, {"username":"Anonymous", "email":"", "password_hash":generate_password_hash(""), "role":"user"})
+    print(e)
+except Exception as e:
+    print(e)

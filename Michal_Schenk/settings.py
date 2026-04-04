@@ -5,7 +5,7 @@ SCREEN_HEIGHT = 800 #px
 
 FPS = 60
 
-GAME_TITLE = "GradProj"
+GAME_TITLE = "DEEP IN THE RED"
 
 
 
@@ -17,10 +17,6 @@ LIGHT_GRAY = (200, 200, 200)
 BLUE = (70, 130, 255)
 DARK_BLUE = (50, 100, 200)
 
-
-
-# Vars
-volume = 0.5
 
 
 def load_settings():

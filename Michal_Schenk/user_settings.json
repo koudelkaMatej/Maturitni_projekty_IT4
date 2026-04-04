@@ -1,6 +1,7 @@
 {
-    "volume": 50,
-    "logged_in": false,
-    "username": "Anonymous",
-    "password": ""
+    "volume-music": 0.2,
+    "volume-sfx": 0.5,
+    "logged_in": true,
+    "username": "michal",
+    "password": "123"
 }

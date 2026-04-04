@@ -4,6 +4,7 @@ import typing
 import random
 
 pygame.font.init()
+pygame.mixer.init()
 
 class Button:
     """Universal Button"""
@@ -13,13 +14,15 @@ class Button:
                 width:int, 
                 height:int, 
                 text:str, 
-                font:pygame.font.Font=pygame.font.Font(None, 36), 
+                font:pygame.font.Font=pygame.font.Font(None, 24), 
                 color:tuple=(255,255,255), hover_color:tuple=(0,0,0), 
                 bg_color:tuple=(0,0,0), bg_hover_color:tuple=(255,255,255), 
                 border_width:int=1, 
                 border_radius:int=0, 
                 enabled:bool=True, 
-                visible:bool=True
+                visible:bool=True,
+                sfx:str="click-sfx",
+                silenced:bool=False
                 ):
         
         self.rect = pygame.Rect(x, y, width, height)
@@ -41,8 +44,10 @@ class Button:
         # State
         self.is_hovered = False
         self.enabled = enabled
-
         self.visible = visible
+
+        self.sfx = sfx
+        self.silenced = silenced
         
     def draw(self, screen):
         if not self.visible:
@@ -69,7 +74,15 @@ class Button:
             self.enabled = enabled
 
     def is_clicked(self, pos, event):
-        return self.rect.collidepoint(pos) and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 if self.enabled else 0
+        if self.rect.collidepoint(pos) and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 if self.enabled else 0:
+            if not self.silenced:
+                try:
+                    sfx = pygame.mixer.Sound(f"assets/sfx/{self.sfx}.mp3")
+                    sfx.set_volume(settings.load_settings()['volume-sfx'])
+                    sfx.play()
+                except Exception as e:
+                    print(f"Error: {e}")
+            return True
     
 
 
@@ -617,6 +630,7 @@ class Timer:
         self.is_paused = False
         self.pause_time = 0
         
+        
     def start(self):
         """Start or restart the timer"""
         self.start_time = pygame.time.get_ticks()
@@ -858,32 +872,31 @@ class InputField:
         
         # Text offset for scrolling long text
         self.text_offset = 0
+
+        self.visible = True
         
     def handle_event(self, event):
-        """Handle keyboard and mouse events"""
         if event.type == pygame.MOUSEBUTTONDOWN:
-            # Check if clicked inside or outside
             self.active = self.rect.collidepoint(event.pos)
             if self.active:
                 self.cursor_visible = True
                 self.last_blink = pygame.time.get_ticks()
-        
-        if self.active and event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                # Enter key - deactivate field
-                self.active = False
-                return "submit"
-            elif event.key == pygame.K_BACKSPACE:
-                self.text = self.text[:-1]
-                self._update_text_offset()
-            elif event.key == pygame.K_TAB:
-                # Tab key - could be used to switch between fields
-                return "tab"
-            elif len(self.text) < self.max_length:
-                # Add character
-                self.text += event.unicode
-                self._update_text_offset()
-        
+        if self.active:
+            if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+                if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                    self.active = False
+                    return "submit"
+                elif event.key == pygame.K_BACKSPACE:
+                    self.text = self.text[:-1]
+                    self._update_text_offset()
+                elif event.key == pygame.K_TAB:
+                    return "tab"
+
+            elif event.type == pygame.TEXTINPUT:
+                if len(self.text) < self.max_length:
+                    self.text += event.text
+                    self._update_text_offset()
+
         return None
     
     def _update_text_offset(self):
@@ -908,6 +921,9 @@ class InputField:
     
     def draw(self, screen):
         """Draw the input field"""
+        if not self.visible:
+            return
+
         # Draw background
         bg_col = self.active_bg_color if self.active else self.bg_color
         pygame.draw.rect(screen, bg_col, self.rect, border_radius=self.border_radius)
@@ -982,3 +998,6 @@ class InputField:
         if active:
             self.cursor_visible = True
             self.last_blink = pygame.time.get_ticks()
+
+    def set_visibility(self, visible:bool):
+        self.visible = visible
