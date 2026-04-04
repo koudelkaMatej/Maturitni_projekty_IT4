@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
+    <title>Profile</title>
+</head>
+<body data-theme="{{ user.prefered_scheme if user else 'light' }}">
+    {% include 'universal/header.html' %}
+    <div class="hero">
+        <h1>About</h1>
+    </div>
+    <div class="container">
+        <h2>Welcome to DEEP IN THE RED</h2>
+        <p>DEEP IN THE RED is a little game heavily inspired by an already existing game called FLATHEAD by Tim Oxton, <a href="https://store.steampowered.com/app/2840480/FLATHEAD/" target="_blank">released on Steam</a>. DEEP IN THE RED takes the core concept from this game and applies it to a much more simpler and minimalistic setting.</p>
+        <div class="flex-row">
+            <div class="container width" style="--width: 50%">
+                <img src="{{ url_for('static',filename='images/FLATHEAD.jpg') }}" alt="">
+                <p>[FLATHEAD @ Tim Oxton, source: https://store.steampowered.com/app/2840480/FLATHEAD]</p>
+            </div>
+            <div class="container width" style="--width: 50%">
+                <img src="{{ url_for('static',filename='images/GAME.png') }}" alt="">
+            </div>
+        </div>
+
+        <p>The core concept is simple. You have a so called "DEBT" visible in the middle of your screen. And you need to "PAY" it to advance to a next round. How do you "PAY" it? Simple.</p>
+        <p>You click the big "START" button. The system picks two random numbers. A "CLUE" number and a "REAL" number. What you see on the screen is only the "CLUE" number, and your task is to correctly guess whether the "REAL" number is "GREATER" or "LOWER". The numbers can range from 1 to 20 (included)</p>
+        <br><br>
+        <p>If you guess correctly - Congratulations, you just obtained yourself ONE TEMPORARY POINT which you can see in the top-left corner.</p>
+        <p>If your guess is wrong - Sorry, you just lost all your TEMPORARY POINTS</p>
+        <br><br>
+        <p>But don't worry, you can save yourself the hassle of losing all your TEMPORARY POINTS by just TRANSFERING them into your PERMANENT ACCOUNT. It even has its own benefits! For every 5 points you have stored in your PERMANENT ACCOUNT, you get a MULTIPLIER bonus! Which means now if you guess a number correctly, you'll get the that many points!</p>
+        <br><br>
+        <p>But of course there's a catch! Any tranfering action takes sweet precious time, and also locks all your other actions, you can just stare and wait as numbers move.</p>
+        <p>But if you still manage to pay your debt, don't think this is over. No. You just began, the infinity cycle. Your debt is raised, you get some more time to spare, and a random skill/effector that helps you faintly in your quest.</p>
+        <br><br>
+        <h3>Skills/Effectors</h3>
+        <p>As of now, there are 4 main effectors/skills:</p>
+        <ul>
+            <li><strong>Insta Pay</strong>: Instantly pays the debt, no waiting.</li>
+            <li><strong>Insta Transfer</strong>: Instantly transfers the points, no waiting.</li>
+            <li><strong>I Don't Think So</strong>: A small chance to turn a loss into a win.</li>
+            <li><strong>I'm Free!</strong>: Allows to do transfer while rolling</li>
+        </ul>
+        <br><br>
+        <h3>What about losing?</h3>
+        <p>You can lose the game in two ways: Running out of time, or Reaching 5 strikes by guessing incorectly 5 times.</p>
+        <p>You just simply lose the game, your achieved scores and levels get logged and uploaded to the database, if you logged in, you can maybe see yourself on the leaderboard in game or on this website.</p>
+    </div>
+    {% include 'universal/footer.html' %}
+</body>
+</html>

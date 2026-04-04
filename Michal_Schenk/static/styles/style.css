@@ -1,0 +1,220 @@
+:root {
+    /* Core Tones - Light Mode */
+    --bg-main: #f9fafb;
+    --bg-surface: #eaecf0;
+    --bg-surface-secondary: #d3d7de;
+    --border: #d3d7de;
+    --text-primary: #14181f;
+    --text-secondary: #5c6370;
+    
+    /* The "Pop" - A muted accent keeps the grayscale from feeling dead */
+    --accent: #3366cc;
+}
+
+[data-theme="dark"] {
+  /* Core Tones - Dark Mode */
+  --bg-main: #252525;           /* Deep Charcoal */
+  --bg-surface: #1E1E1E;        /* Soft Elevation */
+  --bg-surface-secondary: #313131;  /* Subtle Layering */
+  --border: #545454;            /* Subtle separation */
+  --text-primary: #f1f2f4;      /* Off-white for readability */
+  --text-secondary: #9da3af;    /* Muted details */
+
+  --accent: #8ca6d9;            /* Lighter accent for dark mode */
+}
+
+
+
+
+/* CLEAN UP */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  transition: all 0.3s ease; /* Smooth transition when toggling */
+  height: 100dvh;
+}
+
+img {
+  width: 100%;
+}
+
+p,
+h1,
+h2,
+h3,
+h4, li {
+    margin: 0;
+    margin-block-end: 0.3em;
+    font-family: "Geist Mono", monospace;
+}
+
+/* TYPOGRAPHY */
+h1 {
+
+}
+
+h2 {
+
+}
+
+/* HEADER */
+div#main-header {
+    position: fixed;
+    width: 100%;
+    background-color: var(--bg-surface);
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: -80px;
+    height: 80px;
+    border: 1px solid var(--border);
+}
+div#main-header + div {
+    margin-top: 80px;
+}
+
+
+div#main-header a {
+    color: var(--text-primary);
+    background-color: transparent;
+    text-transform: uppercase;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-family: "Geist Mono", monospace;
+    font-weight: 100;
+}
+
+div#main-header a:hover {
+    color: var(--bg-surface);
+    background-color: var(--text-primary);
+    text-decoration: underline;
+}
+
+/* FOOTER */
+div#main-footer {
+  background-color: #222;
+  color: white;
+  text-align: center;
+  padding: 15px 0;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+/* HERO */
+div.hero {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+form {
+  display: flex;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background-color: var(--bg-surface);
+  max-width: 400px;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"] {
+  width: 80%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+}
+
+form button[type="submit"],
+button, a.button {
+  width: 50%;
+  padding: 10px;
+  margin: 20px 0 0 0;
+  border: 1px solid #222;
+  border-radius: 3px;
+  background-color: #222;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-decoration: none;
+  font-size: 12px;
+}
+
+form button[type="submit"]:hover,
+button:hover, a.button:hover {
+  background-color: white;
+  color: #222;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--bg-surface);
+}
+
+table th,
+table td {
+  border: 1px solid var(--text-primary);
+  padding: 10px;
+  text-align: left;
+}
+
+table th {
+    padding: 16px 10px;
+    font-size: larger;
+}
+
+table tr:nth-child(even) {
+  background-color: var(--bg-surface-secondary);
+}
+
+table tr.invalidated {
+  background-color: #ff5c5c;
+}
+
+/* ORGANIZATION */
+.flex-row {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.width-30 {
+  width: 30%;
+}
+
+.width {
+  width: var(--width);
+}
+
+.width-70 {
+  width: 70%;
+}
+
+.container {
+  padding: 15px;
+}
+
+.full-height {
+  height: 100vh;
+}

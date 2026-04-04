@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
+    <title>Profile</title>
+</head>
+<body data-theme="{{ user.prefered_scheme if user else 'light' }}">
+    {% include 'universal/header.html' %}
+    <div class="hero">
+        <h1>Profile</h1>
+    </div>
+    <div class="flex-row">
+        <div class="container width-30">
+            <h2>User Information</h2>
+            <p><b>Username:</b> {{ user.username }}</p>
+            <p><b>Email:</b> {{ user.email }}</p>
+            <div class="flex-row">
+                <a class="button" href="{{ url_for('change_password') }}">Change password</a>
+                <a class="button" href="{{ url_for('logout') }}">Logout</a>
+            </div>
+            <hr>
+            {% if user.role == "admin" %}
+            <div>
+                <p>Admin panel</p>
+                <a class="button" href="{{ url_for('db_editor') }}">DB EDITOR</a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="container width-70">
+            <h2>Game Sessions</h2>
+            <table>
+                <tr>
+                    <th>Score</th>
+                    <th>Level Reached</th>
+                    <th>Started At</th>
+                </tr>
+                {% for session in sessions %}
+                <tr>
+                    <td>{{ session.score }}</td>
+                    <td>{{ session.level_reached }}</td>
+                    <td>{{ session.started_at }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    {% include 'universal/footer.html' %}
+</body>
+</html>
