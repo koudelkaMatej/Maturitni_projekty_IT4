@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>City Rescue Simulator — IZS Simulátor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- NAVIGACE -->
+<nav>
+  <div class="nav-brand">🚨 City Rescue Simulator</div>
+  <ul class="nav-links">
+    <li><a href="#o-hre">O hře</a></li>
+    <li><a href="#jak-hrat">Jak hrát</a></li>
+    <li><a href="#diagramy">Diagramy</a></li>
+    <li><a href="#ke-stazeni">Ke stažení</a></li>
+    <li><a href="#o-nas">O nás</a></li>
+    <li><a href="zebricek.php" class="nav-btn">🏆 Žebříček</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">🎮 Maturitní projekt 2025</div>
+    <h1>City Rescue<br><span class="accent">Simulator</span></h1>
+    <p class="hero-sub">Řiď záchranářské složky města. Reaguj rychle, zachraňuj životy.</p>
+    <div class="hero-buttons">
+      <a href="#jak-spustit" class="btn btn-primary">▶ Jak spustit</a>
+      <a href="#o-hre" class="btn btn-outline">Více o hře</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="city-grid">
+      <div class="unit policie">🚔 Policie</div>
+      <div class="unit hasici">🚒 Hasiči</div>
+      <div class="unit sanitka">🚑 Sanitka</div>
+      <div class="event fire">🔥 Požár</div>
+      <div class="event flood">💧 Povodeň</div>
+      <div class="event crime">🚔 Krádež</div>
+    </div>
+  </div>
+</header>
+
+<!-- O HŘE -->
+<section id="o-hre" class="section">
+  <div class="container">
+    <h2 class="section-title">O hře</h2>
+    <p class="section-sub">Simulátor záchranářských složek napsaný v Pythonu a Pygame</p>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-icon">🎯</div>
+        <h3>Cíl hry</h3>
+        <p>Řídíš tři záchranářské jednotky — policii, hasiče a sanitku. Na mapě města se náhodně objevují události, které musíš vyřešit správnou jednotkou dřív, než vyprší čas.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚡</div>
+        <h3>Herní mechaniky</h3>
+        <p>Každý typ události vyžaduje jiný typ záchranáře. Pošleš-li špatnou jednotku, vrátí se bez výsledku. Vyřešíš-li událost včas, získáš <strong>+1 bod</strong>. Pokud událost vyprší bez vyřešení, přijdeš o <strong>1 bod</strong>.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏆</div>
+        <h3>Online žebříček</h3>
+        <p>Po každé hře zadáš jméno a skóre se odešle na školní server. Porovnej se s ostatními hráči v živém žebříčku.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⚙️</div>
+        <h3>Technologie</h3>
+        <p>Python 3 + Pygame 2. Backend v PHP + MySQL na školním serveru. Objektové programování, herní smyčka, síťová komunikace.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JAK HRÁT -->
+<section id="jak-hrat" class="section dark">
+  <div class="container">
+    <h2 class="section-title">Jak hrát</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Vyber jednotku</h3>
+          <p>Klikni na jeden z panelů základny dole — Policie, Hasiči nebo Sanitka. Panel se zvýrazní žlutě.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Klikni na událost</h3>
+          <p>Na mapě se objeví pulzující barevné kruhy — události. Klikni na ten, pro který máš správnou jednotku.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Čekej na vyřešení</h3>
+          <p>Jednotka odjede na místo. Dorazí-li správná jednotka včas, událost zmizí a získáš <strong>+1 bod</strong>. Pozor — pokud čas vyprší dřív, přijdeš o <strong>1 bod</strong>!</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Odešli skóre</h3>
+          <p>Po 1 minutě se hra ukončí. Zadej jméno a odešli výsledek na online žebříček.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend-box">
+      <h3>Legenda událostí</h3>
+      <div class="legend-grid">
+        <div class="legend-item"><span class="dot red"></span><strong>Požár / Povodeň / Výbuch</strong> → Hasiči 🚒</div>
+        <div class="legend-item"><span class="dot orange"></span><strong>Nehoda</strong> → Sanitka 🚑</div>
+        <div class="legend-item"><span class="dot blue"></span><strong>Krádež / Přepadení</strong> → Policie 🚔</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- JAK SPUSTIT -->
+<section id="jak-spustit" class="section">
+  <div class="container">
+    <h2 class="section-title">Jak spustit hru</h2>
+    <div class="install-steps">
+      <div class="install-step">
+        <div class="install-num">①</div>
+        <div>
+          <h4>Instalace Pythonu</h4>
+          <p>Stáhni a nainstaluj <strong>Python 3.9+</strong> z <a href="https://python.org" target="_blank">python.org</a></p>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="install-num">②</div>
+        <div>
+          <h4>Instalace závislostí</h4>
+          <code>pip install pygame requests</code>
+        </div>
+      </div>
+      <div class="install-step">
+        <div class="install-num">③</div>
+        <div>
+          <h4>Spuštění hry</h4>
+          <code>python main.py</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="requirements-box">
+      <h4>Systémové požadavky</h4>
+      <div class="req-grid">
+        <div><strong>OS:</strong> Windows 10+, macOS 10.15+, Linux</div>
+        <div><strong>Python:</strong> 3.9 nebo novější</div>
+        <div><strong>RAM:</strong> 256 MB</div>
+        <div><strong>Rozlišení:</strong> min. 800×600</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIAGRAMY -->
+<section id="diagramy" class="section dark">
+  <div class="container">
+    <h2 class="section-title">Vývojové diagramy</h2>
+    <div class="diagrams-grid">
+
+      <div class="diagram-box">
+        <h3>Hlavní herní smyčka</h3>
+        <div class="flowchart">
+          <div class="fc-box start">START</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box">Inicializace Pygame</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box">Zobraz Menu</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-diamond">Hráč zvolil „Hrát"?</div>
+          <div class="fc-arrow">↓ Ano</div>
+          <div class="fc-box highlight">Herní smyčka<br><small>handle_event → update → draw</small></div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-diamond">Čas vypršel?</div>
+          <div class="fc-arrow">↓ Ano</div>
+          <div class="fc-box">Konec hry — odesli skóre</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-box start">KONEC</div>
+        </div>
+      </div>
+
+      <div class="diagram-box">
+        <h3>Algoritmus vyřešení události</h3>
+        <div class="flowchart">
+          <div class="fc-box start">Hráč klikne na událost</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-diamond">Je jednotka vybrána?</div>
+          <div class="fc-row">
+            <div class="fc-branch">
+              <div class="fc-arrow-side">Ne →</div>
+              <div class="fc-box error">Nic se nestane</div>
+            </div>
+          </div>
+          <div class="fc-arrow">↓ Ano</div>
+          <div class="fc-box">Jednotka jede na pozici události</div>
+          <div class="fc-arrow">↓</div>
+          <div class="fc-diamond">Dorazila? + správný typ?</div>
+          <div class="fc-row">
+            <div class="fc-branch">
+              <div class="fc-arrow-side">Ne →</div>
+              <div class="fc-box error">Vrátit se na základnu</div>
+            </div>
+          </div>
+          <div class="fc-arrow">↓ Ano</div>
+          <div class="fc-box ok">+1 bod, událost zmizí</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ER DIAGRAM -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">ER Diagram — databáze</h2>
+    <p class="section-sub">Struktura databáze pro ukládání skóre</p>
+    <div class="er-diagram">
+      <div class="er-table">
+        <div class="er-header">score_tabulka</div>
+        <div class="er-row pk">🔑 id (INT, PK, AUTO_INCREMENT)</div>
+        <div class="er-row">👤 hrac (VARCHAR 50, NOT NULL)</div>
+        <div class="er-row">🏆 body (INT, NOT NULL, DEFAULT 0)</div>
+        <div class="er-row">📅 datum (DATETIME, DEFAULT NOW())</div>
+      </div>
+      <div class="er-info">
+        <h4>SQL pro vytvoření tabulky:</h4>
+        <pre><code>CREATE TABLE score_tabulka (
+  id    INT AUTO_INCREMENT PRIMARY KEY,
+  hrac  VARCHAR(50) NOT NULL,
+  body  INT NOT NULL DEFAULT 0,
+  datum DATETIME DEFAULT CURRENT_TIMESTAMP
+);</code></pre>
+        <h4>Příklady dotazů:</h4>
+        <pre><code>-- TOP 10 hráčů
+SELECT * FROM score_tabulka
+ORDER BY body DESC LIMIT 10;
+
+-- Vložení skóre
+INSERT INTO score_tabulka (hrac, body)
+VALUES ('Ondrej', 15);</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KE STAŽENÍ -->
+<section id="ke-stazeni" class="section">
+  <div class="container">
+    <h2 class="section-title">Ke stažení</h2>
+    <p class="section-sub">Dokumentace a materiály k projektu</p>
+    <div class="downloads-grid">
+
+      <div class="download-card">
+        <div class="dl-icon">📊</div>
+        <h3>Prezentace pro investora</h3>
+        <p>Přehled projektu, technická architektura, splněné požadavky a kontakt. Formát PowerPoint.</p>
+        <a href="prezentace_investor.pptx" class="dl-btn" download>
+          ⬇ Stáhnout PPTX
+        </a>
+      </div>
+
+      <div class="download-card">
+        <div class="dl-icon">📖</div>
+        <h3>Uživatelský manuál</h3>
+        <p>Kompletní příručka pro hráče — instalace, ovládání, herní mechaniky, časté problémy. Formát Word.</p>
+        <a href="manual_uzivatele.docx" class="dl-btn" download>
+          ⬇ Stáhnout DOCX
+        </a>
+      </div>
+
+      <div class="download-card">
+        <div class="dl-icon">🧪</div>
+        <h3>Automatizované testy</h3>
+        <p>Unittest testy pokrývající klíčové herní mechaniky — párování jednotek a výpočet skóre.</p>
+        <a href="testy.py" class="dl-btn" download>
+          ⬇ Stáhnout testy.py
+        </a>
+      </div>
+
+      <div class="download-card">
+        <div class="dl-icon">💻</div>
+        <h3>Zdrojový kód</h3>
+        <p>Kompletní zdrojový kód hry v Pythonu včetně všech tříd, komentářů a konfigurace.</p>
+        <a href="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/tkadleco" class="dl-btn dl-btn-outline" target="_blank">
+          GitHub repozitář
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- O NÁS -->
+<section id="o-nas" class="section dark">
+  <div class="container">
+    <h2 class="section-title">O nás</h2>
+    <p class="section-sub">Maturitní projekt — SPS Kladno, školní rok 2024/2025</p>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">🧑‍💻</div>
+        <h3>Ondřej Tkadlec</h3>
+        <p class="team-role">Vývojář &amp; Vedoucí projektu</p>
+        <p>Python, Pygame, PHP, SQL</p>
+      </div>
+    </div>
+    <div class="contact-box">
+      <p>📧 Kontakt: <strong>tkadleco@spskladno.cz</strong></p>
+      <p>🏫 Škola: SPS Kladno, Jana Palacha 1840</p>
+      <p>💾 Projekt: City Rescue Simulator v1.0</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 City Rescue Simulator — Maturitní projekt SPS Kladno</p>
+</footer>
+
+</body>
+</html>
