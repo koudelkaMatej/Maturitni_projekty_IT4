@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin panel</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="container container-wide">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Sprava projektu</p>
+        <h1>Admin panel</h1>
+      </div>
+      <div class="header-links">
+        <a href="/profile">Profil</a>
+        <a href="/history">Historie</a>
+        <a href="/leaderboard">Leaderboard</a>
+      </div>
+    </div>
+
+    {% if action_message %}
+      <p class="success">{{ action_message }}</p>
+    {% endif %}
+
+    <section class="panel">
+      <div class="table-wrap">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Uzivatel</th>
+              <th>Coiny</th>
+              <th>Hry</th>
+              <th>Nejlepsi wave</th>
+              <th>Kills</th>
+              <th>Akce</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in users %}
+              <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[4] }}</td>
+                <td>{{ row[5] }}</td>
+                <td>
+                  {% if row[1] == 'sa' %}
+                    <span class="mini-note">Chraneny ucet</span>
+                  {% else %}
+                    <div class="admin-actions">
+                      <form method="post">
+                        <input type="hidden" name="user_id" value="{{ row[0] }}">
+                        <input type="hidden" name="action" value="reset">
+                        <button type="submit" class="button-muted button-small">Reset statistik</button>
+                      </form>
+                      <form method="post">
+                        <input type="hidden" name="user_id" value="{{ row[0] }}">
+                        <input type="hidden" name="action" value="delete">
+                        <button type="submit" class="button-danger button-small">Smazat</button>
+                      </form>
+                    </div>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

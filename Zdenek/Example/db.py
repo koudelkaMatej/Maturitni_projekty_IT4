@@ -1,10 +1,12 @@
-# db.py
 import mysql.connector
 
+DB_CONFIG = {
+    "host": "dbs.spskladno.cz",
+    "user": "student42",
+    "password": "spsnet",
+    "database": "vyuka42",
+}
+
+
 def get_db():
-    return mysql.connector.connect(
-        host="dbs.spskladno.cz",
-        user="student24",
-        password="spsnet",
-        database="vyuka24"
-    )
+    return mysql.connector.connect(**DB_CONFIG)
