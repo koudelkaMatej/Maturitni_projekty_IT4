@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>O projektu</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="main-container">
+
+    <h1>O projektu Snake</h1>
+
+    <p style="text-align: left">
+        Tento projekt je školní hra <strong>Snake</strong> naprogramovaná v jazyce
+        <strong>Python</strong> pomocí knihovny <strong>Pygame</strong>.
+        Projekt byl vytvořen jako maturitní / školní práce a je rozdělen
+        do více souborů pro lepší přehlednost a údržbu.
+    </p>
+
+    <h2>Hlavní vlastnosti</h2>
+    <ul class="list">
+        <li>Volba obtížnosti: <strong>Easy / Medium / Hard</strong></li>
+        <li>Volba přezdívky (nickname) při každém spuštění hry</li>
+        <li>Ukládání skóre do MySQL databáze</li>
+        <li>Žebříčky nejlepších hráčů pro každou obtížnost</li>
+        <li>Webové profily jednotlivých hráčů</li>
+        <li>Možnost zobrazení a vynulování skóre</li>
+        <li>Prevence proti SQL injection</li>
+    </ul>
+
+    <h2>Power-upy</h2>
+    <p style="text-align: left">
+        Každých <strong>10 sekund</strong> se na herním poli objeví blok power-upu:
+    </p>
+    <ul class="list">
+        <li><strong>90 % šance</strong> – krátkodobé zrychlení hada</li>
+        <li><strong>10 % šance</strong> – zdvojnásobení aktuálního skóre</li>
+    </ul>
+
+    <h2>Obtížnosti hry</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Obtížnost</th>
+                <th>Popis</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Easy</td>
+                <td>Jídlo se nikdy neobjeví na okraji obrazovky</td>
+            </tr>
+            <tr>
+                <td>Medium</td>
+                <td>Jídlo se může objevit na okraji (50 %)</td>
+            </tr>
+            <tr>
+                <td>Hard</td>
+                <td>Jídlo je vždy na okraji obrazovky</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Ukázky hry</h2>
+
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+        <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/1.png?raw=true" width="45%">
+        <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/2.png?raw=true" width="45%">
+        <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/3.png?raw=true" width="45%">
+        <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/4.png?raw=true" width="45%">
+    </div>
+
+    <h2>Webové rozhraní</h2>
+    <p style="text-align: left">
+        Součástí projektu je také webové rozhraní vytvořené pomocí
+        <strong>Flasku</strong>, které umožňuje:
+    </p>
+    <ul class="list">
+        <li>Zobrazení žebříčků podle obtížnosti</li>
+        <li>Detailní profily hráčů</li>
+        <li>Přehled dosažených výsledků</li>
+        <li>Popis projektu (aktuální stránka)</li>
+    </ul>
+
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+        <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/9.png?raw=true" width="45%">
+        <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/blob/main/kroufekj/img/10.png?raw=true" width="45%">
+    </div>
+
+    <div class="buttons">
+        <a class="btn" href="{{ url_for('index') }}">← Zpět na žebříček</a>
+        <a class="btn secondary"
+           href="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/main/kroufekj"
+           target="_blank">
+            Github
+        </a>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,7 @@
+git clone https://github.com/koudelkaMatej/Maturitni_projekty_IT4.git
+cd Maturitni_projekty_IT4
+
+
+git add .
+git commit -m "msg"
+git push origin main
