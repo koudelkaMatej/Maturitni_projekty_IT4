@@ -47,7 +47,7 @@ STAV_SCOREBOARD = 4
 stav = STAV_MENU
 
 # Nastaveni
-obtiznost    = "Stredni"
+obtiznost    = "Střední"
 aktualni_res = okno_res
 
 # Herní objekty — všechny dostanou game_surface (ne okno)

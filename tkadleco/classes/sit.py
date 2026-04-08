@@ -25,7 +25,7 @@ class SpravceSite:
 
     def __init__(self):
         # URL skriptu na školním serveru (POZOR: vlnovka v cestě je nutná!)
-        self.url = "http://xeon.spskladno.cz/~tkadleco/zebricek.php"
+        self.url = "https://xeon.spskladno.cz/~tkadleco/zebricek.php"
 
     def odesli_skore(self, jmeno, body):
         """

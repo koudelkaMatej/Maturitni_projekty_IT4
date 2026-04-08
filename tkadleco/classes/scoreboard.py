@@ -34,7 +34,7 @@ class Scoreboard:
     """
 
     # URL skriptu zebříčku na školním serveru
-    URL = "http://xeon.spskladno.cz/~tkadleco/zebricek.php"
+    URL = "https://xeon.spskladno.cz/~tkadleco/zebricek.php"
 
     def __init__(self, screen):
         """
