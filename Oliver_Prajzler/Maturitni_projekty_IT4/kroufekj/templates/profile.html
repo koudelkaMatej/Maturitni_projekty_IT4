@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ user.username }} – Profil</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="main-container">
+        <h1>{{ user.username }}</h1>
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Obtížnost</th>
+                        <th>Skóre</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key, value in user.items() %}
+                        {% if key != 'username' %}
+                            <tr>
+                                <td>{{ key }}</td>
+                                <td>{{ value }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <p class="back-link">
+            <a href="{{ url_for('index') }}">← Žebříček</a>
+        </p>
+    </div>
+</body>
+</html>

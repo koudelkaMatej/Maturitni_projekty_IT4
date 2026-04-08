@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historie her</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="container container-wide">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Archiv bitev</p>
+        <h1>Historie her</h1>
+      </div>
+      <div class="header-links">
+        <a href="/profile">Profil</a>
+        <a href="/stats">Statistiky</a>
+        <a href="/leaderboard">Leaderboard</a>
+        {% if is_admin_user %}
+          <a href="/admin">Admin</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <section class="panel">
+      {% if history_rows|length == 0 %}
+        <p>Zatim zadna historie her.</p>
+      {% else %}
+        <div class="table-wrap">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Datum</th>
+                <th>Vysledek</th>
+                <th>Wave</th>
+                <th>Kills</th>
+                <th>Coins</th>
+                <th>Obtiznost</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in history_rows %}
+                <tr>
+                  <td>{{ row[0] }}</td>
+                  <td>{{ row[1] }}</td>
+                  <td>{{ row[2] }}</td>
+                  <td>{{ row[3] }}</td>
+                  <td>{{ row[4] }}</td>
+                  <td>{{ row[5] }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+</body>
+</html>

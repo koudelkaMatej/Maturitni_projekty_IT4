@@ -1,0 +1,288 @@
+import mysql.connector
+import json
+import sys
+
+# --- KONFIGURACE ŠKOLNÍ DATABÁZE ---
+DB_CONFIG = {
+    'host': 'dbs.spskladno.cz',
+    'user': 'student40',
+    'password': 'spsnet',
+    'database': 'vyuka40',
+    'port': 3306
+}
+
+def get_connection():
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        return conn
+    except mysql.connector.Error as err:
+        print(f"Chyba připojení k serveru dbs.spskladno.cz: {err}")
+        sys.exit("Nelze se spojit se školní databází. Zkontrolujte internet nebo VPN.")
+
+def init_db():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('CREATE TABLE IF NOT EXISTS highscores (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), score INT, mode VARCHAR(50), date TIMESTAMP DEFAULT CURRENT_TIMESTAMP)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS player_data (user_name VARCHAR(255) PRIMARY KEY, total_apples INT DEFAULT 0, active_skin VARCHAR(100) DEFAULT "Základní")')
+    cursor.execute('CREATE TABLE IF NOT EXISTS unlocked_skins (id INT AUTO_INCREMENT PRIMARY KEY, user_name VARCHAR(255), skin_name VARCHAR(100))')
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def get_player_data(name):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute('SELECT total_apples, active_skin FROM player_data WHERE user_name = %s', (name,))
+    data = cursor.fetchone()
+    if not data:
+        cursor.execute('INSERT INTO player_data (user_name, total_apples, active_skin) VALUES (%s, 0, "Základní")', (name,))
+        cursor.execute('INSERT INTO unlocked_skins (user_name, skin_name) VALUES (%s, "Základní")', (name,))
+        conn.commit()
+        res = {"apples": 0, "skin": "Základní"}
+    else:
+        res = {"apples": data['total_apples'], "skin": data['active_skin']}
+    cursor.close()
+    conn.close()
+    return res
+
+def update_apples(name, amount):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('UPDATE player_data SET total_apples = total_apples + %s WHERE user_name = %s', (amount, name))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def handle_skin_purchase(user_name, s_name, s_price):
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute('SELECT skin_name FROM unlocked_skins WHERE user_name=%s AND skin_name=%s', (user_name, s_name))
+        already_owned = cursor.fetchone()
+        cursor.execute('SELECT total_apples FROM player_data WHERE user_name=%s', (user_name,))
+        res = cursor.fetchone()
+        p_apples = res['total_apples'] if res else 0
+        if already_owned:
+            cursor.execute('UPDATE player_data SET active_skin=%s WHERE user_name=%s', (s_name, user_name))
+        elif p_apples >= s_price:
+            cursor.execute('UPDATE player_data SET total_apples = total_apples - %s, active_skin = %s WHERE user_name = %s', (s_price, s_name, user_name))
+            cursor.execute('INSERT INTO unlocked_skins (user_name, skin_name) VALUES (%s, %s)', (user_name, s_name))
+        conn.commit()
+    except Exception as e: print(f"Chyba při nákupu: {e}")
+    finally:
+        cursor.close()
+        conn.close()
+
+def save_high_score(name, score, mode):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO highscores (name, score, mode) VALUES (%s, %s, %s)', (name, score, mode))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    generate_html_leaderboard()
+
+def load_high_scores(mode):
+    conn = get_connection()
+    cursor = conn.cursor()
+    query = "SELECT name, MAX(score) as top_score FROM highscores WHERE mode = %s GROUP BY name ORDER BY top_score DESC LIMIT 10"
+    cursor.execute(query, (mode,))
+    scores = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return scores
+
+def generate_html_leaderboard():
+    modes = ["easy", "normal", "hardcore"]
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT user_name, skin_name FROM unlocked_skins')
+    all_unlocked = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    skins_json = json.dumps(all_unlocked)
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="cs">
+    <head>
+        <meta charset="UTF-8">
+        <title>Snake Game Portal</title>
+        <style>
+            body {{ font-family: 'Segoe UI', sans-serif; background: #1a1a1a; color: white; margin: 0; display: flex; flex-direction: column; align-items: center; padding-bottom: 50px; }}
+            nav {{ background: #2d2d2d; width: 100%; display: flex; justify-content: center; align-items: center; padding: 15px 0; border-bottom: 2px solid #4caf50; position: sticky; top: 0; z-index: 100; }}
+            nav a {{ color: #4caf50; text-decoration: none; margin: 0 15px; font-weight: bold; cursor: pointer; }}
+            .login-area {{ position: absolute; right: 20px; }}
+            .btn-login {{ background: #4caf50; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }}
+            .container {{ display: none; background: #2d2d2d; padding: 40px; border-radius: 15px; margin-top: 50px; width: 700px; border: 2px solid #4caf50; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }}
+            .active {{ display: block; animation: fadeIn 0.5s; }}
+            
+            .home-hero {{ text-align: center; }}
+            .home-hero h1 {{ font-size: 3em; color: #4caf50; margin-bottom: 10px; }}
+            .home-text {{ line-height: 1.6; color: #ccc; font-size: 1.1em; }}
+            
+            .tabs {{ display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }}
+            .tab-btn {{ background: #444; border: none; color: white; padding: 12px 20px; border-radius: 5px; cursor: pointer; }}
+            .tab-btn.active-tab {{ background: #4caf50; }}
+            table {{ width: 100%; border-collapse: collapse; }}
+            th, td {{ padding: 12px; text-align: left; border-bottom: 1px solid #444; }}
+            .rank {{ color: gold; font-weight: bold; }}
+
+            .stat-grid {{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; }}
+            .stat-box {{ background: #1a1a1a; padding: 15px; border-radius: 10px; border: 1px solid #4caf50; text-align: center; }}
+            .stat-val {{ display: block; font-size: 1.5em; font-weight: bold; color: #4caf50; }}
+            .skin-tag {{ background: #333; color: #4caf50; padding: 6px 15px; border-radius: 20px; border: 1px solid #4caf50; font-size: 0.9em; font-weight: bold; margin: 5px; display: inline-block; }}
+
+            .rules-section {{ margin-top: 20px; border-top: 1px solid #444; padding-top: 20px; }}
+            .rules-list {{ list-style: none; padding: 0; }}
+            .rules-list li {{ margin-bottom: 15px; padding-left: 30px; position: relative; }}
+            .rules-list li::before {{ content: '🐍'; position: absolute; left: 0; }}
+            
+            .powerup-info {{ margin-top: 15px; padding: 15px; border-radius: 8px; background: #383838; border-left: 5px solid transparent; }}
+            .blue-box {{ border-left-color: #00ffff; }}
+            .purple-box {{ border-left-color: #a020f0; }}
+            .diagram-box {{ margin-top: 30px; background: white; padding: 15px; border-radius: 10px; text-align: center; }}
+            .diagram-box img {{ max-width: 100%; height: auto; }}
+
+            @keyframes fadeIn {{ from {{ opacity: 0; }} to {{ opacity: 1; }} }}
+        </style>
+    </head>
+    <body onload="checkLogin()">
+    <nav>
+        <a onclick="showSection('home')">Home</a>
+        <a onclick="showSection('leaderboard')">Žebříčky</a>
+        <a onclick="showSection('rules')">Pravidla</a>
+        <a id="nav-profile" style="display:none;" onclick="showSection('profile')">Můj Profil</a>
+        <div class="login-area"><button id="login-btn" class="btn-login" onclick="login()">Přihlásit se</button></div>
+    </nav>
+
+    <div id="home" class="container active">
+        <div class="home-hero">
+            <h1>Hadík: Ultimate Edition</h1>
+            <p class="home-text">
+                Vítejte v moderní interpretaci legendární arkády! <b>Hadík</b> není jen o sbírání jablek, je to o strategii, 
+                rychlých reflexech a budování vaší herní identity. <br><br>
+                V našem portálu můžete sledovat své nejlepší výkony v různých obtížnostech, nakupovat unikátní skiny 
+                za nasbíraná jablka a bojovat o první příčky v globálním žebříčku. Jste připraveni ovládnout hrací pole?
+            </p>
+            <div style="margin-top: 30px; padding: 20px; background: #333; border-radius: 10px;">
+                <h3 style="color: #4caf50; margin-top: 0;">Co je nového?</h3>
+                <ul style="text-align: left; display: inline-block;">
+                    <li>3 herní módy propojené se školní DB</li>
+                    <li>Obchod se skiny (změňte barvu svého hada!)</li>
+                    <li>Power-upy ovlivňující rychlost času</li>
+                    <li>Online synchronizace statistik</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="leaderboard" class="container">
+        <h1>🏆 Síň slávy</h1>
+        <div class="tabs">
+            <button class="tab-btn active-tab" id="btn-easy" onclick="showMode('easy')">Easy</button>
+            <button class="tab-btn" id="btn-normal" onclick="showMode('normal')">Normal</button>
+            <button class="tab-btn" id="btn-hardcore" onclick="showMode('hardcore')">Hardcore</button>
+        </div>
+    """
+    for m in modes:
+        scores = load_high_scores(m)
+        display = "block" if m == "easy" else "none"
+        html_content += f'<div id="table-{m}" class="mode-table" style="display:{display}"><table>'
+        html_content += '<tr><th>#</th><th>Hráč</th><th style="text-align:right">Skóre</th></tr>'
+        for i, (n, s) in enumerate(scores):
+            html_content += f"<tr class='score-row' data-name='{n}' data-score='{s}' data-mode='{m}'><td class='rank'>{i+1}.</td><td>{n}</td><td style='text-align:right'>{s}</td></tr>"
+        html_content += "</table></div>"
+
+    html_content += f"""
+    </div>
+
+    <div id="profile" class="container">
+        <h1 style="text-align:center;">👤 Profil: <span id="p-name-title"></span></h1>
+        <div class="stat-grid">
+            <div class="stat-box"><span>Easy</span><span id="stat-easy" class="stat-val">0</span></div>
+            <div class="stat-box"><span>Normal</span><span id="stat-normal" class="stat-val">0</span></div>
+            <div class="stat-box"><span>Hardcore</span><span id="stat-hardcore" class="stat-val">0</span></div>
+        </div>
+        <h3 style="text-align:center; margin-top:30px;">🎨 Tvá sbírka skinů</h3>
+        <div id="p-skin-list" style="text-align:center;"></div>
+        <div style="text-align:center; margin-top:40px;"><button class="btn-login" style="background:#f44336;" onclick="logout()">Odhlásit se</button></div>
+    </div>
+
+    <div id="rules" class="container">
+        <h1>📜 Jak hrát Hadíka</h1>
+        <div class="rules-section">
+            <h3>🎮 Ovládání a cíl</h3>
+            <ul class="rules-list">
+                <li>Používejte klávesy <b>WSAD</b> nebo <b>šipky</b> ke změně směru.</li>
+                <li>Sbírejte červená jablka k růstu. Každé jablko = <b>1 J</b> do obchodu.</li>
+                <li>Hra končí nárazem do zdi nebo do vlastního těla.</li>
+            </ul>
+        </div>
+        <div class="rules-section">
+            <h3>⚡ Herní Módy</h3>
+            <ul class="rules-list">
+                <li><b>Easy:</b> Relaxační tempo pro začátečníky.</li>
+                <li><b>Normal:</b> Standardní výzva.</li>
+                <li><b>Hardcore:</b> Rychlá jízda s dynamickými překážkami!</li>
+            </ul>
+        </div>
+        <div class="rules-section">
+            <h3>🌀 Power-upy</h3>
+            <div class="powerup-info blue-box"><h4 style="color: #00ffff; margin:0;">🔵 Modrý (Slow)</h4><p>Zpomalí čas na 3s.</p></div>
+            <div class="powerup-info purple-box"><h4 style="color: #a020f0; margin:0;">🟣 Fialový (Fast)</h4><p>Zrychlí čas na 3s.</p></div>
+        </div>
+        <div class="diagram-box">
+            <p style="color:black"><b>Logické schéma propojení dat (ERD):</b></p>
+            <img src="schema.png" alt="schema.png">
+        </div>
+    </div>
+
+    <script>
+        const allSkins = {skins_json};
+        function showSection(id) {{
+            document.querySelectorAll('.container').forEach(c => c.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }}
+        function showMode(m) {{
+            document.querySelectorAll('.mode-table').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
+            document.getElementById('table-' + m).style.display = 'block';
+            document.getElementById('btn-' + m).classList.add('active-tab');
+        }}
+        function login() {{
+            const n = prompt("Zadej své jméno:");
+            if(n) {{ localStorage.setItem('snakeUser', n); location.reload(); }}
+        }}
+        function logout() {{ localStorage.removeItem('snakeUser'); location.reload(); }}
+        function checkLogin() {{
+            const user = localStorage.getItem('snakeUser');
+            if(user) {{
+                document.getElementById('login-btn').innerText = "Profil: " + user;
+                document.getElementById('login-btn').onclick = () => showSection('profile');
+                document.getElementById('nav-profile').style.display = "inline";
+                document.getElementById('p-name-title').innerText = user;
+                updateUserData(user);
+            }}
+        }}
+        function updateUserData(user) {{
+            document.querySelectorAll('.score-row').forEach(r => {{
+                if(r.dataset.name.toLowerCase() === user.toLowerCase()) {{
+                    document.getElementById('stat-' + r.dataset.mode).innerText = r.dataset.score;
+                }}
+            }});
+            const list = document.getElementById('p-skin-list');
+            list.innerHTML = "";
+            allSkins.forEach(s => {{
+                if(s[0].toLowerCase() === user.toLowerCase()) {{
+                    const span = document.createElement('span');
+                    span.className = 'skin-tag';
+                    span.innerText = s[1];
+                    list.appendChild(span);
+                }}
+            }});
+        }}
+    </script>
+    </body></html>
+    """
+    with open("index.html", "w", encoding="utf-8") as f: f.write(html_content)

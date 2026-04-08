@@ -2,16 +2,59 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Stats</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistiky</title>
+  <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <h1>Statistiky</h1>
+  <div class="container">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Prehled vykonu</p>
+        <h1>Statistiky</h1>
+      </div>
+      <div class="header-links">
+        <a href="/profile">Profil</a>
+        <a href="/history">Historie</a>
+        <a href="/leaderboard">Leaderboard</a>
+        {% if is_admin_user %}
+          <a href="/admin">Admin</a>
+        {% endif %}
+      </div>
+    </div>
 
-  <p><b>Počet her:</b> {{ total_games }}</p>
-  <p><b>Počet výher:</b> {{ wins }}</p>
-  <p><b>Nejlepší vlna:</b> {{ best_wave }}</p>
-  <p><b>Celkem zabití:</b> {{ total_kills }}</p>
+    <div class="stats-container">
+      <div class="stat-item">
+        <span class="stat-label">Pocet her</span>
+        <span class="stat-value">{{ total_games }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Pocet vyher</span>
+        <span class="stat-value">{{ wins }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Pocet proher</span>
+        <span class="stat-value">{{ losses }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Uspesnost</span>
+        <span class="stat-value">{{ win_rate }} %</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Nejlepsi vlna</span>
+        <span class="stat-value">{{ best_wave }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Celkem zabiti</span>
+        <span class="stat-value">{{ total_kills }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Celkem coinu ze her</span>
+        <span class="stat-value">{{ total_reward }}</span>
+      </div>
+    </div>
 
-  <p><a href="/profile">Zpět na profil</a></p>
+    <a href="/profile" class="back-link">Zpet na profil</a>
+  </div>
 </body>
 </html>

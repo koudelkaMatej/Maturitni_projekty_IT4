@@ -2,30 +2,102 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil</title>
+  <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-  <h1>Profil</h1>
+  <div class="container container-wide">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Pilot obrany</p>
+        <h1>Profil hrace</h1>
+      </div>
+      <div class="header-links">
+        <a href="/stats">Statistiky</a>
+        <a href="/history">Historie</a>
+        <a href="/leaderboard">Leaderboard</a>
+        {% if is_admin_user %}
+          <a href="/admin">Admin</a>
+        {% endif %}
+        <a href="/logout">Odhlasit</a>
+      </div>
+    </div>
 
-  <p><b>Uživatel:</b> {{ username }}</p>
-  <p><b>Coiny:</b> {{ coins }}</p>
-  <p><b>Vytvořen:</b> {{ created_at }}</p>
+    <div class="dashboard-grid">
+      <section class="panel">
+        <h2>Zakladni info</h2>
+        <div class="stats-container">
+          <div class="stat-item">
+            <span class="stat-label">Uzivatel</span>
+            <span class="stat-value">{{ username }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Profilove coiny</span>
+            <span class="stat-value">{{ coins }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Vytvoren</span>
+            <span class="stat-value">{{ created_at }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Pocet her</span>
+            <span class="stat-value">{{ stats.total_games }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Vyhry</span>
+            <span class="stat-value">{{ stats.wins }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Nejlepsi vlna</span>
+            <span class="stat-value">{{ stats.best_wave }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Killy</span>
+            <span class="stat-value">{{ stats.total_kills }}</span>
+          </div>
+        </div>
+      </section>
 
-  <p>
-    <a href="/game">Hra</a> |
-    <a href="/stats">Statistiky</a> |
-    <a href="/logout">Odhlásit</a>
-  </p>
+      <section class="panel">
+        <h2>Odemcene veze</h2>
+        <div class="unlock-grid">
+          {% for tower in unlocked_towers %}
+            <article class="unlock-card {{ tower.card_class }}">
+              <h3>{{ tower.name }}</h3>
+              <p>{{ tower.description }}</p>
+              <div class="unlock-meta">
+                <span>{{ tower.status_label }}</span>
+                <strong>{{ tower.unlock_cost }} coinu</strong>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </section>
+    </div>
 
-  <h2>Poslední hry</h2>
-  {% if last_matches|length == 0 %}
-    <p>Zatím žádné hry.</p>
-  {% else %}
-    <ul>
-      {% for m in last_matches %}
-        <li>{{ m[4] }} — {{ m[0] }}, vlna {{ m[1] }}, killy {{ m[2] }}, odměna {{ m[3] }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
+    <section class="panel">
+      <div class="sidebar-heading">
+        <h2>Posledni hry</h2>
+        <a href="/history">Cela historie</a>
+      </div>
+      {% if last_matches|length == 0 %}
+        <p>Zatim zadne odehrane hry.</p>
+      {% else %}
+        <ul class="match-list">
+          {% for m in last_matches %}
+            <li>
+              <strong>{{ m[0] }}</strong>
+              <span>Vlna {{ m[1] }}</span>
+              <span>Killy {{ m[2] }}</span>
+              <span>Odmena {{ m[3] }}</span>
+              <span>Obtiznost {{ m[4] }}</span>
+              <span>{{ m[5] }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </section>
+  </div>
 </body>
 </html>

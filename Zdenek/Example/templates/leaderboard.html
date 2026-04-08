@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="container container-wide">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Soutez velitelu</p>
+        <h1>Leaderboard</h1>
+      </div>
+      <div class="header-links">
+        <a href="/profile">Profil</a>
+        <a href="/history">Historie</a>
+        {% if is_admin_user %}
+          <a href="/admin">Admin</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <section class="panel">
+        <h2>Top 10 podle vlny</h2>
+        <div class="table-wrap">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Hrac</th>
+                <th>Nejlepsi vlna</th>
+                <th>Killy</th>
+                <th>Coiny</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in leaderboards.best_wave %}
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ row[0] }}</td>
+                  <td>{{ row[1] }}</td>
+                  <td>{{ row[2] }}</td>
+                  <td>{{ row[3] }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Top 10 podle killu</h2>
+        <div class="table-wrap">
+          <table class="leaderboard-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Hrac</th>
+                <th>Killy</th>
+                <th>Nejlepsi vlna</th>
+                <th>Coiny</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for row in leaderboards.total_kills %}
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ row[0] }}</td>
+                  <td>{{ row[2] }}</td>
+                  <td>{{ row[1] }}</td>
+                  <td>{{ row[3] }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>Top 10 podle coinu</h2>
+      <div class="table-wrap">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Hrac</th>
+              <th>Coiny</th>
+              <th>Nejlepsi vlna</th>
+              <th>Killy</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in leaderboards.total_coins %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[3] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
