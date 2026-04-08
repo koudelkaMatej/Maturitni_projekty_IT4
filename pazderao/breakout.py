@@ -7,11 +7,7 @@ from timer import GameTimer
 from settings import *
 from menu import *
 
-try:
-    # možnost otevřít web zároveň s hrou
-    subprocess.Popen([sys.executable, "web.py"])
-except Exception as e:
-    print(f"Nepodařilo se spustit webový server: {e}")
+
 
 pygame.init()
 
@@ -317,6 +313,13 @@ while run:
 
         if event.type == pygame.MOUSEBUTTONDOWN and in_menu:
             if table_button_rect.collidepoint(pygame.mouse.get_pos()):
+                try:
+                    # spuštění webu současně se hrou
+                    subprocess.Popen([sys.executable, "web.py"])
+                    pygame.time.delay(500)
+                except:
+                    pass 
+                
                 webbrowser.open("http://127.0.0.1:5000/tab")
         
         if event.type == pygame.MOUSEBUTTONDOWN or (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE):
