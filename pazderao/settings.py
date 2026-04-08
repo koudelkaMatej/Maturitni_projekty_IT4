@@ -6,17 +6,16 @@ SCREEN_HEIGHT = 600
 
 # fonty a texty
 pygame.font.init()
-FONT_PATH = "pazderao/images/font/lemonmilk.otf"
+FONT_PATH = "images/font/lemonmilk.otf"
 font = pygame.font.Font(FONT_PATH, 27)
 font1 = pygame.font.Font(FONT_PATH, 50)
 font2 = pygame.font.Font(FONT_PATH, 17)
 
 # cesty
-BG_IMAGE_PATH = "pazderao/images/background.jpg"
-CESTA_PRO_DATA = "pazderao/data/casy.txt" 
-IMG_PATH_PLUS = "pazderao/images/plus.png" 
-IMG_PATH_MINUS = "pazderao/images/minus.png"
-IMG_PATH_BALL = "pazderao/images/ball.png"
+BG_IMAGE_PATH = "images/background.jpg"
+IMG_PATH_PLUS = "images/plus.png" 
+IMG_PATH_MINUS = "images/minus.png"
+IMG_PATH_BALL = "images/ball.png"
 
 # nastavení herní mechaniky
 COLS = 6
@@ -56,7 +55,7 @@ table_button_rect = pygame.Rect(10, SCREEN_HEIGHT - 40, 100, 30)
 
 # údaje pro připojení k databázi + doplňky 
 host = "dbs.spskladno.cz"
-username = "vyuka16"
+username = "student16"
 password = "spsnet"
 database = "vyuka16"
 WEB_URL = "http://127.0.0.1:5000/"

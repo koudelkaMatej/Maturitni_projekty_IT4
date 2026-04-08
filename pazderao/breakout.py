@@ -2,9 +2,16 @@ import pygame
 from pygame.locals import *
 import random
 import webbrowser
-from Timer import GameTimer 
+import sys, subprocess
+from timer import GameTimer 
 from settings import *
 from menu import *
+
+try:
+    # možnost otevřít web zároveň s hrou
+    subprocess.Popen([sys.executable, "web.py"])
+except Exception as e:
+    print(f"Nepodařilo se spustit webový server: {e}")
 
 pygame.init()
 
