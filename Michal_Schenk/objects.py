@@ -24,6 +24,26 @@ class Button:
                 sfx:str="click-sfx",
                 silenced:bool=False
                 ):
+        """Universal button
+
+        Args:
+            x (int): X position
+            y (int): Y position
+            width (int): X size / width
+            height (int): Y size / height
+            text (str): text content
+            font (pygame.font.Font, optional): font. Defaults to pygame.font.Font(None, 24).
+            color (tuple, optional): text color. Defaults to (255,255,255).
+            hover_color (tuple, optional): text hover color. Defaults to (0,0,0).
+            bg_color (tuple, optional): background color. Defaults to (0,0,0).
+            bg_hover_color (tuple, optional): hover background color. Defaults to (255,255,255).
+            border_width (int, optional): border width. Defaults to 1.
+            border_radius (int, optional): border radius. Defaults to 0.
+            enabled (bool, optional): enabled - can be clicked. Defaults to True.
+            visible (bool, optional): visibility. Defaults to True.
+            sfx (str, optional): what sfx to play upon click. Defaults to "click-sfx".
+            silenced (bool, optional): do not play any sfx upon click. Defaults to False.
+        """
         
         self.rect = pygame.Rect(x, y, width, height)
         self.text = text
@@ -105,6 +125,22 @@ class Text():
                 visible:bool=True, 
                 prefix:str = "", 
                 suffix:str = ""):
+        """Universal Text
+
+        Args:
+            text (str): text content
+            x (int): X position
+            y (int): Y position
+            font (pygame.font.Font, optional): font. Defaults to pygame.font.Font(None, 24).
+            color (tuple, optional): text color. Defaults to (255,255,255).
+            align (str, optional): text align. Defaults to "center".
+            bg_color (typing.Optional[tuple], optional): background color. Defaults to None.
+            padding (int, optional): background padding. Defaults to 0.
+            alpha (int, optional): opacity. Defaults to 255.
+            visible (bool, optional): visibility. Defaults to True.
+            prefix (str, optional): text content prefix. Defaults to "".
+            suffix (str, optional): text content suffix. Defaults to "".
+        """
         
         self.prefix = prefix
         self.text = text
@@ -210,6 +246,24 @@ class Slider:
                 handle_color: tuple = (255, 255, 255), 
                 handle_hover_color: tuple = (200, 200, 200), 
                 suffix:str=""):
+        """Universal Slider for numeric values
+
+        Args:
+            x (int): X position
+            y (int): Y position
+            width (int): X size / width
+            height (int): Y size / height
+            min_val (float, optional): minimum value. Defaults to 0.
+            max_val (float, optional): maximum value. Defaults to 100.
+            initial_val (float, optional): starting value. Defaults to 50.
+            label (str, optional): label content. Defaults to "".
+            font (pygame.font.Font, optional): font. Defaults to pygame.font.Font(None, 24).
+            color (tuple, optional): label color. Defaults to (255, 255, 255).
+            bg_color (tuple, optional): background color. Defaults to (50, 50, 50).
+            handle_color (tuple, optional): handle color. Defaults to (255, 255, 255).
+            handle_hover_color (tuple, optional): hover handle color. Defaults to (200, 200, 200).
+            suffix (str, optional): label suffix. Defaults to "".
+        """
         
         self.rect = pygame.Rect(x, y, width, height)
         self.min_val = min_val
@@ -350,7 +404,33 @@ class LeaderboardTable:
                 screen_width: int = settings.SCREEN_WIDTH,
                 screen_height: int = settings.SCREEN_HEIGHT,
                 visible:bool = True):
-        
+        """Initialize a scrollable leaderboard table UI component. Sets up geometry, appearance, scrolling behavior and visibility based on the given parameters.
+
+        Args:
+            x (int): X position of the table.
+            y (int): Y position of the table.
+            width (int): Width of the table area.
+            height (int): Height of the table area.
+            columns (list[str]): List of column names to display.
+            font (pygame.font.Font, optional): Font used for row text. Defaults to pygame.font.Font(None, 24).
+            header_font (pygame.font.Font, optional): Font used for header text. Defaults to pygame.font.Font(None, 28).
+            header_color (tuple, optional): Color of the header text. Defaults to (255, 255, 255).
+            text_color (tuple, optional): Color of the row text. Defaults to (200, 200, 200).
+            bg_color (tuple, optional): Background color of the table. Defaults to (20, 20, 20).
+            alt_row_color (tuple, optional): Background color for alternating rows. Defaults to (30, 30, 30).
+            header_bg_color (tuple, optional): Background color of the header row. Defaults to (40, 40, 40).
+            border_color (tuple, optional): Color of the table border and header separator. Defaults to (100, 100, 100).
+            highlight_color (tuple, optional): Background color for the hovered row. Defaults to (60, 60, 60).
+            scrollbar_color (tuple, optional): Color of the scrollbar handle. Defaults to (100, 100, 100).
+            scrollbar_hover_color (tuple, optional): Color of the scrollbar handle when hovered or dragged. Defaults to (150, 150, 150).
+            center_x (bool, optional): Whether to center the table horizontally in the given screen width. Defaults to False.
+            center_y (bool, optional): Whether to center the table vertically in the given screen height. Defaults to False.
+            screen_width (int, optional): Screen width used for centering calculations. Defaults to settings.SCREEN_WIDTH.
+            screen_height (int, optional): Screen height used for centering calculations. Defaults to settings.SCREEN_HEIGHT.
+            visible (bool, optional): Initial visibility state of the table. Defaults to True.
+        """
+
+
         # Handle centering
         if center_x and screen_width:
             x = (screen_width - width) // 2
@@ -657,7 +737,7 @@ class Timer:
             self.is_paused = False
     
     def update(self):
-        """Update timer state. Call this in your game loop."""
+        """Update timer state. Needs to be called in the game update loop."""
         if not self.is_active or self.is_paused:
             return False
             
@@ -721,7 +801,7 @@ class TimerManager:
         return self.timers.get(name)
     
     def update_all(self):
-        """Update all timers. Call this in your game loop."""
+        """Update all timers. Needs to be called in the game update loop."""
         # Create a copy of the values to avoid dictionary modification during iteration
         for timer in list(self.timers.values()):
             timer.update()
@@ -794,7 +874,7 @@ class TimerSequence:
         self.current_timer.start()
     
     def update(self):
-        """Update the sequence. Call this in your game loop."""
+        """Update the sequence. Needs to be called in the game update loop."""
         if self.current_timer:
             self.current_timer.update()
     
@@ -979,7 +1059,7 @@ class InputField:
         return self.text
     
     def set_text(self, text: str):
-        """Set the text programmatically"""
+        """Set the text"""
         self.text = text[:self.max_length]
         self._update_text_offset()
     

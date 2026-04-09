@@ -13,7 +13,7 @@
     <td>{{game.started_at}}</td>
     <td>{{game.score}}</td>
     <td>{{game.level_reached}}</td>
-    <td><input type="text" name="invalidated" value="{{game.invalidated}}"></td>
+    <td><input type="text" name="invalid" value="{{game.invalid}}"></td>
     <td><a class="button" hx-post="/api/update/game-session/{{ game.id }}" hx-include="closest tr" hx-swap="none">Update</a></td>
 </tr>
 {% endfor %}

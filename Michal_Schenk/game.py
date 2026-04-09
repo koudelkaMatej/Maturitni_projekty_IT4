@@ -3,6 +3,7 @@ import sys
 from enum import Enum
 import random
 import datetime
+from sqlalchemy.exc import NoResultFound
 
 import settings
 import objects
@@ -92,7 +93,12 @@ class GameState(Enum):
 
 class IntroScreen:
     """INTRO STATE"""
-    def __init__(self, set_state):    
+    def __init__(self, set_state):
+        """Initialization
+
+        Args:
+            set_state (func): set_state function used to switch between screens
+        """            
         self.set_state = set_state
 
         self.alpha = 0
@@ -122,6 +128,8 @@ class IntroScreen:
         log.info("INTRO SCREEN created")
         
     def update(self):
+        """Update logic
+        """
         if self.alpha < 255:
             self.alpha = min(255, self.alpha + self.fade_speed)
         self.display_time += 1
@@ -129,7 +137,12 @@ class IntroScreen:
         if self.display_time >= self.max_display_time:
             self.set_state(GameState.MAIN_MENU)
     
-    def draw(self, screen):
+    def draw(self, screen:pygame.Surface):
+        """Draw frame on screen
+
+        Args:
+            screen (pygame.Surface): The selected surface
+        """
         screen.fill(settings.BLACK)
 
         for text in self.texts.values():
@@ -162,6 +175,11 @@ class IntroScreen:
 class MainMenuScreen():
     """MAIN MENU STATE"""
     def __init__(self, set_state):
+        """Initialization
+
+        Args:
+            set_state (func): set_state function used to switch between screens
+        """ 
         # THE ESSENTIALS
         self.set_state = set_state
         self.timer_manager = objects.TimerManager()
@@ -229,12 +247,23 @@ class MainMenuScreen():
         log.info("MAIN MENU SCREEN created")
 
     def check_login_status(self):
+        """Checks login status and returns username
+
+        Returns:
+            str: username of logged in user otherwise Anonymous
+        """
         if settings.load_settings()["logged_in"]:
             return settings.load_settings()["username"]
         else:
             return "Anonymous"
 
     def handle_event(self, event, mouse_pos):
+        """Handle any mouse/keyboard event, used for buttons or any other interactive elements
+
+        Args:
+            event (unk): pygame event
+            mouse_pos (unk): current mouse position
+        """
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.buttons['play'].is_clicked(mouse_pos, event):
                 play_music("play")
@@ -250,6 +279,11 @@ class MainMenuScreen():
                 self.timer_manager.delay(250, lambda: self.set_state(GameState.QUIT))
     
     def draw(self, screen, mouse_pos):
+        """Draw frame on screen
+
+        Args:
+            screen (pygame.Surface): The selected surface
+        """
         screen.fill(settings.BLACK)
         
         for button in self.buttons.values():
@@ -260,6 +294,8 @@ class MainMenuScreen():
             text.draw(screen)
 
     def update(self):
+        """Update logic
+        """
         self.timer_manager.update_all()
 
     
@@ -286,6 +322,11 @@ class MainMenuScreen():
 class SettingsScreen:
     """SETTINGS STATE"""
     def __init__(self, set_state):
+        """Initialization
+
+        Args:
+            set_state (func): set_state function used to switch between screens
+        """ 
         # THE ESSENTIALS
         self.set_state = set_state
         self.timer_manager = objects.TimerManager()
@@ -369,21 +410,28 @@ class SettingsScreen:
     
 
     def check_login_status(self):
-            # Check login status on init
-            if settings.load_settings()["logged_in"]:
-                self.buttons['logout'].set_visibility(True, True)
-                self.buttons['login'].set_visibility(False, False)
-                self.username_input.set_visibility(False)
-                self.password_input.set_visibility(False)
-            else:
-                self.buttons['login'].set_visibility(True, True)
-                self.buttons['logout'].set_visibility(False, False)
-                self.username_input.set_visibility(True)
-                self.password_input.set_visibility(True)
+        """Checks login status and sets the in-game texts to user related data
+        """
+        if settings.load_settings()["logged_in"]:
+            self.buttons['logout'].set_visibility(True, True)
+            self.buttons['login'].set_visibility(False, False)
+            self.username_input.set_visibility(False)
+            self.password_input.set_visibility(False)
+        else:
+            self.buttons['login'].set_visibility(True, True)
+            self.buttons['logout'].set_visibility(False, False)
+            self.username_input.set_visibility(True)
+            self.password_input.set_visibility(True)
             
         
     
     def handle_event(self, event, mouse_pos):
+        """Handle any mouse/keyboard event, used for buttons or any other interactive elements
+
+        Args:
+            event (unk): pygame event
+            mouse_pos (unk): current mouse position
+        """
         for slider in self.sliders.values():
             slider.handle_event(event, mouse_pos)
 
@@ -398,8 +446,7 @@ class SettingsScreen:
         username = self.username_input.handle_event(event)
         password = self.password_input.handle_event(event)
         if username == "submit" or password == "submit" or self.buttons['login'].is_clicked(mouse_pos, event):
-            user = db_handling.query_rows(db_handling.UserModel, {'username': self.username_input.get_text()})
-            user = user[0] if user else None
+            user = db_handling.Session().query(db_handling.UserModel).filter_by(username=self.username_input.get_text()).first()
             if user and user.check_password(self.password_input.get_text()):
                 settings.save_setting("username", self.username_input.get_text())
                 settings.save_setting("password", self.password_input.get_text())
@@ -431,6 +478,11 @@ class SettingsScreen:
             
     
     def draw(self, screen, mouse_pos):
+        """Draw frame on screen
+
+        Args:
+            screen (pygame.Surface): The selected surface
+        """
         screen.fill(settings.BLACK)
         
         for slider in self.sliders.values():
@@ -448,6 +500,8 @@ class SettingsScreen:
         self.password_input.draw(screen)
 
     def update(self):
+        """Update logic
+        """
         self.timer_manager.update_all()
         self.username_input.update()
         self.password_input.update()
@@ -465,6 +519,11 @@ class SettingsScreen:
 class PlayScreen:
     """PLAY STATE"""
     def __init__(self, set_state):
+        """Initialization
+
+        Args:
+            set_state (func): set_state function used to switch between screens
+        """ 
         # THE ESSENTIALS
         self.set_state = set_state
         self.timer_manager = objects.TimerManager()
@@ -677,6 +736,12 @@ class PlayScreen:
 
 
     def handle_event(self, event, mouse_pos):
+        """Handle any mouse/keyboard event, used for buttons or any other interactive elements
+
+        Args:
+            event (unk): pygame event
+            mouse_pos (unk): current mouse position
+        """
         if event.type == pygame.MOUSEBUTTONDOWN:
             if self.buttons['start'].is_clicked(mouse_pos, event):
                 self.buttons['start'].set_enabled(False)
@@ -691,6 +756,11 @@ class PlayScreen:
                 self._pay()
     
     def draw(self, screen, mouse_pos):
+        """Draw frame on screen
+
+        Args:
+            screen (pygame.Surface): The selected surface
+        """
         screen.fill(settings.BLACK)
 
         for text in self.texts.values():
@@ -705,12 +775,16 @@ class PlayScreen:
         self.table.draw(screen)
 
     def update(self):
+        """Update logic
+        """
         self.timer_manager.update_all()
         self.announcement_flash.update()
 
 
     # GAME FUNCTIONS
     def _generate_numbers(self):
+        """Generate two randomized numbers `self.actual` and `self.clue` an show `self.clue` on screen
+        """
         self.actual = random.randint(1,20)
         self.clue = random.randint(1,20)
         while self.actual == self.clue:
@@ -724,6 +798,8 @@ class PlayScreen:
         log.debug(f"GENERATED NUMBERS  [{self.clue}, {self.actual}]")
 
     def _guess_greater(self):
+        """Guess that `self.actual` is greater than `self.clue` and call `self._lose()` or `self._win()` depending on the reality
+        """
         log.debug("GUESSED GREATER")
         if self.clue is not None and self.actual is not None:
             if self.clue < self.actual:
@@ -735,6 +811,8 @@ class PlayScreen:
 
 
     def _guess_lower(self):
+        """Guess that `self.actual` is lower than `self.clue` and call `self._lose()` or `self._win()` depending on the reality
+        """
         log.debug("GUESSED LOWER")
         if self.clue is not None and self.actual is not None:
             if self.clue > self.actual:
@@ -744,7 +822,12 @@ class PlayScreen:
                 self._lose()
                 play_sound("failure-sfx")
 
-    def _win(self, chance_override=False):
+    def _win(self, chance_override:bool=False):
+        """Win a round, add temporary points, lower strikes
+
+        Args:
+            chance_override (bool, optional): If True (because of 'I don't think so' skill), paints the text yellow. Defaults to False.
+        """
         self.texts['clue'].set_color((255,255,0) if chance_override else (0,255,0))
         self.timer_manager.start_timer("win_flash")
         self.temporary_storage += self.multiplier()
@@ -756,6 +839,8 @@ class PlayScreen:
         log.info("CORRECT GUESS")
 
     def _lose(self):
+        """Lose a round, remove all temporary points, increase strike. In case the user acquired the 'I don't think so' skill, roll the dice to turn a loss into a win.
+        """
         log.info("INCORRECT GUESS")
         if self.effectors['another_chance'].get('level', 0) > 0:
             if random.random() < self.salvage_chance():
@@ -782,6 +867,8 @@ class PlayScreen:
             self._end_round("TOO MANY STRIKES")
 
     def _reset(self):
+        """Reset displays and buttons for another round
+        """
         self.texts['clue'].set_color((255, 255, 255))
         self.texts['clue'].set_text("ROLL")
         self.buttons['start'].set_enabled(True)
@@ -791,6 +878,10 @@ class PlayScreen:
 
 
     def _transfer(self):
+        """Transfer temporary points to a permanent account. 
+        - In case the user acquired the 'Insta Transfer' skill, the transfer is instant.
+        - In case the user acquired the 'No Locks' skill, player can continue guessing numbers while transfering.
+        """
         log.debug("TRANSFERING")
         if self.effectors['no_locks']['level'] != 1:
             [button.set_enabled(False) for button in self.buttons.values()]
@@ -815,6 +906,10 @@ class PlayScreen:
         self.texts['multiplier'].set_text(str(self.multiplier()))
 
     def _pay(self):
+        """Pay the debt using points from a permanent account. 
+        - In case the user acquired the 'Insta Pay' skill, the payment transfer is instant.
+        - In case the user acquired the 'No Locks' skill, player can continue guessing numbers while paying.
+        """
         log.debug("PAYING")
         if self.effectors['no_locks']['level'] != 1:
             [button.set_enabled(False) for button in self.buttons.values()]
@@ -847,6 +942,8 @@ class PlayScreen:
 
 
     def _advance_level(self):
+        """Advance the level, increase the debt x1.5, and give player a random skill
+        """
         log.info("ADVANCED LEVEL")
         self._stop_time()
         
@@ -879,10 +976,20 @@ class PlayScreen:
 
 
     def _stop_playing(self):
+        """End round and move to main menu
+        """
         self.set_state(GameState.MAIN_MENU)
         play_music("main_menu")
 
     def _end_round(self, reason:str):
+        """End current game
+
+        Args:
+            reason (str): reason why the game was ended
+
+        Raises:
+            NoResultFound: in case no user ORM is found
+        """
         play_music("endgame", loops=0)
         for button in self.buttons.values():
             button.set_enabled(False)
@@ -901,14 +1008,18 @@ class PlayScreen:
                     "Date": self.started_at
                 }])
         try:
-            db_handling.insert_row(db_handling.GameSessionModel, {
-                    'user_id': db_handling.query_rows(db_handling.UserModel, {"username": settings.load_settings()["username"]})[0].id,
-                    'started_at': self.started_at,
-                    'score': self.score,
-                    'level_reached': self.level
-                })
-        except Exception as e:
-            print(f"Error: {e}")
+            session = db_handling.Session()
+            user = session.query(db_handling.UserModel).filter_by(username=settings.load_settings()["username"]).first()
+            if not user:
+                raise NoResultFound
+            game_session = db_handling.GameSessionModel(user_id=user.id, started_at=self.started_at, score=self.score, level_reached=self.level)
+            session.add(game_session)
+            session.commit()
+        except (NoResultFound, Exception) as e:
+            log.warning(f"{e}")
+        finally:
+            session.close()
+        
         self.timer_manager.delay(10000, lambda: self.table.set_visibility(True))
         self.timer_manager.delay(15000, lambda: self._stop_playing())
         log.info("ENDED ROUND")
@@ -916,6 +1027,8 @@ class PlayScreen:
         
 
     def _timer(self):
+        """The game timer loop
+        """
         if self.time_remaining <= 0:
             self._end_round("TIME RAN OUT")
         elif self.advance_timer:
@@ -926,8 +1039,12 @@ class PlayScreen:
             self.timer_manager.delay(1000, self._timer)
 
     def _stop_time(self):
+        """Pause the timer
+        """
         self.advance_timer = False
     def _resume_time(self):
+        """Resume the timer
+        """
         self.advance_timer = True
 
 
@@ -949,21 +1066,27 @@ class PlayScreen:
 class LeaderboardScreen:
     """Handles the leaderboard screen"""
     def __init__(self, set_state):
+        """Initialization
+
+        Args:
+            set_state (func): set_state function used to switch between screens
+        """ 
+        # THE ESSENTIALS
         self.set_state = set_state
 
 
 
         self.back_button = objects.Button(50, settings.SCREEN_HEIGHT - 80, 150, 50, "BACK", color=(255,255,255), hover_color=(0,0,0))
         self.table = objects.LeaderboardTable(x=settings.SCREEN_WIDTH//2, y=settings.SCREEN_HEIGHT//2, width=int(settings.SCREEN_WIDTH*0.8), height=400, columns=["Rank", "User", "Level", "Score", "Date"], center_x=True, center_y=True)
-        unsorted_data = db_handling.query_rows(db_handling.GameSessionModel, include=['user'])
-        sorted_data = sorted(unsorted_data, key=lambda x: (-x['level_reached'], -x['score']))
+        unsorted_data = db_handling.Session().query(db_handling.GameSessionModel).filter_by(invalid=0).all()
+        sorted_data = sorted(unsorted_data, key=lambda x: (-x.level_reached, -x.score))
         leaderboard_data = [
             {
                 "Rank": i,
-                "User": row['user']['username'],
-                "Level": row['level_reached'],
-                "Score": row['score'],
-                "Date": row['started_at'],
+                "User": row.user.username,
+                "Level": row.level_reached,
+                "Score": row.score,
+                "Date": row.started_at,
             }
             for i, row in enumerate(sorted_data, start=1)
         ]
@@ -983,15 +1106,28 @@ class LeaderboardScreen:
         log.info("LEADERBOARDS SCREEN created")
 
     def update(self):
+        """Update logic
+        """
         pass
 
     
     def handle_event(self, event, mouse_pos):
+        """Handle any mouse/keyboard event, used for buttons or any other interactive elements
+
+        Args:
+            event (unk): pygame event
+            mouse_pos (unk): current mouse position
+        """
         self.table.handle_event(event, mouse_pos)
         if self.back_button.is_clicked(mouse_pos, event):
             self.set_state(GameState.MAIN_MENU)
     
     def draw(self, screen, mouse_pos):
+        """Draw frame on screen
+
+        Args:
+            screen (pygame.Surface): The selected surface
+        """
         screen.fill(settings.BLACK)
                 
         self.table.check_hover(mouse_pos)

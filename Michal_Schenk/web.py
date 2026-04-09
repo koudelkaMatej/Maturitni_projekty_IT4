@@ -28,6 +28,14 @@ login_manager.login_view = "login" # type: ignore
 
 @login_manager.user_loader
 def load_user(user_id:int):
+	"""Load a user instance for the current login session. This is used by Flask-Login to restore authenticated users between requests.
+
+	Args:
+		user_id (int): The primary key of the user to load from the database.
+
+	Returns:
+		db_handling.UserModel | None: The loaded user model instance if found, otherwise None.
+	"""
 	user = db.session.query(db_handling.UserModel).filter_by(id=user_id).first()
 	log.info(f"LOADED USER: {user}")
 	return user
@@ -82,8 +90,8 @@ def logout():
 @app.route('/profile')
 @login_required
 def profile():
-	unsorted_sessions = db_handling.query_rows(db_handling.GameSessionModel, {'user_id': current_user.id}, include=['user'])
-	sorted_sessions = sorted(unsorted_sessions, key=lambda x: (-x['level_reached'], -x['score']))
+	unsorted_sessions = db.session.query(db_handling.GameSessionModel).filter_by(user_id=current_user.id).all()
+	sorted_sessions = sorted(unsorted_sessions, key=lambda x: (-x.level_reached, -x.score))
 	return render_template('profile.html', user=current_user, sessions=sorted_sessions)
 
 
@@ -94,7 +102,7 @@ def leaderboard():
 	if current_user.role == "admin":
 		unsorted_sessions = db.session.query(db_handling.GameSessionModel).all()
 	else:
-		unsorted_sessions = db.session.query(db_handling.GameSessionModel).filter_by(invalidated="").all()
+		unsorted_sessions = db.session.query(db_handling.GameSessionModel).filter_by(invalid=0).all()
 	sorted_sessions = sorted(unsorted_sessions, key=lambda x: (-x.level_reached, -x.score))
 	return render_template('leaderboard.html', sessions=sorted_sessions, user=current_user)
 
@@ -156,19 +164,35 @@ def api_game_sessions():
 
 
 @app.route('/api/invalidate/<int:id>', methods=['GET', 'POST'])
-def api_invalidate(id):
+def api_invalidate(id:int):
+	"""Invalidate a specific game session by its identifier. This endpoint is restricted to admin users and marks the session as invalid when called via POST.
+
+	Args:
+		id (int): The unique identifier of the game session to invalidate.
+
+	Returns:
+		tuple[dict, int] | tuple[dict, int]: An empty JSON response with HTTP 200 when the request is processed, or an empty JSON response with HTTP 404 if the session does not exist for a valid admin POST request.
+	"""
 	if request.method == 'POST':
 		if current_user.role == "admin":
 			run = db.session.query(db_handling.GameSessionModel).filter_by(id=id).first()
 			if not run:
 				return {}, 404
-			run.invalidated = "Invalidated by admin"
+			run.invalid = 1
 			log.debug(f"INVALIDATED GAME SESSION.ID {run.id} BY {current_user.username}")
 			db.session.commit()
-	return {}
+	return {}, 200
 
 @app.route('/api/delete/user/<int:id>', methods=['GET', 'POST'])
 def api_delete_user(id):
+	"""Delete a user and all of their game sessions by identifier. This endpoint is restricted to admin users and removes both the user record and any associated sessions when called via POST.
+
+	Args:
+		id (int): The unique identifier of the user to delete.
+
+	Returns:
+		dict | tuple[dict, int]: An empty JSON object with HTTP 200 on success or for non-POST/non-admin access, or an empty JSON object with HTTP 404 if the user does not exist for a valid admin POST request.
+	"""
 	if request.method == 'POST':
 		if current_user.role == "admin":
 			user = db.session.query(db_handling.UserModel).filter_by(id=id).first()
@@ -190,6 +214,14 @@ def api_delete_user(id):
 @app.route('/api/update/user/<int:id>', methods=['GET', 'POST'])
 @login_required
 def api_update_user(id):
+	"""Update an existing user's details by identifier. This endpoint is restricted to admin users and applies form-provided changes to the selected user when called via POST.
+
+	Args:
+		id (int): The unique identifier of the user to update.
+
+	Returns:
+		dict | tuple[dict, int]: An empty JSON object with HTTP 200 when the update is processed or for non-POST/non-admin access, or an empty JSON object with HTTP 404 if the user does not exist for a valid admin POST request.
+	"""
 	if request.method == 'POST':
 		if current_user.role == "admin":
 			user = db.session.query(db_handling.UserModel).filter_by(id=id).first()
@@ -211,13 +243,21 @@ def api_update_user(id):
 @app.route('/api/update/game-session/<int:id>', methods=['GET', 'POST'])
 @login_required
 def api_update_game_session(id):
+	"""Update the invalidation status of a specific game session by identifier. This endpoint is restricted to admin users and applies form-provided changes when called via POST.
+
+	Args:
+		id (int): The unique identifier of the game session to update.
+
+	Returns:
+		dict | tuple[dict, int]: An empty JSON object with HTTP 200 when the update is processed or for non-POST/non-admin access, or an empty JSON object with HTTP 404 if the game session does not exist for a valid admin POST request.
+	"""
 	if request.method == 'POST':
 		if current_user.role == "admin":
 			game = db.session.query(db_handling.GameSessionModel).filter_by(id=id).first()
 			if not game:
 				return {}, 404
 			data = request.form
-			game.invalidated = data.get("invalidated")
+			game.invalid = data.get("invalid")
 			db.session.commit()	
 			log.debug(f"UPDATED GAME SESSION.ID {game.id}: {game}")
 	return {}
@@ -227,17 +267,21 @@ def api_update_game_session(id):
 
 @app.before_request
 def log_request_info():
-        endpoint = flask.request.endpoint or "unknown"
-        if endpoint != "static":
-            view_params = flask.request.view_args
-            
-            if view_params:
-                param_string = ".".join(str(v) for v in view_params.values())
-                log_name = f"route.{endpoint}.{param_string}"
-            else:
-                log_name = f"route.{endpoint}"
+	"""Log basic information about the incoming request for observability. This helper builds a simple route identifier and associates it with the current user for debugging and auditing.
 
-            log.info(f"{current_user} - {log_name}")
+	The logger records the resolved endpoint name and any view parameters, excluding static file requests. This allows tracking which authenticated or anonymous user accessed which route pattern.
+	"""
+	endpoint = flask.request.endpoint or "unknown"
+	if endpoint != "static":
+		view_params = flask.request.view_args
+		
+		if view_params:
+			param_string = ".".join(str(v) for v in view_params.values())
+			log_name = f"route.{endpoint}.{param_string}"
+		else:
+			log_name = f"route.{endpoint}"
+
+		log.info(f"{current_user} - {log_name}")
 
 if __name__ == '__main__':
 	app.run(debug=True, host='0.0.0.0', port=5000)

@@ -23,7 +23,7 @@
                {% endif %}
            </tr>
            {% for entry in sessions %}
-           <tr {{ 'class=invalidated' if entry.invalidated != "" }}>
+           <tr {{ 'class=invalid' if entry.invalid == 1 }}>
                <td>{{ loop.index }}</td>
                <td>{{ entry.user.username }}</td>
                <td>{{ entry.score }}</td>

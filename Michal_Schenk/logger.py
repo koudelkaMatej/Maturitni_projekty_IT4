@@ -4,7 +4,15 @@ import os
 if not os.path.exists("logs"):
     os.makedirs("logs")
 
-def get_logger(name):
+def get_logger(name:str):
+    """Returns the logger
+
+    Args:
+        name (str): used to organize multiple loggers
+
+    Returns:
+        Logger: the logger object
+    """
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
