@@ -8,6 +8,8 @@ __pycache__/
 scores.txt
 settings.txt
 *.log
+pripojeni.py
+**/pripojeni.py
 
 # Ignore local IDE settings
 .vscode/
