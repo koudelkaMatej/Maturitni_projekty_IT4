@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Account Settings - Ubermosh Rebirth{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="card auth-card">
+        <h2>Account Settings</h2>
+        <p>Logged in as <strong>{{ username }}</strong></p>
+        <form method="post" class="auth-form">
+            <label>
+                Current Password
+                <input type="password" name="current_password" autocomplete="current-password" required autofocus>
+            </label>
+            <label>
+                New Password
+                <input type="password" name="new_password" autocomplete="new-password" required>
+            </label>
+            <label>
+                Confirm New Password
+                <input type="password" name="confirm_password" autocomplete="new-password" required>
+            </label>
+            <button type="submit" class="btn">Update Password</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

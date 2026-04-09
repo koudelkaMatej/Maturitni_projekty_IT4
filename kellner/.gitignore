@@ -1,0 +1,16 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+.DS_Store
+scores.txt
+settings.txt
+*.log
+
+# Ignore local IDE settings
+.vscode/
+
+# Ignore system files
+Thumbs.db

@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Ubermosh Rebirth - Showcase{% endblock %}
+
+{% block content %}
+
+        <!-- WELCOME -->
+        <section id="welcome" class="section">
+            <h2 class="hero-text">WELCOME TO <span class="highlight">UBERMOSH</span></h2>
+            <p>Cut bullets. Dodge death. Survive the Rebirth.</p>
+        </section>
+
+        <!-- ABOUT -->
+        <section id="about" class="section">
+            <div class="card">
+                <h3>About The Game</h3>
+                <p>
+                    <strong>Ubermosh Rebirth</strong> is a fast-paced top-down bullet-hell arcade game inspired by the
+                    cult classic <em>Ubermosh</em> by Walter Machado.
+                </p>
+                <p>
+                    Wield a blade that can cut through bullets and guns that shred enemies. You have 60 seconds to
+                    extract.
+                    Will you survive the onslaught, or become just another corpse in the arena?
+                </p>
+            </div>
+        </section>
+
+        <!-- GUIDE -->
+        <section id="guide" class="section">
+            <h3 class="section-title">Field Guide</h3>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4>Gamemodes</h4>
+                    <ul>
+                        <li><span class="mode-tag normal">Normal</span> - Balanced. 4 HP. Sword & Random Guns.</li>
+                        <li><span class="mode-tag reflect">Reflect</span> - <strong>HARD MODE</strong>. 6 HP. No Sword
+                            Kills. You must REFLECT bullets to kill.</li>
+                        <li><span class="mode-tag gunner">Gunner</span> - <strong>EASY MODE</strong>. 2 HP. Start with a
+                            powerful gun.</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h4>Enemies</h4>
+                    <ul>
+                        <li><span style="color: #c832c8;">Fast Shooter</span> - Fires high-velocity rounds.</li>
+                        <li><span style="color: #ffa500;">Dual Shooter</span> - Double trouble.</li>
+                        <li><span style="color: #3232ff;">Shotgun</span> - Spread fire. Keep distance.</li>
+                        <li><span style="color: #aaaaaa;">Sword</span> - Rusher. No gun, just speed.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- LEADERBOARD -->
+        <section id="leaderboard" class="section">
+            <h3 class="section-title">Hall of Fame</h3>
+
+            {% if leaderboard %}
+            <!-- TOP 1 SPECIAL -->
+            {% set top = leaderboard[0] %}
+            <div class="champion-card">
+                <div class="crown">👑</div>
+                <h4>CHAMPION OF THE ARENA</h4>
+                <div class="champ-name">{{ top['nickname'] }}</div>
+                <div class="champ-score">Score: {{ top['score'] }}</div>
+                <div class="champ-details">{{ top['gamemode'] }} | {{ top['status'] }}</div>
+                <p class="congrats">Congratulations <strong>{{ top['nickname'] }}</strong> for the absolute best run
+                    recorded!</p>
+            </div>
+
+            <!-- REST OF TOP 10 -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nickname</th>
+                            <th>Score</th>
+                            <th>Mode</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in leaderboard[1:] %}
+                        <tr>
+                            <td>{{ loop.index + 1 }}</td>
+                            <td>{{ row['nickname'] }}</td>
+                            <td>{{ row['score'] }}</td>
+                            <td><span class="mode-text {{ row['gamemode'].lower() }}">{{ row['gamemode'] }}</span></td>
+                            <td class="status-{{ row['status'].lower() }}">{{ row['status'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No records found. Be the first!</p>
+            {% endif %}
+
+            <!-- GAMEMODE CHAMPS -->
+            <h4 class="sub-title">Gamemode Champions</h4>
+            <div class="grid-3">
+                {% for mode, data in top_per_mode.items() %}
+                <div class="mini-card">
+                    <h5>{{ mode }}</h5>
+                    <div class="mini-name">{{ data['nickname'] }}</div>
+                    <div class="mini-score">{{ data['score'] }}</div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </section>
+
+{% endblock %}

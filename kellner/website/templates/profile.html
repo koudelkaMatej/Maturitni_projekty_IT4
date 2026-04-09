@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Ubermosh Rebirth{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="card profile-card">
+        <h2>Player Profile</h2>
+        <div class="profile-username">{{ username }}</div>
+
+        {% if user_data %}
+        <div class="profile-stats">
+            <div class="stat-row">
+                <span class="stat-label">Score:</span>
+                <span class="stat-value">{{ user_data['score'] }}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Gamemode:</span>
+                <span class="stat-value mode-{{ user_data['gamemode'].lower() }}">{{ user_data['gamemode'] }}</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Status:</span>
+                <span class="stat-value status-{{ user_data['status'].lower() }}">{{ user_data['status'] }}</span>
+            </div>
+        </div>
+        {% else %}
+        <div class="profile-stats">
+            <p>No game data yet. Play a game to get started!</p>
+        </div>
+        {% endif %}
+
+        <div class="profile-actions">
+            <a href="{{ url_for('account') }}" class="btn">Change Password</a>
+            <a href="{{ url_for('index') }}#leaderboard" class="btn">View Leaderboard</a>
+        </div>
+    </div>
+</section>
+{% endblock %}
