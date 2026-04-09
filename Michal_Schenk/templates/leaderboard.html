@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
-    <meta http-equiv="refresh" content="5">
-    <title>Leaderboard</title>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
+   <script src="{{ url_for('static',filename='scripts/htmx.min.js') }}"></script>
+   <title>Leaderboard</title>
 </head>
-<body>
-    <h1>Leaderboard</h1>
-    <table>
-        <tr>
-            <th>Rank</th>
-            <th>Username</th>
-            <th>Score</th>
-            <th>Level Reached</th>
-            <th>Started At</th>
-        </tr>
-        {% for entry in sessions %}
-        <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ entry.user.username }}</td>
-            <td>{{ entry.score }}</td>
-            <td>{{ entry.level_reached }}</td>
-            <td>{{ entry.started_at }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+<body data-theme="{{ user.prefered_scheme if user else 'light' }}">
+   {% include 'universal/header.html' %}
+   <div class="hero">
+       <h1>Leaderboard</h1>
+       <table>
+           <tr>
+               <th>Rank</th>
+               <th>Username</th>
+               <th>Score</th>
+               <th>Level Reached</th>
+               <th>Started At</th>
+               {% if user.role == "admin" %}
+               <th></th>
+               {% endif %}
+           </tr>
+           {% for entry in sessions %}
+           <tr {{ 'class=invalid' if entry.invalid == 1 }}>
+               <td>{{ loop.index }}</td>
+               <td>{{ entry.user.username }}</td>
+               <td>{{ entry.score }}</td>
+               <td>{{ entry.level_reached }}</td>
+               <td>{{ entry.started_at }}</td>
+               {% if user.role == "admin" %}
+               <td><button hx-post="/api/invalidate/{{ entry.id }}" hx-swap="none">&Cross;</button></td>
+               {% endif %}
+           </tr>
+           {% endfor %}
+       </table>
+   </div>
+   {% include 'universal/footer.html' %}
 </body>
 </html>
+

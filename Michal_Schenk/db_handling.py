@@ -5,36 +5,30 @@ from typing import TypedDict, Optional, Any, Type
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.orm import joinedload
+from sqlalchemy.exc import OperationalError
+import os
 
-DATABASE_FILE = 'gradproj.db'
+DATABASE_FILE = 'ditr.db'
 DATABASE_URL = f'sqlite:///instance/{DATABASE_FILE}'
+
+if not os.path.exists("instance"):
+    os.makedirs("instance")
 
 engine = create_engine(DATABASE_URL)
 Base = declarative_base()
-
-
-
-def session_init():
-    engine = create_engine(DATABASE_URL)
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
-
+Session = sessionmaker(bind=engine)
 
 class User(TypedDict):
     id: int
     username: str
+    password_hash: str
     email: str
     created_at: datetime.datetime
-
+    prefered_scheme: Optional[str]
+    role: Optional[str]
+    banned: bool
+    
     game_sessions: Optional[list['GameSession']]
-
-class UserAccess(TypedDict):
-    id: int
-    user_id: int
-    password_hash: str
-    last_login: Optional[datetime.datetime]
-    reset_mail: Optional[str]
 
 class GameSession(TypedDict):
     id: int
@@ -42,6 +36,7 @@ class GameSession(TypedDict):
     started_at: datetime.datetime
     score: int
     level_reached: int
+    invalid: bool
     user: Optional['User']
 
 
@@ -60,11 +55,19 @@ class UserModel(Base, UserMixin):
     email = mapped_column(String, unique=True, nullable=False)
     created_at = mapped_column(DateTime, default=datetime.datetime.now())
     game_sessions = relationship('GameSessionModel', back_populates='user')
+    prefered_scheme = mapped_column(String, nullable=True)
+    role = mapped_column(String, nullable=True, default="user", server_default="user")
+    banned = mapped_column(Integer, nullable=False, default=0, server_default="0")
 
-    def set_password(self, password, persist: bool = True):
+    def set_password(self, password:str):
+        """Sets/Resets the password
+
+        Args:
+            password (str): Password string
+        """
         self.password_hash = generate_password_hash(password)
-        if persist and getattr(self, 'id', None) is not None:
-            session = session_init()
+        if getattr(self, 'id', None) is not None:
+            session = Session()
             try:
                 session.query(UserModel).filter_by(id=self.id).update({'password_hash': self.password_hash})
                 session.commit()
@@ -74,11 +77,21 @@ class UserModel(Base, UserMixin):
             finally:
                 session.close()
 
-    def check_password(self, password):
+    def check_password(self, password:str):
+        """Checks the entered password with the hashed password stored in DB
+
+        Args:
+            password (str): the entered password
+
+        Returns:
+            bool: returns True if entered password is correct and user should be logged in, otherwise False
+        """
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
         return f"<User(id={self.id}, username='{self.username}', email='{self.email}', created_at='{self.created_at}')>"
+    
+    
 
 class GameSessionModel(Base):
     __tablename__ = 'game_sessions'
@@ -88,85 +101,45 @@ class GameSessionModel(Base):
     started_at = mapped_column(DateTime, default=datetime.datetime.now())
     score = mapped_column(Integer, default=0)
     level_reached = mapped_column(Integer, default=1)
+    invalid = mapped_column(Integer, nullable=False, default=0, server_default="0")
 
     user = relationship('UserModel', back_populates='game_sessions')
 
+    def __repr__(self):
+        return f"<GameSession(id={self.id}, user_id={self.user_id}, started_at='{self.started_at}', score={self.score}, level_reached={self.level_reached}), invalid={self.invalid}>"
 
-Base.metadata.create_all(bind=session_init().get_bind())
 
-def insert_row(model: Type[Any], data: dict[str, Any]) -> Any:
-    session = session_init()
+
+
+Base.metadata.create_all(bind=Session().get_bind())
+
+with Session() as session:
     try:
-        new_record = model(**data)
-        session.add(new_record)
-        session.commit()
-        session.refresh(new_record)
-        return new_record
+        admin_user = session.query(UserModel).filter_by(username="admin").first()
+        anonymous_user = session.query(UserModel).filter_by(username="Anonymous").first()
+
+        if admin_user is None:
+            admin = UserModel(
+                username="admin",
+                email="admin@admin.com",
+                password_hash=generate_password_hash("admin"),
+                role="admin",
+                banned=0,
+            )
+            session.add(admin)
+
+        if anonymous_user is None:
+            anon = UserModel(
+                username="Anonymous",
+                email="",
+                password_hash=generate_password_hash(""),
+                role="user",
+                banned=0,
+            )
+            session.add(anon)
+
+        if admin_user is None or anonymous_user is None:
+            session.commit()
     except Exception as e:
         session.rollback()
-        raise e
-    finally:
-        session.close()
-
-
-def query_rows(model: Type[Any], filters: Optional[dict[str, Any]] = None, include: Optional[list[str]] = None) -> list[Any]:
-    """
-    Query rows for `model`. If `include` is provided (list of relationship attribute names),
-    the related objects will be eagerly loaded and returned as nested dicts alongside the
-    model's column data. If `include` is None, SQLAlchemy model instances are returned.
-    """
-    session = session_init()
-    try:
-
-        query = session.query(model)
-
-        # Eager-load requested relationships
-        if include:
-            for rel in include:
-                query = query.options(joinedload(getattr(model, rel)))
-
-        # Apply filters
-        if filters:
-            for attr, value in filters.items():
-                query = query.filter(getattr(model, attr) == value)
-
-        results = query.all()
-
-        # If no relationships requested, return the raw ORM objects
-        if not include:
-            return results
-
-        # Helper to convert an ORM instance to dict (columns + requested relationships)
-        def instance_to_dict(obj):
-            data = {}
-            # columns
-            for col in obj.__table__.columns:
-                data[col.name] = getattr(obj, col.name)
-            # relationships
-            for rel in include:
-                if not hasattr(obj, rel):
-                    continue
-                val = getattr(obj, rel)
-                if val is None:
-                    data[rel] = None
-                else:
-                    # detect collection-like relationship (InstrumentedList etc.)
-                    if hasattr(val, '__iter__') and not hasattr(val, '__table__'):
-                        data[rel] = []
-                        for item in val:
-                            # for related items, include only their columns (no further nesting)
-                            sub = {}
-                            for c in item.__table__.columns:
-                                sub[c.name] = getattr(item, c.name)
-                            data[rel].append(sub)
-                    else:
-                        # single related object
-                        sub = {}
-                        for c in val.__table__.columns:
-                            sub[c.name] = getattr(val, c.name)
-                        data[rel] = sub
-            return data
-
-        return [instance_to_dict(r) for r in results]
-    finally:
-        session.close()
+        print(e)

@@ -1,0 +1,27 @@
+<tr>
+    <th>ID</th>
+    <th>Username</th>
+    <th>Email</th>
+    <th>Password Hash [:32]</th>
+    <th>Created at</th>
+    <th>Scheme</th>
+    <th>Role</th>
+    <th>Banned</th>
+</tr>
+{% for user in users %}
+<tr>
+    <td>{{user.id}}</td>
+    <td><input type="text" name="username" value="{{user.username}}"></td>
+    <td><input type="text" name="email" value="{{user.email}}"></td>
+    <td><input type="text" name="password_hash" value="{{user.password_hash[:32]}}***"></td>
+    <td><input type="text" name="created_at" value="{{user.created_at}}"></td>
+    <td><input type="text" name="scheme" value="{{user.prefered_scheme}}"></td>
+    <td><input type="text" name="role" value="{{user.role}}"></td>
+    <td><input type="text" name="banned" value="{{user.banned}}"></td>
+    
+    {% if user.username != "admin" and user.username != "Anonymous" %}
+        <td><a class="button" hx-post="/api/update/user/{{ user.id }}" hx-include="closest tr" hx-swap="none">Update</a></td>
+        <td><a class="button" hx-post="/api/delete/user/{{ user.id }}" hx-swap="none">Delete</a></td>
+    {% endif %}
+</tr>
+{% endfor %}

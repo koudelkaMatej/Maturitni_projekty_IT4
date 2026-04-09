@@ -1,0 +1,19 @@
+<tr>
+    <th>ID</th>
+    <th>User [ID]</th>
+    <th>Started At</th>
+    <th>Score</th>
+    <th>Level Reached</th>
+    <th>Invalid</th>
+</tr>
+{% for game in games %}
+<tr>
+    <td>{{game.id}}</td>
+    <td>{{game.user.username}} [{{game.user_id}}]</td>
+    <td>{{game.started_at}}</td>
+    <td>{{game.score}}</td>
+    <td>{{game.level_reached}}</td>
+    <td><input type="text" name="invalid" value="{{game.invalid}}"></td>
+    <td><a class="button" hx-post="/api/update/game-session/{{ game.id }}" hx-include="closest tr" hx-swap="none">Update</a></td>
+</tr>
+{% endfor %}

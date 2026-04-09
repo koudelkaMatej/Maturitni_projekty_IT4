@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/style.css') }}">
+    <script src="{{ url_for('static',filename='scripts/htmx.min.js') }}"></script>
+    <title>Profile</title>
+</head>
+<body data-theme="{{ user.prefered_scheme if user else 'light' }}">
+    {% include 'universal/header.html' %}
+    <div class="hero">
+        <h1>EDITOR</h1>
+    </div>
+    <div class="container">
+        <a class="button" hx-get="/api/users" hx-target="#display">USERS</a>
+        <a class="button" hx-get="/api/game-sessions" hx-target="#display">GAME SESSION</a>
+    </div>
+    <table id="display">
+
+    </table>
+    {% include 'universal/footer.html' %}
+</body>
+</html>

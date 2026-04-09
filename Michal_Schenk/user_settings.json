@@ -1,5 +1,6 @@
 {
-    "volume": 50,
+    "volume-music": 0.5,
+    "volume-sfx": 0.5,
     "logged_in": false,
     "username": "Anonymous",
     "password": ""
