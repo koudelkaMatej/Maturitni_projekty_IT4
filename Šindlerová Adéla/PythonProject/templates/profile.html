@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <title>Profil | Smart Snake</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand">🐍 Smart Snake</div>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/about">O projektu</a>
+        <a href="/leaderboard">Leaderboard</a>
+        <a href="/profile" class="active">Profil</a>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Můj profil</h1>
+      <p class="muted">Statistiky a poslední hry (musíš být přihlášen(a) na webu).</p>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <p id="who" class="small muted"></p>
+
+      <div class="grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 10px;">
+        <div class="card" style="padding:12px;">
+          <h2>Best</h2>
+          <div style="font-size:28px; font-weight:800;" id="best">-</div>
+        </div>
+        <div class="card" style="padding:12px;">
+          <h2>Počet her</h2>
+          <div style="font-size:28px; font-weight:800;" id="games">-</div>
+        </div>
+        <div class="card" style="padding:12px;">
+          <h2>Průměr</h2>
+          <div style="font-size:28px; font-weight:800;" id="avg">-</div>
+        </div>
+      </div>
+
+      <h3 style="margin-top:16px;">Posledních 10 her</h3>
+      <table>
+        <thead><tr><th>Score</th><th>Apples</th><th>Trvání</th><th>Čas</th></tr></thead>
+        <tbody id="tb"></tbody>
+      </table>
+      <p id="msg" class="small muted" style="margin-top:10px;"></p>
+
+      <div class="card" style="margin-top:12px;">
+        <h3>Jak se ukládají výsledky</h3>
+        <p class="muted small" style="margin:0;">
+          Výsledky posílá desktop aplikace po dohrání přes API.
+          Spusť hru: <code>python desktop_game.py</code>
+        </p>
+      </div>
+    </section>
+  </main>
+
+<script>
+async function api(path){
+  const res = await fetch(path);
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.error || "Request failed");
+  return data;
+}
+(async ()=>{
+  const who = document.querySelector("#who");
+  const msg = document.querySelector("#msg");
+  try{
+    const me = await api("/api/me");
+    if(!me.user){
+      who.innerHTML = `<span class="bad">Nepřihlášen.</span> Jdi na <a href="/login">login</a>.`;
+      return;
+    }
+    who.className = "small good";
+    who.textContent = "Přihlášen na webu: " + me.user.username;
+
+    const st = await api("/api/my-stats");
+    document.querySelector("#best").textContent = st.best_score;
+    document.querySelector("#games").textContent = st.games;
+    document.querySelector("#avg").textContent = st.avg_score;
+
+    const tb = document.querySelector("#tb");
+    tb.innerHTML = "";
+    st.last10.forEach(r=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${r.score}</td><td>${r.apples}</td><td>${Math.round(r.duration_ms/1000)}s</td><td>${r.played_at}</td>`;
+      tb.appendChild(tr);
+    });
+
+    msg.className="small good";
+    msg.textContent="OK";
+  }catch(e){
+    msg.className="small bad";
+    msg.textContent=e.message;
+  }
+})();
+</script>
+</body>
+</html>

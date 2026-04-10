@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <title>Register | Smart Snake</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand">🐍 Smart Snake</div>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/about">O projektu</a>
+        <a href="/leaderboard">Leaderboard</a>
+        <a href="/profile">Profil</a>
+        <a href="/login">Login</a>
+        <a href="/register" class="active">Register</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Registrace účtu</h1>
+      <p class="muted">
+        Účet si vytvoříš na webu. Potom se do hry přihlásíš v desktop aplikaci.
+      </p>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="row">
+        <input id="u" placeholder="username (min 3)" />
+        <input id="p" placeholder="password (min 6)" type="password" />
+        <button class="btn" id="btn">Vytvořit účet</button>
+      </div>
+
+      <p id="msg" class="small muted" style="margin-top:10px;"></p>
+
+      <div class="card" style="margin-top:12px;">
+        <h3>Další krok</h3>
+        <p class="muted small" style="margin:0;">
+          Spusť hru: <code>python desktop_game.py</code> a přihlas se stejným účtem.
+        </p>
+      </div>
+    </section>
+  </main>
+
+<script>
+async function api(path, opts={}) {
+  const res = await fetch(path, {headers:{'Content-Type':'application/json'}, ...opts});
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.error || "Request failed");
+  return data;
+}
+const msg = document.querySelector("#msg");
+
+document.querySelector("#btn").addEventListener("click", async () => {
+  try{
+    await api("/api/register", {method:"POST", body: JSON.stringify({
+      username: document.querySelector("#u").value,
+      password: document.querySelector("#p").value
+    })});
+    msg.className = "small good";
+    msg.textContent = "OK! Účet vytvořen. Teď se přihlas v aplikaci (desktop_game.py).";
+  }catch(e){
+    msg.className = "small bad";
+    msg.textContent = e.message;
+  }
+});
+</script>
+</body>
+</html>

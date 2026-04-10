@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <title>Leaderboard | Smart Snake</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand">🐍 Smart Snake</div>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/about">O projektu</a>
+        <a href="/leaderboard" class="active">Leaderboard</a>
+        <a href="/profile">Profil</a>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Leaderboard</h1>
+      <p class="muted">Top 20 výsledků uložených z desktop aplikace.</p>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Hráč</th><th>Score</th><th>Apples</th><th>Trvání</th><th>Čas</th>
+          </tr>
+        </thead>
+        <tbody id="tb"></tbody>
+      </table>
+      <p id="msg" class="small muted" style="margin-top:10px;"></p>
+    </section>
+  </main>
+
+<script>
+async function api(path) {
+  const res = await fetch(path);
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.error || "Request failed");
+  return data;
+}
+(async ()=>{
+  const tb = document.querySelector("#tb");
+  const msg = document.querySelector("#msg");
+  try{
+    const data = await api("/api/leaderboard");
+    tb.innerHTML = "";
+    data.rows.forEach((r,i)=>{
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i+1}</td>
+        <td>${r.username}</td>
+        <td>${r.score}</td>
+        <td>${r.apples}</td>
+        <td>${Math.round(r.duration_ms/1000)}s</td>
+        <td>${r.played_at}</td>`;
+      tb.appendChild(tr);
+    });
+    msg.className="small good";
+    msg.textContent="Načteno " + data.rows.length + " záznamů";
+  }catch(e){
+    msg.className="small bad";
+    msg.textContent=e.message;
+  }
+})();
+</script>
+</body>
+</html>

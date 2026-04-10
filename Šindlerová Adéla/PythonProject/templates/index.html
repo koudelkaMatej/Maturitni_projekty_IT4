@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <title>Smart Snake</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand">🐍 Smart Snake</div>
+      <div class="links">
+        <a href="/" class="active">Home</a>
+        <a href="/about">O projektu</a>
+        <a href="/leaderboard">Leaderboard</a>
+        <a href="/profile">Profil</a>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Smart Snake</h1>
+      <p class="muted">
+        Školní projekt: <b>aplikace + web + databáze</b>.
+        Aplikace = desktop hra Snake, web = účty + leaderboard + profil.
+      </p>
+
+      <div class="pill-row">
+        <span class="pill">Python + Flask</span>
+        <span class="pill">SQLite</span>
+        <span class="pill">Desktop App (pygame)</span>
+        <span class="pill">Web + API</span>
+      </div>
+
+      <div class="row">
+        <a class="btn" href="/register">Zaregistrovat účet</a>
+        <a class="btn secondary" href="/leaderboard">Leaderboard</a>
+      </div>
+
+      <p class="small muted" style="margin-top:12px;">
+        {% if user %}
+          Přihlášen na webu: <b>{{ user.username }}</b>
+        {% else %}
+          Na webu nejsi přihlášen(a). (To nevadí — přihlášení do hry je v aplikaci.)
+        {% endif %}
+      </p>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>🎮 Aplikace (desktop hra)</h2>
+        <p class="muted">
+          Hra běží jako desktop aplikace. Přihlášení je přímo v aplikaci.
+          Pokud účet neexistuje, aplikace nabídne registraci přes web.
+        </p>
+        <div class="card" style="margin-top:12px;">
+          <h3>Jak spustit aplikaci</h3>
+          <ol style="color: var(--muted); margin-left: 18px;">
+            <li>Spusť server: <code>python app.py</code></li>
+            <li>Spusť hru: <code>python desktop_game.py</code></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🌐 Web</h2>
+        <ul>
+          <li>Registrace účtu</li>
+          <li>Login (web) + profil</li>
+          <li>Leaderboard (Top 20)</li>
+          <li>Stránka s popisem projektu</li>
+        </ul>
+        <a class="btn secondary" href="/about">O projektu</a>
+      </div>
+
+      <div class="card">
+        <h2>🗄️ Databáze</h2>
+        <p class="muted">
+          SQLite ukládá uživatele a výsledky her. Skóre posílá aplikace přes API.
+        </p>
+        <ul>
+          <li><code>users</code> – účty</li>
+          <li><code>scores</code> – výsledky</li>
+          <li><code>api_tokens</code> – přihlášení pro app</li>
+        </ul>
+        <a class="btn secondary" href="/leaderboard">Zobrazit výsledky</a>
+      </div>
+    </section>
+
+    <footer class="footer muted small">
+      Smart Snake — školní projekt (desktop app + web + DB).
+    </footer>
+  </main>
+</body>
+</html>

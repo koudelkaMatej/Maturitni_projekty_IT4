@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <title>O projektu | Smart Snake</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="brand">🐍 Smart Snake</div>
+      <div class="links">
+        <a href="/">Home</a>
+        <a href="/about" class="active">O projektu</a>
+        <a href="/leaderboard">Leaderboard</a>
+        <a href="/profile">Profil</a>
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <section class="hero">
+      <h1>O projektu</h1>
+      <p class="muted">
+        Projekt je rozdělený na 3 části: <b>desktop aplikace</b>, <b>web</b> a <b>databázi</b>.
+        Hra Snake je rozšířená o vlastní prvek: <b>power-upy</b> (speed/slow/poison).
+      </p>
+      <div class="pill-row">
+        <span class="pill">Desktop hra (pygame)</span>
+        <span class="pill">Web Flask</span>
+        <span class="pill">SQLite</span>
+        <span class="pill">REST API</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>📱 Aplikace</h2>
+        <p class="muted">
+          Desktop hra v Pythonu (pygame). Po spuštění se uživatel přihlásí.
+          Pokud účet neexistuje, aplikace vyzve k registraci na webu a otevře stránku registrace.
+        </p>
+        <ul>
+          <li>Login přímo v aplikaci</li>
+          <li>Po hře uložení skóre do DB přes API</li>
+          <li>Power-upy jako vlastní rozšíření</li>
+        </ul>
+        <div class="card" style="margin-top:12px;">
+          <h3>Spuštění</h3>
+          <p class="muted small" style="margin:0;">
+            <code>python app.py</code> (server) <br/>
+            <code>python desktop_game.py</code> (desktop hra)
+          </p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🌐 Web</h2>
+        <ul>
+          <li>Registrace účtů</li>
+          <li>Leaderboard (Top 20)</li>
+          <li>Profil hráče + statistiky</li>
+          <li>Popis projektu</li>
+        </ul>
+        <a class="btn secondary" href="/leaderboard">Leaderboard</a>
+      </div>
+
+      <div class="card">
+        <h2>🗄️ Databáze</h2>
+        <p class="muted">SQLite tabulky:</p>
+        <ul>
+          <li><code>users</code> – uživatelé</li>
+          <li><code>scores</code> – výsledky her</li>
+          <li><code>api_tokens</code> – tokeny pro desktop app</li>
+        </ul>
+        <p class="muted small">Soubor DB: <code>data.sqlite</code></p>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <h2>✅ Splnění zadání</h2>
+      <div class="two-col">
+        <div>
+          <h3>Aplikace</h3>
+          <p class="muted">Desktop hra (pygame) s loginem.</p>
+        </div>
+        <div>
+          <h3>Web + databáze</h3>
+          <p class="muted">Webové stránky + API + ukládání výsledků do SQLite.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer muted small">
+      Smart Snake — školní projekt.
+    </footer>
+  </main>
+</body>
+</html>
