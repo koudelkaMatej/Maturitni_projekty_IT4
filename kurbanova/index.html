@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catformer | Přehled projektu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div class="hero__content">
+        <p class="eyebrow">Platformová hra v Pythonu</p>
+        <h1>Catformer</h1>
+        <p class="hero__text">
+          Webová prezentace projektu s rychlým přehledem toho, co hra obsahuje,
+          jaké moduly používá a jaké části jsou v repozitáři připravené.
+        </p>
+        <div class="hero__actions">
+          <a class="button button--primary" href="#obsah">Co projekt obsahuje</a>
+          <a class="button button--ghost" href="#spusteni">Jak spustit</a>
+        </div>
+      </div>
+      <div class="hero__card">
+        <span class="hero__badge">7 levelů</span>
+        <span class="hero__badge">SQLite databáze</span>
+        <span class="hero__badge">Ukládání skóre</span>
+        <span class="hero__badge">Editor levelů</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="section" id="obsah">
+        <div class="section-heading">
+          <p class="eyebrow">Obsah projektu</p>
+          <h2>Z čeho se aplikace skládá</h2>
+        </div>
+        <div class="grid cards">
+          <article class="card">
+            <h3>Hlavní hra</h3>
+            <p>
+              Soubor <code>main.py</code> obsahuje hlavní herní smyčku v Pygame,
+              pohyb postavy, kolize, menu, přechod mezi levely i načítání assetů.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Databáze hráčů</h3>
+            <p>
+              Modul <code>database.py</code> pracuje se SQLite databází
+              <code>player_scores.db</code>, kde jsou připravené tabulky pro
+              uživatele, hry, skóre i achievementy.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Nastavení hry</h3>
+            <p>
+              Soubor <code>settings.py</code> a konfigurace <code>settings.json</code>
+              řeší ukládání hlasitosti hudby a zvukových efektů.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Editor levelů</h3>
+            <p>
+              Skript <code>level_editor.py</code> umožňuje vytvářet a upravovat
+              herní mapy pomocí dlaždic a ukládat je do souborů jednotlivých levelů.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section section--highlight">
+        <div class="section-heading">
+          <p class="eyebrow">Funkce</p>
+          <h2>Co je ve hře připravené</h2>
+        </div>
+        <div class="features">
+          <div class="feature">
+            <span class="feature__number">01</span>
+            <p>Platformová hratelnost s pohybem, skákáním a gravitací.</p>
+          </div>
+          <div class="feature">
+            <span class="feature__number">02</span>
+            <p>Nepřátelé, pohyblivé plošiny, láva, mince a cílový východ.</p>
+          </div>
+          <div class="feature">
+            <span class="feature__number">03</span>
+            <p>Zvuky, hudba na pozadí a uživatelské nastavení hlasitosti.</p>
+          </div>
+          <div class="feature">
+            <span class="feature__number">04</span>
+            <p>Ukládání výsledků a leaderboard přes SQLite databázi.</p>
+          </div>
+          <div class="feature">
+            <span class="feature__number">05</span>
+            <p>Celkem 7 připravených levelů a nástroj na jejich úpravu.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="skore">
+        <div class="section-heading">
+          <p class="eyebrow">Skóre</p>
+          <h2>Uložené výsledky ze hry</h2>
+        </div>
+        <div class="stats">
+          <article class="stat">
+            <span class="stat__label">Počet hráčů</span>
+            <strong id="total-players">0</strong>
+          </article>
+          <article class="stat">
+            <span class="stat__label">Odehrané hry</span>
+            <strong id="finished-games">0</strong>
+          </article>
+          <article class="stat">
+            <span class="stat__label">Nejlepší skóre</span>
+            <strong id="best-score">0 mincí</strong>
+          </article>
+          <article class="stat">
+            <span class="stat__label">Nejlepší hráč</span>
+            <strong id="top-player">Zatím bez záznamu</strong>
+          </article>
+        </div>
+
+        <div class="leaderboard">
+          <div class="leaderboard__header">
+            <p id="updated-at">Poslední aktualizace: zatím bez exportu</p>
+            <p>Data se ukládají z Pygame hry do SQLite a pak automaticky do webu.</p>
+          </div>
+          <div class="leaderboard__table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Pořadí</th>
+                  <th>Hráč</th>
+                  <th>Level</th>
+                  <th>Mince</th>
+                  <th>Datum</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body">
+                <tr>
+                  <td colspan="5" class="leaderboard__empty">Načítám uložené výsledky…</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Struktura</p>
+          <h2>Hlavní soubory v projektu</h2>
+        </div>
+        <div class="code-panel">
+<pre><code>gamecat/
+├── main.py
+├── database.py
+├── settings.py
+├── level_editor.py
+├── settings.json
+├── player_scores.db
+├── level1_data až level7_data
+└── img/ (obrázky a zvuky)</code></pre>
+        </div>
+      </section>
+
+      <section class="section" id="spusteni">
+        <div class="section-heading">
+          <p class="eyebrow">Použití</p>
+          <h2>Jak projekt spustit</h2>
+        </div>
+        <div class="grid steps">
+          <article class="step">
+            <span>1</span>
+            <p>Přejdi do složky <code>gamecat</code>.</p>
+          </article>
+          <article class="step">
+            <span>2</span>
+            <p>Nainstaluj Python a knihovnu <code>pygame</code>.</p>
+          </article>
+          <article class="step">
+            <span>3</span>
+            <p>Spusť hru příkazem <code>python main.py</code>.</p>
+          </article>
+          <article class="step">
+            <span>4</span>
+            <p>Pro editor levelů použij <code>python level_editor.py</code>.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="navod">
+        <div class="section-heading">
+          <p class="eyebrow">Návod</p>
+          <h2>Jak se hra hraje</h2>
+        </div>
+        <div class="grid cards">
+          <article class="card">
+            <h3>Cíl hry</h3>
+            <p>
+              Projdi level, sesbírej co nejvíc mincí a dojdi k východu.
+              Postupně se dostaneš až do posledního levelu.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Ovládání</h3>
+            <p>
+              Pohyb doleva a doprava funguje přes šipky <code>←</code> a <code>→</code>,
+              skok provedeš klávesou <code>↑</code>.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Na co si dát pozor</h3>
+            <p>
+              Vyhýbej se nepřátelům, lávě a špatně načasovaným skokům na plošiny.
+              Když zemřeš, hra uloží dosažené skóre.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Skóre a postup</h3>
+            <p>
+              Za sesbírané mince získáváš skóre. Po dokončení levelu nebo po prohře
+              se výsledek uloží a zobrazí v tabulce na webu.
+            </p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="leaderboard.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
