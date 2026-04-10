@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Žebříček - Breakout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="nav-left"><strong>Breakout Hra</strong></div>
+        <div class="nav-right">
+            <a href="/">Domů</a>
+            <a href="/tab">Žebříček</a>
+            {% if user %}
+                <a href="/profile">Můj profil</a>
+            {% else %}
+                <a href="/login">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Nejlepší časy</h2>
+        
+        <div style="margin-bottom: 20px;">
+            <a href="/tab?level=1" class="btn-main" style="background-color: #28a745;">Lehká</a>
+            <a href="/tab?level=2" class="btn-main" style="background-color: #fd7e14;">Střední</a>
+            <a href="/tab?level=3" class="btn-main" style="background-color: #dc3545;">Těžká</a>
+        </div>
+
+        <h3>Výsledky pro: 
+            {% if level == 1 %}Lehkou{% endif %}
+            {% if level == 2 %}Střední{% endif %}
+            {% if level == 3 %}Těžkou{% endif %}
+        </h3>
+
+        {% if leaderboard %}
+            <table>
+                <tr>
+                    <th>Hráč</th>
+                    <th>Čas</th>
+                </tr>
+                {% for row in leaderboard %}
+                <tr>
+                    <td><strong>{{ row.username }}</strong></td>
+                    <td>{{ row.time_str }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>Zatím tu nikdo není. Buď první!</p>
+        {% endif %}
+    </div>
+</body>
+</html>

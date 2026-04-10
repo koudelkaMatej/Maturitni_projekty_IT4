@@ -1,0 +1,116 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+}
+
+/* odkazy */
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* horní lišta */
+nav { 
+    background: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* tlačítka v menu */
+nav a {
+    padding: 8px 16px;
+    border-radius: 6px;
+    color: #007bff;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+/* barva při najetí */
+nav a:hover {
+    background-color: #f0f2f5;
+    color: #0056b3;
+}
+
+/* mezery vpravo */
+.nav-right a {
+    margin-left: 10px;
+}
+
+/* hlavní box */
+.container { 
+    max-width: 800px;
+    margin: 40px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* tabulka */
+table { 
+    width: 100%;
+    margin-bottom: 30px;
+    border-collapse: collapse;
+}
+
+td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* barva řádku */
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* modrý tlačítko */
+.btn-main {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #007bff;
+    color: white !important;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: 0.3s;
+}
+
+.btn-main:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* o projektu */
+.about-list {
+    list-style-type: none;
+    padding-left: 0;
+    line-height: 1.6;
+}
+
+.about-list li {
+    margin-bottom: 20px;
+}
+
+.about-list strong {
+    display: block;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.about-desc {
+    margin: 5px 0 0 20px;
+    font-size: 0.95rem;
+    color: #555;
+    text-align: left;
+}
+
+/* barvy obtížností */
+.text-easy { color: #28a745; font-weight: bold; }
+.text-medium { color: #fd7e14; font-weight: bold; }
+.text-hard { color: #dc3545; font-weight: bold; }

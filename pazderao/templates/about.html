@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>O projektu - Breakout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav>
+        <div class="nav-left">
+            <a href="/login">Uživatelský Login</a>
+        </div>
+        <div class="nav-right">
+            <a href="/">Domů</a>
+            <a href="/tab">Tabulka výsledků</a>
+            <a href="/about">O projektu</a>
+        </div>
+    </nav>
+
+    <div class="container" style="text-align: left;">
+        
+        <h1 style="text-align: center; margin-bottom: 30px;">O projektu Breakout</h1>
+
+        <p>
+            Jako moji hru jsem si vybral hru <strong>Breakout</strong> naprogramovanou v jazyce
+            <strong>Python</strong> pomocí knihovny <strong>Pygame</strong>. Práce je rozdělena do více souborů pro lepší přehlednost a údržbu.
+            Ke hře je též funkční webová aplikace vytvořená pomocí knihovny <strong>Flask</strong>,
+            která zobrazuje žebříček časů a umožňuje přihlašování uživatelů. 
+            Cílem hráče je pomocí pálky odrážet míček a zničit všechny bloky na obrazovce. 
+        </p>
+
+    <h2>Hlavní vlastnosti hry:</h2>
+    <ul class="about-list">
+        
+    <li>
+        <strong>Volba obtížnosti: 
+            <span class="text-easy">Lehká</span> / 
+            <span class="text-medium">Střední</span> / 
+            <span class="text-hard">Těžká</span>
+        </strong>
+        <p class="about-desc">
+            Hra nabízí možnost vybrat si úroveň obtížnosti. Tyto úrovně jsou určeny pro různé typy hráčů. Každá úroveň má své nastavení, 
+            které ovlivňuje rychlost míčku, velikost pálky a rozložení bloků. 
+            Lehká úroveň je ideální pro začátečníky, střední pro mírně pokročilé a těžká pro zkušenější hráče.
+        </p>
+    </li>
+
+        <li>
+            <strong>Měření času pomocí herního timeru</strong>
+            <p class="about-desc">
+                Ve hře se nachází funkce timer, která umožňuje měřit čas, za jak dlouho se hráči podaří zničit všechny bloky. 
+                Čas se zapisuje pouze tehdy, když hráč hru dokončí.
+                Čas je měřen s přesností na milisekundy. Čas se spustí při prvním odrazu a zastaví se v momentě, kdy zničíš poslední cihlu na ploše.
+            </p>
+        </li>
+
+        <li>
+            <strong>Automatické ukládání nejlepších výsledků</strong>
+            <p class="about-desc">
+                Po dohrání hry se automaticky vyhodnotí čas. V případě, že uživatel zadal jméno na začátku hry,
+                tak se čas uloží na webovou stránku a do mySQL databáze.
+            </p>
+        </li>
+
+        <li>
+        <strong>Žebříčky nejlepších hráčů</strong>
+        <p class="about-desc">
+            Web nabízí také Leaderboard, kde si uživatel může prohlédnout nejlepší dosažené časy všech hráčů rozdělené podle obtížnosti.
+            Při vybírání obtížnosti je možné tabulku hráčů otevřít, tlačítko se nachází v levé dolní části obrazovky.
+        </p>
+    </li>
+
+    <li>
+        <strong>Pause menu</strong>
+        <p class="about-desc">
+            Při stisknutí klávesy "Esc" se hra pozastaví a zobrazí se menu s možností pokračovat, nebo se vrátit na hlavní obrazovku.
+        </p>
+    </li>
+
+    <li>
+        <strong>Uživatelský systém (Login)</strong>
+        <p class="about-desc">
+            Systém umožňuje hráčům vytvořit si vlastní profil. To zajišťuje, že tvé rekordy budou vždy spojeny s tvým jménem a nikdo ti je "neukradne".
+        </p>
+    </li>
+
+</ul>
+
+        <h2>Boosty</h2>
+        <p>Během hry mohou z rozbitých cihel vypadnout speciální vylepšení (boosty), které hráči mohou pomoci, ale i ho oslabit.</p>
+        <ul style="line-height: 1.6;">
+            <li><strong>Zvětšení pálky</strong> – dočasně rozšíří pálku pro snazší odrážení míčku</li>
+            <li><strong>Zmenšení velikosti pálky</strong> – dočasně zmenší pálku, což ztěžuje odrážení míčku</li>
+            <li><strong>Extra míček</strong> – přidá další míček do hry.</li>
+        </ul>
+
+        <h2>Obtížnosti hry</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th style="text-align: left;">Obtížnost</th>
+                    <th style="text-align: left;">Popis</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Lehká</strong></td>
+                    <td>Širší pálka a pomalejší míček. Ideální pro seznámení se hrou.</td>
+                </tr>
+                <tr>
+                    <td><strong>Střední</strong></td>
+                    <td>Vyvážená rychlost míčku a standardní rozložení bloků.</td>
+                </tr>
+                <tr>
+                    <td><strong>Těžká</strong></td> 
+                    <td>Velmi rychlý míček a menší pálka. Prověří tvé reflexy na maximum.</td>
+                </tr>
+            </tbody>
+        </table>
+        <span class = "text-hard">UPOZORNĚNÍ:</span>
+        <p>Odrážení míčku hranami pálky zvyšuje jeho rychlost. Nastavení hry je tomu tak přizpůsobené, a nejedná se o chybu.</p>
+
+        <h2>Ovládání hry (Keybinds):</h2>
+        <p>
+            <strong>Levé tlačítko myši (LMB)</strong> - spuštení hry, ovládání v menu.
+            <br>
+            <strong>Enter</strong> – Potvrzení při zadávání jména
+            <br>
+            <strong>Šipky</strong> – pohyb pálky
+            <br>
+            <strong> Mezerník (Space) </strong> – spuštění hry
+            <br>
+            <strong>Esc</strong> – pozastavení hry a otevření pause menu
+            <br>
+            <strong>+,2,3</strong> – Možnost vybrání obtížnosti při výběru
+
+
+        </p>
+        <h3>Struktura databáze (ER Diagram)</h3>
+            <div class="diagram-container">
+                <img src="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/raw/Ondrej-Pazdera/pazderao/images/Er-Diagram.png" alt="Er-Diagram" style="max-width: 100%; height: auto;">
+            </div>
+
+        <h2>Webové rozhraní</h2>
+        <p>
+            Součástí maturitní práce je také toto webové rozhraní vytvořené pomocí frameworku
+            <strong>Flask</strong> (společně s HTML5 a CSS3), které umožňuje:
+        </p>
+        <ul style="line-height: 1.6;">
+            <li>Zobrazení žebříčků (Leaderboard) podle jednotlivých obtížností</li>
+            <li>Přihlašování uživatelů (Login)</li>
+            <li>Prezentaci celého projektu a technické dokumentace</li>
+        </ul>
+
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
+            <a href="/" class="btn-main" style="margin: 0 10px;">← Zpět na hlavní stránku</a>
+            <a href="https://github.com/koudelkaMatej/Maturitni_projekty_IT4/tree/Ondrej-Pazdera" target="_blank" class="btn-main" style="background-color: #333; margin: 0 10px;">
+                Odkaz na GitHub repozitář
+            </a>
+        </div>
+
+    </div>
+
+</body>
+</html>

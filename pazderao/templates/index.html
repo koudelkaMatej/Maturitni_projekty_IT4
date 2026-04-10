@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Breakout - Domů</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav> 
+        <div class="nav-left">
+            <strong>Breakout</strong>
+        </div>
+        <div class="nav-right">
+            <a href="/">Domů</a>
+            <a href="/tab">Tabulka výsledků</a>
+            <a href="/about">O projektu</a>
+            {% if user %}
+                <a href="/profile" style="color: #ffcc00;">Můj profil ({{ user }})</a>
+                <a href="/logout">Odhlásit</a>
+            {% else %}
+                <a href="/login">Uživatelský Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container"> 
+        <h1>Maturitní projekt - Breakout</h1>
+
+        <p style="margin-top: 30px; font-style: italic;">Tato webová aplikace slouží k zobrazení nejlepších výsledků a informací o hře.</p>
+        
+        <p>Breakout je klasická arcade hra, ve které hráč ovládá desku a odrazuje míček, aby zničil všechny bloky na obrazovce.</p>
+
+        {% if not user %}
+            <p><strong>Pro zobrazení Vašich výsledků se prosím </strong><a href="/login" style="color: #007bff; font-weight: bold; text-decoration: underline;">přihlašte</a> 😉</p>
+        {% else %}
+            <p><strong>Vítej zpět, {{ user }}! </p>
+        {% endif %}
+        
+        <p>Více informací o tomto projektu lze nalézt v sekci <a href="/about" style="color: #007bff; font-weight: bold; text-decoration: underline;">O projektu</a>.</p>
+        
+        <p>Nezapomeňte se podívat na <a href="/tab" style="color: #007bff; font-weight: bold; text-decoration: underline;">Tabulku výsledků</a>, kde se nacházejí rekordy odehraných her.</p>
+        
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
+
+        <div class="guide-container" style="text-align: left; max-width: 600px; margin: 0 auto;">
+            <h2 style="text-align: left; margin-left: 0">Vysvětlivky:</h2>
+            <p><strong>Tabulka vítězů:</strong> Tabulka nejlepších dosažených časů všech hráčů.</p>
+            <p><strong>O projektu:</strong> Obsahuje technické detaily o vývoji, použité technologie a informace k maturitní práci.</p>
+            <p><strong>Domů:</strong> Návrat na tuto úvodní stránku s přehledem.</p>
+        </div>
+
+        <p style="margin-top: 30px; font-style: italic; color: #888;">Tato hra slouží pouze jako maturitní projekt.</p>
+
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
+
+        <div style="text-align: left; width: 100%; margin: 0 0 20px 0;">
+            <p style="margin: 2px 0; font-style: italic;"><strong>Jméno:</strong> Ondřej Pazdera</p>
+            <p style="margin: 2px 0; font-style: italic;"><strong>Třída:</strong> IT4</p>
+            <p style="margin: 2px 0; font-style: italic;"><strong>Ročník:</strong> 2026</p>
+        </div>
+        
+        <a href="/tab" class="btn-main">Zobrazit tabulku výsledků</a>
+    </div>
+
+</body>
+</html>
