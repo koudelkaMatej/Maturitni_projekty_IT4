@@ -38,7 +38,7 @@ TOWER_CATALOG: Dict[str, dict] = {
         "range": 120,
         "damage": 10,
         "cooldown": 34,
-        "color": (44, 123, 229),
+        "color": (14, 143, 136),
     },
     "sniper": {
         "name": "Sniper",
@@ -48,7 +48,7 @@ TOWER_CATALOG: Dict[str, dict] = {
         "range": 210,
         "damage": 26,
         "cooldown": 78,
-        "color": (125, 92, 255),
+        "color": (61, 107, 145),
     },
     "splash": {
         "name": "Splash",
@@ -59,7 +59,7 @@ TOWER_CATALOG: Dict[str, dict] = {
         "damage": 14,
         "cooldown": 48,
         "splash_radius": 58,
-        "color": (255, 140, 66),
+        "color": (232, 111, 81),
     },
     "frost": {
         "name": "Frost",
@@ -71,7 +71,7 @@ TOWER_CATALOG: Dict[str, dict] = {
         "cooldown": 42,
         "slow_factor": 0.55,
         "slow_duration": 105,
-        "color": (31, 184, 178),
+        "color": (105, 205, 187),
     },
 }
 
@@ -112,27 +112,27 @@ GAME_LENGTHS = {
 }
 
 ENEMY_TYPES = {
-    "grunt": {"name": "Grunt", "hp": 34, "speed": 0.62, "reward": 14, "color": (217, 75, 75), "radius": 10},
-    "fast": {"name": "Fast", "hp": 20, "speed": 1.05, "reward": 12, "color": (255, 204, 77), "radius": 8},
-    "tank": {"name": "Tank", "hp": 72, "speed": 0.42, "reward": 20, "color": (139, 92, 246), "radius": 12},
-    "boss": {"name": "Boss", "hp": 260, "speed": 0.36, "reward": 90, "color": (17, 24, 39), "radius": 16},
+    "grunt": {"name": "Grunt", "hp": 34, "speed": 0.62, "reward": 14, "color": (209, 72, 95), "radius": 10},
+    "fast": {"name": "Fast", "hp": 20, "speed": 1.05, "reward": 12, "color": (246, 186, 74), "radius": 8},
+    "tank": {"name": "Tank", "hp": 72, "speed": 0.42, "reward": 20, "color": (94, 123, 173), "radius": 12},
+    "boss": {"name": "Boss", "hp": 260, "speed": 0.36, "reward": 90, "color": (14, 31, 40), "radius": 16},
 }
 
-COLOR_BG = (244, 239, 231)
-COLOR_PANEL = (255, 250, 242)
-COLOR_PANEL_ALT = (255, 244, 220)
-COLOR_LINE = (207, 189, 168)
-COLOR_TEXT = (47, 36, 24)
-COLOR_MUTED = (120, 103, 87)
-COLOR_ACCENT = (194, 97, 45)
-COLOR_GREEN = (31, 122, 107)
-COLOR_RED = (191, 62, 50)
-COLOR_PATH = (211, 168, 106)
-COLOR_GRID = (180, 163, 145)
-COLOR_HP = (123, 216, 143)
-COLOR_HP_BOSS = (249, 115, 22)
+COLOR_BG = (237, 247, 245)
+COLOR_PANEL = (251, 255, 254)
+COLOR_PANEL_ALT = (228, 242, 239)
+COLOR_LINE = (180, 203, 208)
+COLOR_TEXT = (23, 49, 58)
+COLOR_MUTED = (93, 119, 128)
+COLOR_ACCENT = (14, 143, 136)
+COLOR_GREEN = (232, 111, 81)
+COLOR_RED = (209, 72, 95)
+COLOR_PATH = (225, 170, 131)
+COLOR_GRID = (193, 212, 216)
+COLOR_HP = (84, 195, 136)
+COLOR_HP_BOSS = (232, 111, 81)
 COLOR_WHITE = (255, 255, 255)
-COLOR_BLACK = (17, 24, 39)
+COLOR_BLACK = (14, 31, 40)
 
 
 class GameState(Enum):
@@ -1008,7 +1008,7 @@ class TowerDefenseGame:
     def draw_overlay(self, title: str):
         board_rect = self.get_board_rect()
         overlay = pygame.Surface(board_rect.size, pygame.SRCALPHA)
-        overlay.fill((17, 24, 39, 150))
+        overlay.fill((14, 31, 40, 150))
         self.screen.blit(overlay, board_rect.topleft)
         text = self.font_large.render(title, True, COLOR_WHITE)
         center = board_rect.center
@@ -1055,7 +1055,7 @@ class TowerDefenseGame:
     def draw_cheat_panel(self):
         panel = self.cheat_panel_rect()
         shade = pygame.Surface(self.get_window_size(), pygame.SRCALPHA)
-        shade.fill((17, 24, 39, 120))
+        shade.fill((14, 31, 40, 120))
         self.screen.blit(shade, (0, 0))
         self.draw_panel(panel, alt=True)
         self.screen.blit(self.font_large.render("Cheat Menu", True, COLOR_TEXT), (panel.x + 26, panel.y + 22))
@@ -1085,7 +1085,7 @@ class TowerDefenseGame:
         self.draw_panel(board_outer_rect)
         self.draw_panel(sidebar_rect, alt=True)
 
-        pygame.draw.rect(self.screen, (244, 239, 228), board_rect, border_radius=18)
+        pygame.draw.rect(self.screen, (241, 250, 248), board_rect, border_radius=18)
         for px, py in PATH:
             pygame.draw.rect(
                 self.screen,
@@ -1136,7 +1136,7 @@ class TowerDefenseGame:
             rect = self.tower_button_rect(index)
             is_selected = tower_id == self.selected_tower_id
             is_unlocked = tower_id in self.unlocked_towers
-            bg = tower["color"] if is_unlocked else (160, 160, 160)
+            bg = tower["color"] if is_unlocked else (145, 159, 165)
             pygame.draw.rect(self.screen, bg, rect, border_radius=16)
             pygame.draw.rect(self.screen, COLOR_GREEN if is_selected else COLOR_BLACK, rect, 3, border_radius=16)
             title_surf = self.font_small.render(f"{tower['name']} {'(Locked)' if not is_unlocked else ''}", True, COLOR_WHITE)

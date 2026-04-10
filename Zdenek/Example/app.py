@@ -15,7 +15,7 @@ TOWER_CATALOG = {
         "range": 120,
         "damage": 10,
         "cooldown": 34,
-        "color": "#2c7be5",
+        "color": "#0e8f88",
     },
     "sniper": {
         "name": "Odstrelovaci vez",
@@ -25,7 +25,7 @@ TOWER_CATALOG = {
         "range": 210,
         "damage": 26,
         "cooldown": 78,
-        "color": "#7d5cff",
+        "color": "#3d6b91",
     },
     "splash": {
         "name": "Explozivni vez",
@@ -36,7 +36,7 @@ TOWER_CATALOG = {
         "damage": 14,
         "cooldown": 48,
         "splash_radius": 58,
-        "color": "#ff8c42",
+        "color": "#e86f51",
     },
     "frost": {
         "name": "Mraziva vez",
@@ -48,7 +48,7 @@ TOWER_CATALOG = {
         "cooldown": 42,
         "slow_factor": 0.55,
         "slow_duration": 105,
-        "color": "#1fb8b2",
+        "color": "#69cdbb",
     },
 }
 
@@ -59,7 +59,6 @@ DIFFICULTIES = {
 }
 
 MATCH_RESULTS = {"WIN", "LOSE"}
-MAX_TOWER_LEVEL = 3
 
 LEADERBOARD_BASE_QUERY = """
 SELECT username, best_wave, total_kills, total_coins
@@ -76,26 +75,13 @@ FROM (
 """
 
 
-# Zakladni pomocne funkce
+# Zakladni funkce
 def logged_in():
     return "user_id" in session
 
 
 def is_admin():
-    if not logged_in():
-        return False
     return session.get("username") == "sa"
-
-
-def ensure_logged_in():
-    if logged_in():
-        return None
-    return redirect("/login")
-
-
-def ensure_admin():
-    if not is_admin():
-        abort(403)
 
 
 def read_int(payload, key):
@@ -115,16 +101,13 @@ def calculate_reward(result, kills, waves, difficulty="normal"):
     if difficulty not in DIFFICULTIES:
         raise ValueError("Neplatna obtiznost.")
 
-    reward = 20
-    reward += kills * 2
-    reward += waves * 10
+    reward = 20 + kills * 2 + waves * 10
 
     if result == "WIN":
         reward += 100
 
-    reward = reward * DIFFICULTIES[difficulty]["reward_bonus"]
-    reward = int(round(reward))
-    return max(0, reward)
+    bonus = DIFFICULTIES[difficulty]["reward_bonus"]
+    return max(0, int(round(reward * bonus)))
 
 
 def validate_match_payload(payload):
@@ -145,7 +128,7 @@ def validate_match_payload(payload):
     return result, waves, kills, difficulty
 
 
-# Data pro profil a statistiky
+# Spolecne DB funkce
 def ensure_default_tower_unlock(cursor, user_id):
     cursor.execute(
         """
@@ -171,36 +154,35 @@ def get_unlocked_towers(cursor, user_id):
         (user_id,),
     )
 
+    rows = cursor.fetchall()
     tower_names = []
-    for row in cursor.fetchall():
+
+    for row in rows:
         tower_names.append(row[0])
 
-    if tower_names:
-        return tower_names
-    return ["basic"]
+    if tower_names == []:
+        tower_names.append("basic")
+
+    return tower_names
 
 
 def build_tower_payload(unlocked_names):
     payload = []
-    unlocked_set = set(unlocked_names)
 
-    for tower_id, tower_info in TOWER_CATALOG.items():
-        tower_data = {}
+    for tower_id in TOWER_CATALOG:
+        tower = TOWER_CATALOG[tower_id].copy()
+        tower["id"] = tower_id
 
-        for key, value in tower_info.items():
-            tower_data[key] = value
-
-        tower_data["id"] = tower_id
-        if tower_id in unlocked_set:
-            tower_data["unlocked"] = True
-            tower_data["card_class"] = "is-unlocked"
-            tower_data["status_label"] = "Odemceno"
+        if tower_id in unlocked_names:
+            tower["unlocked"] = True
+            tower["card_class"] = "is-unlocked"
+            tower["status_label"] = "Odemceno"
         else:
-            tower_data["unlocked"] = False
-            tower_data["card_class"] = "is-locked"
-            tower_data["status_label"] = "Zamceno"
+            tower["unlocked"] = False
+            tower["card_class"] = "is-locked"
+            tower["status_label"] = "Zamceno"
 
-        payload.append(tower_data)
+        payload.append(tower)
 
     return payload
 
@@ -248,148 +230,6 @@ def get_player_stats(cursor, user_id):
     }
 
 
-def get_recent_matches(cursor, user_id, limit=5):
-    cursor.execute(
-        """
-        SELECT result, waves_reached, kills, reward_coins, difficulty, played_at
-        FROM matches
-        WHERE user_id = %s
-        ORDER BY played_at DESC
-        LIMIT %s
-        """,
-        (user_id, limit),
-    )
-    return cursor.fetchall()
-
-
-def get_player_profile_data(user_id):
-    mydb = get_db()
-    mycursor = mydb.cursor()
-
-    try:
-        ensure_default_tower_unlock(mycursor, user_id)
-
-        mycursor.execute(
-            "SELECT username, coins, created_at FROM users WHERE id = %s",
-            (user_id,),
-        )
-        user_row = mycursor.fetchone()
-
-        stats = get_player_stats(mycursor, user_id)
-        last_matches = get_recent_matches(mycursor, user_id)
-        unlocked_towers = get_unlocked_towers(mycursor, user_id)
-
-        mydb.commit()
-    finally:
-        mycursor.close()
-        mydb.close()
-
-    return {
-        "username": user_row[0],
-        "coins": user_row[1],
-        "created_at": user_row[2],
-        "stats": stats,
-        "last_matches": last_matches,
-        "unlocked_towers": build_tower_payload(unlocked_towers),
-    }
-
-
-def get_player_stats_for_page(user_id):
-    mydb = get_db()
-    mycursor = mydb.cursor()
-
-    try:
-        stats = get_player_stats(mycursor, user_id)
-    finally:
-        mycursor.close()
-        mydb.close()
-
-    return stats
-
-
-def get_history_rows(user_id):
-    mydb = get_db()
-    mycursor = mydb.cursor()
-
-    try:
-        mycursor.execute(
-            """
-            SELECT played_at, result, waves_reached, kills, reward_coins, difficulty
-            FROM matches
-            WHERE user_id = %s
-            ORDER BY played_at DESC
-            """,
-            (user_id,),
-        )
-        rows = mycursor.fetchall()
-    finally:
-        mycursor.close()
-        mydb.close()
-
-    return rows
-
-
-def get_leaderboard_rows(cursor, order_clause):
-    query = LEADERBOARD_BASE_QUERY + f" ORDER BY {order_clause} LIMIT 10"
-    cursor.execute(query)
-    return cursor.fetchall()
-
-
-def get_leaderboards():
-    mydb = get_db()
-    mycursor = mydb.cursor()
-
-    try:
-        boards = {
-            "best_wave": get_leaderboard_rows(
-                mycursor,
-                "best_wave DESC, total_kills DESC, total_coins DESC, username ASC",
-            ),
-            "total_kills": get_leaderboard_rows(
-                mycursor,
-                "total_kills DESC, best_wave DESC, total_coins DESC, username ASC",
-            ),
-            "total_coins": get_leaderboard_rows(
-                mycursor,
-                "total_coins DESC, best_wave DESC, total_kills DESC, username ASC",
-            ),
-        }
-    finally:
-        mycursor.close()
-        mydb.close()
-
-    return boards
-
-
-def get_admin_users():
-    mydb = get_db()
-    mycursor = mydb.cursor()
-
-    try:
-        mycursor.execute(
-            """
-            SELECT
-                u.id,
-                u.username,
-                u.coins,
-                COALESCE(COUNT(m.id), 0) AS total_games,
-                COALESCE(MAX(m.waves_reached), 0) AS best_wave,
-                COALESCE(SUM(m.kills), 0) AS total_kills
-            FROM users u
-            LEFT JOIN matches m ON m.user_id = u.id
-            GROUP BY u.id, u.username, u.coins
-            ORDER BY u.username ASC
-            """
-        )
-        rows = mycursor.fetchall()
-    finally:
-        mycursor.close()
-        mydb.close()
-
-    return rows
-
-
-# Zapis do databaze
 def delete_user_data(cursor, user_id):
     cursor.execute("DELETE FROM purchases WHERE user_id = %s", (user_id,))
     cursor.execute("DELETE FROM towers_unlocked WHERE user_id = %s", (user_id,))
@@ -408,35 +248,33 @@ def save_match_result(user_id, payload):
     result, waves, kills, difficulty = validate_match_payload(payload)
     reward = calculate_reward(result, kills, waves, difficulty)
 
-    if reward < 0:
-        raise ValueError("reward musi byt >= 0")
-
-    mydb = get_db()
-    mycursor = mydb.cursor()
+    db = get_db()
+    cursor = db.cursor()
 
     try:
-        mycursor.execute(
+        cursor.execute(
             """
             INSERT INTO matches (user_id, result, waves_reached, kills, reward_coins, difficulty)
             VALUES (%s, %s, %s, %s, %s, %s)
             """,
             (user_id, result, waves, kills, reward, difficulty),
         )
-        mycursor.execute(
+        cursor.execute(
             "UPDATE users SET coins = coins + %s WHERE id = %s",
             (reward, user_id),
         )
-        mydb.commit()
-        return reward
+        db.commit()
     except Exception:
-        mydb.rollback()
+        db.rollback()
         raise
     finally:
-        mycursor.close()
-        mydb.close()
+        cursor.close()
+        db.close()
+
+    return reward
 
 
-# Routy
+# Stranky
 @app.route("/")
 def home():
     if logged_in():
@@ -455,21 +293,21 @@ def register():
     if username == "" or password == "":
         return render_template("register.html", error="Vypln username a heslo.")
 
-    mydb = get_db()
-    mycursor = mydb.cursor()
+    db = get_db()
+    cursor = db.cursor()
 
     try:
-        mycursor.execute(
+        cursor.execute(
             "INSERT INTO users (username, password, coins) VALUES (%s, %s, %s)",
             (username, password, 0),
         )
-        mydb.commit()
+        db.commit()
     except Exception:
-        mydb.rollback()
+        db.rollback()
         return render_template("register.html", error="Uzivatel uz existuje nebo DB chyba.")
     finally:
-        mycursor.close()
-        mydb.close()
+        cursor.close()
+        db.close()
 
     return redirect("/login")
 
@@ -482,23 +320,23 @@ def login():
     username = request.form.get("username", "").strip()
     password = request.form.get("password", "")
 
-    mydb = get_db()
-    mycursor = mydb.cursor()
+    db = get_db()
+    cursor = db.cursor()
 
     try:
-        mycursor.execute("SELECT id, password FROM users WHERE username = %s", (username,))
-        row = mycursor.fetchone()
+        cursor.execute("SELECT id, password FROM users WHERE username = %s", (username,))
+        user = cursor.fetchone()
     finally:
-        mycursor.close()
-        mydb.close()
+        cursor.close()
+        db.close()
 
-    if row is None:
+    if user is None:
         return render_template("login.html", error="Spatne jmeno nebo heslo.")
 
-    user_id = row[0]
-    stored_password = row[1]
+    user_id = user[0]
+    saved_password = user[1]
 
-    if stored_password != password:
+    if saved_password != password:
         return render_template("login.html", error="Spatne jmeno nebo heslo.")
 
     session["user_id"] = user_id
@@ -514,40 +352,102 @@ def logout():
 
 @app.route("/profile")
 def profile():
-    redirect_response = ensure_logged_in()
-    if redirect_response:
-        return redirect_response
+    if not logged_in():
+        return redirect("/login")
 
-    profile_data = get_player_profile_data(session["user_id"])
+    user_id = session["user_id"]
+    db = get_db()
+    cursor = db.cursor()
+
+    try:
+        cursor.execute(
+            "SELECT username, coins, created_at FROM users WHERE id = %s",
+            (user_id,),
+        )
+        user = cursor.fetchone()
+
+        stats = get_player_stats(cursor, user_id)
+
+        cursor.execute(
+            """
+            SELECT result, waves_reached, kills, reward_coins, difficulty, played_at
+            FROM matches
+            WHERE user_id = %s
+            ORDER BY played_at DESC
+            LIMIT %s
+            """,
+            (user_id, 5),
+        )
+        last_matches = cursor.fetchall()
+
+        unlocked_names = get_unlocked_towers(cursor, user_id)
+        db.commit()
+    finally:
+        cursor.close()
+        db.close()
+
     return render_template(
         "profile.html",
-        username=profile_data["username"],
-        coins=profile_data["coins"],
-        created_at=profile_data["created_at"],
-        stats=profile_data["stats"],
-        last_matches=profile_data["last_matches"],
-        unlocked_towers=profile_data["unlocked_towers"],
+        username=user[0],
+        coins=user[1],
+        created_at=user[2],
+        stats=stats,
+        last_matches=last_matches,
+        unlocked_towers=build_tower_payload(unlocked_names),
         is_admin_user=is_admin(),
     )
 
 
 @app.route("/stats")
 def stats():
-    redirect_response = ensure_logged_in()
-    if redirect_response:
-        return redirect_response
+    if not logged_in():
+        return redirect("/login")
 
-    player_stats = get_player_stats_for_page(session["user_id"])
-    return render_template("stats.html", **player_stats, is_admin_user=is_admin())
+    db = get_db()
+    cursor = db.cursor()
+
+    try:
+        stats_data = get_player_stats(cursor, session["user_id"])
+    finally:
+        cursor.close()
+        db.close()
+
+    return render_template(
+        "stats.html",
+        total_games=stats_data["total_games"],
+        wins=stats_data["wins"],
+        losses=stats_data["losses"],
+        best_wave=stats_data["best_wave"],
+        total_kills=stats_data["total_kills"],
+        total_reward=stats_data["total_reward"],
+        win_rate=stats_data["win_rate"],
+        is_admin_user=is_admin(),
+    )
 
 
 @app.route("/history")
 def history():
-    redirect_response = ensure_logged_in()
-    if redirect_response:
-        return redirect_response
+    if not logged_in():
+        return redirect("/login")
 
-    history_rows = get_history_rows(session["user_id"])
+    db = get_db()
+    cursor = db.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT played_at, result, waves_reached, kills, reward_coins, difficulty
+            FROM matches
+            WHERE user_id = %s
+            ORDER BY played_at DESC
+            """,
+            (session["user_id"],),
+        )
+        history_rows = cursor.fetchall()
+    finally:
+        cursor.close()
+        db.close()
+
     return render_template(
         "history.html",
         history_rows=history_rows,
@@ -557,25 +457,53 @@ def history():
 
 @app.route("/leaderboard")
 def leaderboard():
-    redirect_response = ensure_logged_in()
-    if redirect_response:
-        return redirect_response
+    if not logged_in():
+        return redirect("/login")
 
-    leaderboards = get_leaderboards()
+    db = get_db()
+    cursor = db.cursor()
+
+    try:
+        cursor.execute(
+            LEADERBOARD_BASE_QUERY
+            + " ORDER BY best_wave DESC, total_kills DESC, total_coins DESC, username ASC LIMIT 10"
+        )
+        best_wave_rows = cursor.fetchall()
+
+        cursor.execute(
+            LEADERBOARD_BASE_QUERY
+            + " ORDER BY total_kills DESC, best_wave DESC, total_coins DESC, username ASC LIMIT 10"
+        )
+        total_kills_rows = cursor.fetchall()
+
+        cursor.execute(
+            LEADERBOARD_BASE_QUERY
+            + " ORDER BY total_coins DESC, best_wave DESC, total_kills DESC, username ASC LIMIT 10"
+        )
+        total_coins_rows = cursor.fetchall()
+    finally:
+        cursor.close()
+        db.close()
+
     return render_template(
         "leaderboard.html",
-        leaderboards=leaderboards,
+        leaderboards={
+            "best_wave": best_wave_rows,
+            "total_kills": total_kills_rows,
+            "total_coins": total_coins_rows,
+        },
         is_admin_user=is_admin(),
     )
 
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
-    redirect_response = ensure_logged_in()
-    if redirect_response:
-        return redirect_response
+    if not logged_in():
+        return redirect("/login")
 
-    ensure_admin()
+    if not is_admin():
+        abort(403)
+
     action_message = None
 
     if request.method == "POST":
@@ -585,25 +513,49 @@ def admin():
         if target_user_id == session["user_id"]:
             action_message = "Admin ucet nelze menit timto formularem."
         else:
-            mydb = get_db()
-            mycursor = mydb.cursor()
+            db = get_db()
+            cursor = db.cursor()
 
             try:
                 if action == "delete":
-                    delete_user_data(mycursor, target_user_id)
+                    delete_user_data(cursor, target_user_id)
                     action_message = "Uzivatel byl smazan."
                 elif action == "reset":
-                    reset_user_data(mycursor, target_user_id)
+                    reset_user_data(cursor, target_user_id)
                     action_message = "Statistiky uzivatele byly resetovany."
 
-                mydb.commit()
+                db.commit()
             finally:
-                mycursor.close()
-                mydb.close()
+                cursor.close()
+                db.close()
+
+    db = get_db()
+    cursor = db.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT
+                u.id,
+                u.username,
+                u.coins,
+                COALESCE(COUNT(m.id), 0) AS total_games,
+                COALESCE(MAX(m.waves_reached), 0) AS best_wave,
+                COALESCE(SUM(m.kills), 0) AS total_kills
+            FROM users u
+            LEFT JOIN matches m ON m.user_id = u.id
+            GROUP BY u.id, u.username, u.coins
+            ORDER BY u.username ASC
+            """
+        )
+        users = cursor.fetchall()
+    finally:
+        cursor.close()
+        db.close()
 
     return render_template(
         "admin.html",
-        users=get_admin_users(),
+        users=users,
         action_message=action_message,
         is_admin_user=True,
     )
@@ -611,8 +563,7 @@ def admin():
 
 @app.route("/api/match", methods=["POST"])
 def create_match():
-    redirect_response = ensure_logged_in()
-    if redirect_response:
+    if not logged_in():
         return jsonify({"error": "Unauthorized"}), 401
 
     payload = request.get_json(silent=True)
