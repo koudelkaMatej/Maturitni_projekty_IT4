@@ -464,7 +464,7 @@ exit_img = pygame.transform.scale(exit_img, (300, 150))
 settings_img = pygame.transform.scale(settings_img, (300, 150))
 leaderboard_img = pygame.transform.scale(leaderboard_img, (300, 150))
 back_img = pygame.transform.scale(back_img, (300, 150))
-restart_img = pygame.transform.scale(restart_img, (200, 100))
+restart_img = pygame.transform.scale(restart_img, (270, 130))
 
 # Oříznutí (odstranění průhledných okrajů)
 start_img = trim_image(start_img)
