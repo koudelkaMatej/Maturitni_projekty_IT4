@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Seznam uživatelů</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-left">
+        <img src="{{ url_for('static', filename='img/turtle1.png') }}" alt="želvička" style="height: 30px; width: auto; margin-right: 10px;">
+        <h1>Flappy Turtle</h1>
+        <div class="nav-links">
+            <a href="/about" class="nav-btn">O projektu</a>
+            <a href="/leaderboard" class="nav-btn">Leaderboard</a>
+            <a href="/profile" class="nav-btn">Můj profil</a>
+            {% if session.get("role") == "admin" %}
+                <a href="/stats" class="nav-btn">Statistiky</a>
+                <a href="/users" class="nav-btn">Uživatelé</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="nav-right">
+        <span class="username">{{ session["user"] }}</span>
+        <a href="/logout" class="nav-btn logout">Odhlásit</a>
+    </div>
+</div>
+
+<div style="margin-top: 40px;">
+    <h2 class="page-title">Seznam uživatelů</h2>
+
+    <table class="leaderboard" style="max-width: 800px;">
+        <tr>
+            <th>Číslo</th>
+            <th>Uživatelské jméno</th>
+            <th>Role</th>
+            <th>Akce</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.role }}</td>
+            <td>
+                {% if user.id != session.get("user_id") %}
+                    <a href="/delete_user/{{ user.id }}" class="delete-btn" onclick="return confirm('Opravdu smazat tohoto uživatele? Všechna jeho skóre a achievements budou také smazány.')">Smazat</a>
+                {% else %}
+                    <span style="color: #888;">(toto jsi ty)</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="center-btn">
+        <a href="/" class="nav-btn">Zpět na hlavní stránku</a>
+    </div>
+</div>
+
+<footer>
+    © 2026 Flappy Turtle | Školní projekt
+</footer>
+
+</body>
+</html>

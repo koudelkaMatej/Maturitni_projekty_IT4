@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-left">
+        <img src="{{ url_for('static', filename='img/turtle1.png') }}" alt="želvička" style="height: 30px; width: auto; margin-right: 10px;">
+        <h1>Flappy Turtle</h1>
+        <div class="nav-links">
+            <a href="/about" class="nav-btn">O projektu</a>
+            <a href="/leaderboard" class="nav-btn">Leaderboard</a>
+            <a href="/profile" class="nav-btn">Můj profil</a>
+            {% if session.get("role") == "admin" %}
+                <a href="/stats" class="nav-btn">Statistiky</a>
+                <a href="/users" class="nav-btn">Uživatelé</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="nav-right">
+        <span class="username">{{ session["user"] }}</span>
+        <a href="/logout" class="nav-btn logout">Odhlásit</a>
+    </div>
+</div>
+
+<div style="margin-top: 40px; width: 100%;">
+    <h2 class="page-title">Leaderboard</h2>
+
+    <table class="leaderboard">
+        <tr>
+            <th>Pořadí</th>
+            <th>Hráč</th>
+            <th>Skóre</th>
+            <th>Obtížnost</th>
+            {% if session.get("role") == "admin" %}
+                <th>Akce</th>
+            {% endif %}
+        </tr>
+
+        {% for row in data %}
+        <tr class="
+            {% if loop.index == 1 %}gold
+            {% elif loop.index == 2 %}silver
+            {% elif loop.index == 3 %}bronze
+            {% endif %}
+        ">
+            <td>{{ loop.index }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }}</td>
+            <td>{{ row[3] }}</td>
+            {% if session.get("role") == "admin" %}
+                <td>
+                    <a class="delete-btn" href="/delete_score/{{ row[0] }}">Smazat</a>
+                </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="center-btn">
+        <button onclick="window.location.href='/'">Zpět na hlavní stránku</button>
+    </div>
+</div>
+
+<footer>
+    © 2026 Flappy Turtle | Školní projekt
+</footer>
+
+</body>
+</html>

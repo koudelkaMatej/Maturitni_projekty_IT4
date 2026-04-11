@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <h1>Leaderboard filter</h1>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-left">
+        <img src="{{ url_for('static', filename='img/turtle1.png') }}" alt="želvička" style="height: 30px; width: auto; margin-right: 10px;">
+        <h1>Flappy Turtle</h1>
+        <div class="nav-links">
+            <a href="/about" class="nav-btn">O projektu</a>
+            <a href="/leaderboard" class="nav-btn">Leaderboard</a>
+            <a href="/profile" class="nav-btn">Můj profil</a>
+            {% if session.get("role") == "admin" %}
+                <a href="/users" class="nav-btn">Uživatelé</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="nav-right">
+        <span class="username">{{ session["user"] }}</span>
+        <a href="/logout" class="nav-btn logout">Odhlásit</a>
+    </div>
+</div>
+
+<h1 class="leaderboard-title">Leaderboard – filtrování</h1>
+
+<div style="text-align: center; margin-bottom: 20px;">
+    <form method="get" action="/leaderboard/filter">
+        <label for="difficulty" style="color: #f5d98f; font-size: 1.2rem;">Obtížnost:</label>
+        <select name="difficulty" id="difficulty" onchange="this.form.submit()" style="padding: 8px; border-radius: 20px; background: #2b4b5c; color: white; border: 2px solid #e6b85e;">
+            <option value="" {% if not selected %}selected{% endif %}>Vše</option>
+            <option value="easy" {% if selected == 'easy' %}selected{% endif %}>Easy</option>
+            <option value="medium" {% if selected == 'medium' %}selected{% endif %}>Medium</option>
+            <option value="hard" {% if selected == 'hard' %}selected{% endif %}>Hard</option>
+        </select>
+    </form>
+</div>
+
+<table class="leaderboard">
+    <tr>
+        <th>Pořadí</th>
+        <th>Hráč</th>
+        <th>Skóre</th>
+        <th>Obtížnost</th>
+        {% if session.get("role") == "admin" %}
+            <th>Akce</th>
+        {% endif %}
+    </tr>
+
+    {% for row in data %}
+    <tr class="
+        {% if loop.index == 1 %}gold
+        {% elif loop.index == 2 %}silver
+        {% elif loop.index == 3 %}bronze
+        {% endif %}
+    ">
+        <td>{{ loop.index }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+        <td>{{ row[3] }}</td>
+        {% if session.get("role") == "admin" %}
+            <td>
+                <a class="delete-btn" href="/delete_score/{{ row[0] }}">Smazat</a>
+            </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+
+<div class="center-btn">
+    <a href="/leaderboard" class="nav-btn">Zpět na hlavní leaderboard</a>
+</div>
+
+<footer>
+    © 2026 Flappy Turtle | Školní projekt
+</footer>
+
+</body>
+</html>

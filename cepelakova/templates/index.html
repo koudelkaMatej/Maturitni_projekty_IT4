@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Turtle</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-left">
+        <img src="{{ url_for('static', filename='img/turtle1.png') }}" alt="želvička" style="height: 30px; width: auto; margin-right: 10px;">
+        <h1>Flappy Turtle</h1>
+        <div class="nav-links">
+            <a href="/about" class="nav-btn">O projektu</a>
+            {% if session.get("user") %}
+                <a href="/leaderboard" class="nav-btn">Leaderboard</a>
+                <a href="/profile" class="nav-btn">Můj profil</a>
+                {% if session.get("role") == "admin" %}
+                    <a href="/stats" class="nav-btn">Statistiky</a>
+                    <a href="/users" class="nav-btn">Uživatelé</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="nav-right">
+        {% if session.get("user") %}
+            <span class="username">{{ session["user"] }}</span>
+            <a href="/logout" class="nav-btn logout">Odhlásit</a>
+        {% else %}
+            <a href="/login" class="nav-btn outline">Přihlášení</a>
+            <a href="/register" class="nav-btn primary">Registrace</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="about-box">
+    <h2>O projektu</h2>
+    <p>
+        Flappy Turtle je jednoduchá hra inspirovaná známou hrou Flappy Bird.
+        Cílem je ovládat želvu a vyhýbat se překážkám co nejdéle.
+    </p>
+    <p>
+        Projekt obsahuje přihlašování uživatelů, ukládání skóre a žebříček hráčů.
+        Administrátor může spravovat výsledky.
+    </p>
+</div>
+
+<footer>
+    © 2026 Flappy Turtle | Školní projekt
+</footer>
+
+</body>
+</html>

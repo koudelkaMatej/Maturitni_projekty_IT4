@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Můj profil</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-left">
+        <img src="{{ url_for('static', filename='img/turtle1.png') }}" alt="želvička" style="height: 30px; width: auto; margin-right: 10px;">
+        <h1>Flappy Turtle</h1>
+        <div class="nav-links">
+            <a href="/about" class="nav-btn">O projektu</a>
+            <a href="/leaderboard" class="nav-btn">Leaderboard</a>
+            <a href="/profile" class="nav-btn">Můj profil</a>
+            {% if session.get("role") == "admin" %}
+                <a href="/stats" class="nav-btn">Statistiky</a>
+                <a href="/users" class="nav-btn">Uživatelé</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="nav-right">
+        <span class="username">{{ username }}</span>
+        <a href="/logout" class="nav-btn logout">Odhlásit</a>
+    </div>
+</div>
+
+
+<div style="margin-top: 40px;">
+    <h2 class="page-title">Můj profil</h2>
+
+    <div class="about-section">
+        <h2>Moje úspěchy</h2>
+        <div class="achievements-grid">
+            {% for a in all %}
+                <div class="achievement-card">
+                    <div class="icon">{{ a.icon or '🏅' }}</div>
+                    <h3>{{ a.name }}</h3>
+                    <p>{{ a.description }}</p>
+                    {% if a in achievements %}
+                        <div class="ziskano">✓ Získáno</div>
+                    {% else %}
+                        <div class="neziskano">✗ Ještě nezískáno</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="center-btn" style="margin-top: 30px;">
+        <a href="/change_password" class="nav-btn">Změnit heslo</a>
+    </div>
+
+    <div class="center-btn">
+        <a href="/" class="nav-btn">Zpět na hlavní stránku</a>
+    </div>
+</div>
+
+<footer>
+    © 2026 Flappy Turtle | Školní projekt
+</footer>
+
+</body>
+</html>

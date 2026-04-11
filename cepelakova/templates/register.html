@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrace</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="form-container">
+    <h1>Registrace</h1>
+    <form method="POST">
+        <input type="text" name="username" placeholder="Uživatelské jméno" required>
+        <input type="password" name="password" placeholder="Heslo" required>
+        <input type="password" name="password2" placeholder="Potvrď heslo" required>
+        <button type="submit">Zaregistrovat se</button>
+    </form>
+    {% if error %}
+        <p style="color: #fca5a5; margin-top: 10px;">{{ error }}</p>
+    {% endif %}
+    <p>Už máš účet? <a href="/login">Přihlas se</a></p>
+    <button onclick="window.location.href='/'">Zpět na hlavní stránku</button>
+</div>
+
+<footer>
+    © 2026 Flappy Turtle | Školní projekt
+</footer>
+
+</body>
+</html>

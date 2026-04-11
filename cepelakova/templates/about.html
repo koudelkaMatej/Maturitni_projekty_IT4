@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>O projektu</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-left">
+        <img src="{{ url_for('static', filename='img/turtle1.png') }}" alt="želvička" style="height: 30px; width: auto; margin-right: 10px;">
+        <h1>Flappy Turtle</h1>
+        <div class="nav-links">
+            <a href="/about" class="nav-btn">O projektu</a>
+            {% if session.get("user") %}
+                <a href="/leaderboard" class="nav-btn">Leaderboard</a>
+                <a href="/profile" class="nav-btn">Můj profil</a>
+                {% if session.get("role") == "admin" %}
+                    <a href="/stats" class="nav-btn">Statistiky</a>
+                    <a href="/users" class="nav-btn">Uživatelé</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="nav-right">
+        {% if session.get("user") %}
+            <span class="username">{{ session["user"] }}</span>
+            <a href="/logout" class="nav-btn logout">Odhlásit</a>
+        {% else %}
+            <a href="/login" class="nav-btn outline">Přihlášení</a>
+            <a href="/register" class="nav-btn primary">Registrace</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="about-page">
+
+    <h2 class="page-title">O projektu</h2>
+
+    <div class="about-section">
+        <h2>Popis programu</h2>
+        <p>
+            Tento projekt představuje jednoduchou hru s názvem Flappy Turtle, která byla inspirována známou hrou Flappy Bird.
+            Hráč si může nastavit obtížnost dle sebe a hrát pod svým jménem.
+            Získané skóre si po registraci a přihlášení může zobrazit na webové stránce hry.
+        </p>
+        <p>
+            Tato hra byla vytvořena v <b>Python</b> využitím <b>Pygame</b> knihovny.
+            Skóre hráče se ukládá do <b>SQLite database</b> a zobrazuje se v leaderboardu.
+        </p>
+        <p>
+            Webová stránka využívá <b>JavaScript</b> pro interaktivní zoom a posun vývojového diagramu.
+        </p>
+    </div>
+
+    <div class="about-section">
+        <h2>Použité knihovny</h2>
+        <ul style="padding-left: 20px; margin-left: 0;">
+            <li><strong>pygame</strong> – grafika, zvuk, vstup (externí, <code>pip install pygame</code>)</li>
+            <li><strong>random</strong> – náhodné generování (vestavěná)</li>
+            <li><strong>json</strong> – ukládání uživatelů (vestavěná)</li>
+            <li><strong>os</strong> – kontrola souborů (vestavěná)</li>
+            <li><strong>sqlite3</strong> – databáze skóre (vestavěná)</li>
+            <li><strong>Flask</strong> – webové rozhraní (externí, <code>pip install flask</code>)</li>
+        </ul>
+    </div>
+
+    <div class="about-section">
+        <h2>Použité algoritmy</h2>
+
+        <h3>Generování pipes</h3>
+        <pre>
+while game_running:
+    if time_since_last_pipe > pipe_frequency:
+        gap = random number between gap_min and gap_max
+        center = random number between 300 and 550
+
+        create_bottom_pipe
+        create_top_pipe
+        </pre>
+
+        <h3>Detekce kolize</h3>
+        <pre>
+if turtle collides with pipe:
+    game_over = True
+
+if turtle hits ground:
+    game_over = True
+        </pre>
+
+        <h3>Ukládání skóre</h3>
+        <pre>
+if game_over and score_not_saved:
+    save_score(username, score, difficulty)
+        </pre>
+    </div>
+
+<div class="about-section">
+        <h2>Vývojový diagram</h2>
+        <h3>Generování pipes</h3>
+
+        <div id="diagram-container" style="
+            overflow: hidden;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            cursor: grab;
+            width: 100%;
+            height: 400px;
+            position: relative;
+        ">
+            <img id="diagram-img" src="static/img/diagram.svg" style="
+                position: absolute;
+                transform-origin: 0 0;
+                user-select: none;
+                pointer-events: none;
+            ">
+        </div>
+
+        <script>
+            const container = document.getElementById('diagram-container');
+            const img = document.getElementById('diagram-img'); let scale = 1, panX = 0, panY = 0, dragging = false, startX, startY;
+
+            function update() {img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;}
+
+            container.addEventListener('wheel', (e) => {e.preventDefault(); scale = Math.min(Math.max(scale * (e.deltaY > 0 ? 0.9 : 1.1), 0.3), 5);update();});
+
+            container.addEventListener('mousedown', (e) => {dragging = true; startX = e.clientX - panX; startY = e.clientY - panY; container.style.cursor = 'grabbing';});
+
+            window.addEventListener('mousemove', (e) => { if (!dragging) return; panX = e.clientX - startX; panY = e.clientY - startY; update();});
+
+            window.addEventListener('mouseup', () => {dragging = false; container.style.cursor = 'grab';});
+        </script>
+
+    </div>
+
+  <div class="about-section">
+        <h2>Ukázka hry</h2>
+        <div style="display: flex; gap: 40px; align-items: center; flex-wrap: wrap;">
+            <img src="{{ url_for('static', filename='img/screen.png') }}" alt="Ukázka hry" style="max-width: 400px; width: 100%;">
+            <div>
+                <h3 style="color: #ffffff; margin-bottom: 15px;">Ovládání</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin: 10px 0; font-size: 1.2rem;"><strong>Mezerník</strong> nebo <strong>kliknutí myši</strong> – skok</li>
+                    <li style="margin: 10px 0; font-size: 1.2rem;"><strong>Skóre</strong> se zobrazuje nahoře uprostřed</li>
+                    <li style="margin: 10px 0; font-size: 1.2rem;">Vyhýbej se trubkám – při nárazu hra končí</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+        <div class="info-card" style="flex: 1; background: #2d5a7a; padding: 20px 35px; border-radius: 25px; text-align: center; box-shadow: 0 4px 0 #1f4a66;">
+            <div style="font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; color: #cce6f5;">Autor</div>
+            <div style="font-size: 1.2rem; font-weight: bold; margin-top: 8px;">Tereza Čepeláková</div>
+        </div>
+        <div class="info-card" style="flex: 1; background: #2d5a7a; padding: 20px 35px; border-radius: 25px; text-align: center; box-shadow: 0 4px 0 #1f4a66;">
+            <div style="font-size: 1rem; text-transform: uppercase; letter-spacing: 2px; color: #cce6f5;">Git repository</div>
+            <a href="https://github.com/Anekostrike/maturitni_projekt.git" target="_blank" style="font-size: 1.2rem; font-weight: bold; color: #ffffff; text-decoration: none; display: inline-block; margin-top: 8px;">GitHub Link</a>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<footer>
+    © 2026 Flappy Turtle | Školní projekt
+</footer>
+
+</body>
+</html>
