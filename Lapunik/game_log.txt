@@ -1,0 +1,25 @@
+[15.04.2026 00:41:20] Hráč 'martinek' se přihlásil.
+[15.04.2026 00:45:53] Hráč 'martinek2' úspěšně zaregistrován.
+[15.04.2026 00:48:58] Hráč 'tester' prohrál v Levelu 1 se skóre 0.
+[15.04.2026 00:49:14] Hráč 'tester' prohrál v Levelu 1 se skóre 0.
+[15.04.2026 00:53:19] Hráč 'martinek' se přihlásil.
+[15.04.2026 01:01:32] Hráč 'martinek2' se přihlásil.
+[15.04.2026 01:15:20] Hráč 'martinek' se přihlásil.
+[15.04.2026 01:17:08] Hráč 'martinek' se přihlásil.
+[15.04.2026 01:31:45] Hráč 'martinek' se přihlásil.
+[15.04.2026 01:32:12] Hráč 'martinek' prohrál v Levelu 50 se skóre 9990.
+[15.04.2026 01:32:32] Hráč 'martinek' prohrál v Levelu 42 se skóre 8200.
+[15.04.2026 01:32:48] Hráč 'martinek' prohrál v Levelu 2 se skóre 200.
+[15.04.2026 01:33:07] Hráč 'martinek' prohrál v Levelu 2 se skóre 200.
+[15.04.2026 01:33:18] Hráč 'martinek' prohrál v Levelu 34 se skóre 6600.
+[15.04.2026 01:33:30] Hráč 'martinek' prohrál v Levelu 3 se skóre 400.
+[15.04.2026 01:56:09] Hráč 'martinek' se přihlásil.
+[15.04.2026 02:00:56] Hráč 'tester' prohrál v Levelu 1 se skóre 0.
+[15.04.2026 02:01:25] Hráč 'martinek' se přihlásil.
+[15.04.2026 02:08:02] Hráč 'martinek2' se přihlásil.
+[15.04.2026 02:08:45] Hráč 'tester' prohrál v Levelu 1 se skóre 0.
+[15.04.2026 02:10:09] Hráč 'martinek2' se přihlásil.
+[15.04.2026 02:10:20] Hráč 'martinek2' prohrál v Levelu 50 se skóre 9820.
+[15.04.2026 02:39:20] Hráč 'martinek2' se přihlásil.
+[15.04.2026 02:47:19] Hráč 'nevimjak' úspěšně zaregistrován.
+[15.04.2026 02:47:35] Hráč 'nevimjak' prohrál v Levelu 21 se skóre 4090.

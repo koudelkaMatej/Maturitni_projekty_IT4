@@ -1,0 +1,16 @@
+{
+    "python.terminal.activateEnvironment": true,
+    "editor.formatOnSave": true,
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.pytest_cache": true,
+        "**/venv": false
+    },
+    "search.exclude": {
+        "**/venv": true
+    },
+    "python.languageServer": "Pylance",
+    "python.analysis.typeCheckingMode": "basic",
+    "terminal.integrated.defaultProfile.windows": "Command Prompt",
+    "python-envs.defaultEnvManager": "ms-python.python:system"
+}
