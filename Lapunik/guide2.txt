@@ -1,0 +1,141 @@
+(database.py)
+
+
+Jak načteme data (SELECT):
+    cursor.execute("SELECT id, username FROM users WHERE username = %s", (jmeno,))
+    row = cursor.fetchone()   ← vrátí jeden řádek jako slovník
+
+Jak vložit data (INSERT):
+    cursor.execute("INSERT INTO users (username, password_hash) VALUES (%s, %s)", (jmeno, hash))
+    connection.commit()       ← potřebné pro uložení změn!
+
+Jak aktualizovat (UPDATE):
+    cursor.execute("UPDATE users SET highscore = GREATEST(highscore, %s) WHERE id = %s", (score, id))
+    connection.commit()
+
+GREATEST() je funkce přímo v SQL – vrátí větší ze dvou čísel.
+Takže do DB uložíme vždy jen to VYŠŠÍ skóre, ne vždy to nové.
+
+Bezpečnost hesel – SHA-256 hash:
+    import hashlib
+    hash = hashlib.sha256("moje_heslo".encode()).hexdigest()
+    # výsledek: "5e884898da..."
+
+Jak to funguje při přihlášení:
+  1. Uživatel napíše heslo → přepočítáme hash
+  2. Porovnáme hash s tím co máme v DB
+  3. Pokud sedí → přihlásíme, jinak → chyba
+
+
+
+ config.json a game_log.txt
+
+
+Zápis do souboru (write):
+    import json
+    data = {"width": 1024, "height": 768, "fullscreen": False}
+    with open("config.json", "w") as f:
+        json.dump(data, f)       ← uloží jako JSON text
+
+Čtení ze souboru (read):
+    with open("config.json", "r") as f:
+        data = json.load(f)      ← načte JSON zpět jako slovník
+    print(data["width"])         ← vypíše 1024
+
+ game_log.txt 
+
+Zápis:
+    from datetime import datetime
+    with open("game_log.txt", "a", encoding="utf-8") as f:  ← "a" = append
+        cas = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+        f.write(f"[{cas}] Hráč 'martinek' se přihlásil.\n")
+
+Důležité: "w" přepíše soubor, "a" přidá na konec (append).
+
+
+
+Smyčka
+
+    while self.running:          ← dokud je hra spuštěná
+        clock.tick(60)           ← počkej, abychom měli max 60 FPS
+        self.events()            ← zpracuj vstup (klávesy, myš)
+        self.update()            ← aktualizuj logiku (pohyb, kolize)
+        self.draw()              ← vykresli snímek na obrazovku
+
+
+Kolize = Jak zjistíme, že střela zasáhla nepřítele?
+    if strela.colliderect(nepritele["rect"]):
+        # zasáhli jsme!
+colliderect() je Pygame funkce → vrátí True/False podle překrytí obdélníků.
+
+
+
+Web
+
+
+Spouští se zvlášť: python web.py  → pak otevřít http://localhost:5000
+
+
+    from flask import Flask
+    app = Flask(__name__)          ← vytvoříme aplikaci
+
+    @app.route("/")                ← když někdo navštíví "/", zavolá se tato funkce
+    def leaderboard():
+        # ... načte data z DB ...
+        return html                ← pošle HTML prohlížeči
+
+    app.run(port=5000)             ← spustí server na portu 5000
+
+HTML generujeme jako string přímo v Pythonu – přidáváme řádky do proměnné html.
+
+
+
+ (tests.py)
+
+
+K čemu: Ověřujeme, že kód funguje správně, i po každé změně.
+Spuštění: python tests.py  → zobrazí výsledky 19 testů
+
+Každý test je funkce která používá assert:
+    def test_weapon_level_capped_at_3():
+        g = _make_game()
+        g.weapon_level = 3
+        g.weapon_level = min(3, g.weapon_level + 1)
+        assert g.weapon_level == 3, "Weapon level nesmí přesáhnout 3"
+
+assert X, "zpráva" = "Ujisti se, že X je pravda. Pokud ne, vyhoď chybu."
+
+Testy jsou rozděleny do 4 sekcí:
+  1. Databáze
+  2. Bezpečnost hesel (SHA-256)
+  3. Validace vstupů (registrace/login)
+  4. Herní logika (HP, kombo, obtížnost)
+
+
+
+  kde co měnit
+
+Všechna čísla / konstanty (nejjednodušší změny):
+→ Otevři settings.py, lze změnit číslo, ulož, spusť. Hotovo.
+
+Barvy v Pygame jsou jako (červená, zelená, modrá) – každá 0–255:
+  (255, 0, 0)   = červená
+  (0, 255, 0)   = zelená
+  (0, 0, 255)   = modrá
+  (255, 255, 0) = žlutá
+  (0, 255, 255) = cyan
+  (255, 255, 255) = bílá
+  (0, 0, 0)     = černá
+
+Jak přidat podmínku (IF):
+  Příklad: zbraň level 4 = 4 střely
+  V game.py, metoda events(), najdi sekci "if k == pygame.K_SPACE":
+    elif self.weapon_level >= 4:
+        self.bullets += [pygame.Rect(cx-20, top, 4, 12), ...]
+
+Jak změnit text na obrazovce:
+  V game.py, metoda draw(), najdi blit() volání:
+    self.screen.blit(F.render("NOVÝ TEXT", True, (255,255,255)), (sx(12), sy(20)))
+
+Jak přidat print výpis (pro ladění):
+  Kdekoli v kódu: print(f"Score je: {self.score}")

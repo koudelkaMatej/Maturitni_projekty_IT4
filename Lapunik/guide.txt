@@ -1,0 +1,84 @@
+
+  STRUKTURA
+
+  main.py       → Vstupní bod, spouští Menu a hru, řídí přechody
+  settings.py   → Všechny konstanty (rychlost, HP, body, FPS...)
+  database.py   → Třída Database: registrace, login, ukládání skóre
+  menu.py       → Třída Menu: formuláře, přihlášení, nastavení
+  game.py       → Třída Game: herní logika, fyzika, kreslení
+  web.py        → Webový žebříček (Flask), spouští se zvlášť
+  tests.py      → 19 automatických testů 
+  config.json   → Uložené nastavení okna
+  game_log.txt  → Záznamy událostí s časem 
+
+
+  JAK SPUSTIT
+  Hra:        python main.py
+  Testy:      python tests.py
+  Web (port 5000): python web.py   pak otevřít http://localhost:5000
+
+
+  OVLÁDÁNÍ VE HŘE
+
+  ← / A, → / D  Pohyb lodě doleva / doprava
+  MEZERNÍK      Střelba
+  SHIFT         Úhybný manévr (Dash), má cooldown
+  R             Hrát znovu po Game Over
+  ESC           Návrat do menu
+  P             Přeskočit level (jen pro testování/demo)
+
+
+  HERNÍ MECHANIKY 
+
+  LEVEL SYSTÉM    Levely jsou nekonečné. Každých 5 levelů je cyklus.
+                  Level 5, 10, 15... = Boss.
+  
+  OBTÍŽNOST       Rychlost a střelba nepřátel roste s levelem.
+                  hard cap – nepůjde to do nekonečna.
+  
+  KOMBO           Pokud jsi 10s bez zásahu → COMBO x2 skóre
+                  Pokud jsi 25s bez zásahu → COMBO x3 skóre
+  
+  PICKUPY         Padají náhodně z nepřátel nebo ze vzduchu.
+                  H = Heal (+25 HP), W = Upgrade zbraně, S = Štít
+  
+  ZBRAŇ           Level 1: 1 střela doprostřed
+                  Level 2: 2 střely po stranách
+                  Level 3: 3 střely (střed + boky)
+                  Při zásahu se zbraň vrátí na Level 1!
+  
+  ŠTÍT            Absorbuje jeden zásah, pak zmizí.
+  
+  DASH            Při dashu jsi nesmrtelný.
+                  Cooldown ~1.5 sekundy.
+
+
+  DATABÁZE
+
+  Server:   dbs.spskladno.cz 
+  Tabulka:  users  (id, username, highscore, password_hash)
+  Hesla:    nikdy nejsou v DB jako text, jsou SHA-256 hashed
+
+
+  Zvyšení rychlost hráče     → settings.py: PLAYER_SPEED = X
+  Změň počáteční HP          → settings.py: PLAYER_HEALTH = X
+  Přidej body za level       → settings.py: SCORE_LEVEL_DONE = X
+  Změň rychlost střely       → settings.py: BULLET_SPEED = X
+  Změň počet životů 	     → game.py hledej "HEAL": hp + X
+  Přidej nový typ nepřítele  → game.py: create_enemies(), spawn_enemy()
+  Zmeň barvu hráče           → game.py: draw_pixel_matrix(PLAYER_MATRIX, (R,G,B), ...)
+
+
+ KONSTANTY V settings.py
+
+  FPS                  = 60
+  PLAYER_SPEED         = 5      (px/snímek)
+  PLAYER_HEALTH        = 100
+  BULLET_SPEED         = 8      (px/snímek)
+  SCORE_BASIC          = 10     (zelený nepřítel)
+  SCORE_STRONG         = 20     (oranžový)
+  SCORE_MEGA           = 50     (červený)
+  SCORE_LEVEL_DONE     = 200    (bonus za level)
+  ENEMY_BASE_SPEED     = 0.3    (rychlost v Level 1)
+  ENEMY_SPEED_SCALE    = 0.2    (přírůstek za level)
+
